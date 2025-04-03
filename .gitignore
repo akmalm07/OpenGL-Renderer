@@ -1,49 +1,88 @@
-# Build Folders
-[Dd]ebug/
-[Rr]elease/
-[xX]64/
-[xX]86/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-
-# VS Code directories
-.vscode/
-
-# Visual Studio directories
-.vs/
-
-# Build files
-*.obj
+# Ignore build directories
+[Bb]uild/
+[Bb]in/
+[Oo]bj/
+[Bb]in-int/
 *.exe
 *.dll
+*.lib
+*.so
 *.pdb
 *.ilk
 *.idb
-*.lib
-*.log
 *.sdf
 *.ipch
-*.tlog
-*.lastbuildstate
 *.iobj
 *.ipdb
+*.log
+*.tlog
+*.lastbuildstate
 
-# Temporary files
-*.tmp
-*.temp
-
-# Auto-generated files
-*.csproj.user
-*.suo
+# Ignore generated files
 *.user
 *.rsuser
-*.sln.docstates
-*.sln.bin
+*.suo
+*.ncb
+*.opendb
+*.VC.db
+*.VC.opendb
+*.vscode/
 
-# Premake build folders
-bin/
-bin-int/
-build/
-Makefile
+# Ignore Visual Studio Code settings
+.vscode/
+.vscode/settings.json
+
+# Ignore Premake
 *.make
-obj/
+Makefile
+*.workspace
+*.project
+
+# Ignore backup and temporary files
+*.bak
+*.swp
+*.tmp
+
+# Ignore debug folders
+Debug/
+Release/
+x64/
+x86/
+
+# Ignore other common directories
+out/
+output/
+dist/
+build/
+
+# Ignore dependency files
+*.obj
+*.o
+*.d
+*.a
+
+# Ignore NuGet packages
+packages/
+*.nupkg
+
+# Ignore auto-generated files
+*.tlog
+*.log
+*.obj
+*.idb
+*.pch
+
+# Ignore Personal Visual Studio config
+.vs/
+*.suo
+*.vcxproj.user
+*.filters
+
+# Ignore folders often found in projects
+deps/
+libs/
+extern/
+
+# Ignore OS specific files
+.DS_Store
+Thumbs.db
