@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{84B15F35-F01B-14AC-395A-C551A503F200}</ProjectGuid>
+    <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>openGLAPI</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <LinkIncremental>true</LinkIncremental>
+    <OutDir>bin\Debug-windows-x86_64\openGLAPI\</OutDir>
+    <IntDir>bin-int\Debug-windows-x86_64\openGLAPI\</IntDir>
+    <TargetName>openGLAPI</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <LinkIncremental>false</LinkIncremental>
+    <OutDir>bin\Release-windows-x86_64\openGLAPI\</OutDir>
+    <IntDir>bin-int\Release-windows-x86_64\openGLAPI\</IntDir>
+    <TargetName>openGLAPI</TargetName>
+    <TargetExt>.exe</TargetExt>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>headers.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>GLEW_STATIC;DEBUG;PLATFORM_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+      <Optimization>Disabled</Optimization>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3_mt.lib;libcmt.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\GLEW\lib;..\vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeaderFile>headers.h</PrecompiledHeaderFile>
+      <WarningLevel>Level3</WarningLevel>
+      <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;PLATFORM_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DebugInformationFormat>None</DebugInformationFormat>
+      <Optimization>Full</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <MinimalRebuild>false</MinimalRebuild>
+      <StringPooling>true</StringPooling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <ExternalWarningLevel>Level3</ExternalWarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3_mt.lib;libcmt.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\GLEW\lib;..\vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="opengl\glInit\include\config.h" />
+    <ClInclude Include="global\config.h" />
+    <ClInclude Include="global\headers.h" />
+    <ClInclude Include="include\engine.h" />
+    <ClInclude Include="include\main.h" />
+    <ClInclude Include="opengl\glUtil\include\mesh_bundle.h" />
+    <ClInclude Include="opengl\glInit\include\program.h" />
+    <ClInclude Include="opengl\glUtil\include\mesh.h" />
+    <ClInclude Include="opengl\glUtil\include\stride_composition.h" />
+    <ClInclude Include="opengl\glUtil\include\texture.h" />
+    <ClInclude Include="opengl\tools\include\aabb_button_control.h" />
+    <ClInclude Include="opengl\tools\include\aabb_button_control.inl" />
+    <ClInclude Include="opengl\tools\include\base_engine.h" />
+    <ClInclude Include="opengl\tools\include\camera.h" />
+    <ClInclude Include="opengl\tools\include\camera_bundle.h" />
+    <ClInclude Include="opengl\tools\include\json_reader.h" />
+    <ClInclude Include="opengl\tools\include\key_control.h" />
+    <ClInclude Include="opengl\tools\include\key_control.inl" />
+    <ClInclude Include="opengl\tools\include\key_usage_registry.h" />
+    <ClInclude Include="opengl\tools\include\keys.h" />
+    <ClInclude Include="opengl\tools\include\memory_pool.h" />
+    <ClInclude Include="opengl\tools\include\memory_pool_container.h" />
+    <ClInclude Include="opengl\tools\include\mouse_control.h" />
+    <ClInclude Include="opengl\tools\include\scene.h" />
+    <ClInclude Include="opengl\tools\include\stride.h" />
+    <ClInclude Include="opengl\tools\include\thread.h" />
+    <ClInclude Include="opengl\tools\include\timer.h" />
+    <ClInclude Include="opengl\tools\include\types.h" />
+    <ClInclude Include="opengl\tools\include\window.h" />
+    <ClInclude Include="opengl\tools\include\window_input.h" />
+    <ClInclude Include="opengl\tools\include\window_input_bundles.h" />
+    <ClInclude Include="opengl\glUtil\include\uniform_buffer.h" />
+    <ClInclude Include="opengl\tools\include\scope_exiter.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="opengl\glInit\src\config.cpp" />
+    <ClCompile Include="global\headers.cpp">
+      <AdditionalOptions>/Ycheaders.h %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="opengl\glInit\src\program.cpp" />
+    <ClCompile Include="opengl\glUtil\src\mesh.cpp" />
+    <ClCompile Include="opengl\glUtil\src\stb_image.cpp" />
+    <ClCompile Include="opengl\glUtil\src\stride_composition.cpp" />
+    <ClCompile Include="opengl\glUtil\src\texture.cpp" />
+    <ClCompile Include="opengl\tools\src\aabb_button_control.cpp" />
+    <ClCompile Include="opengl\tools\src\base_engine.cpp" />
+    <ClCompile Include="opengl\tools\src\camera.cpp" />
+    <ClCompile Include="opengl\tools\src\json_reader.cpp" />
+    <ClCompile Include="opengl\tools\src\key_control.cpp" />
+    <ClCompile Include="opengl\tools\src\key_usage_registry.cpp" />
+    <ClCompile Include="opengl\tools\src\memory_pool.cpp" />
+    <ClCompile Include="opengl\tools\src\memory_pool_container.cpp" />
+    <ClCompile Include="opengl\tools\src\mouse_control.cpp" />
+    <ClCompile Include="opengl\tools\src\scene.cpp" />
+    <ClCompile Include="opengl\tools\src\stride.cpp" />
+    <ClCompile Include="opengl\tools\src\thread.cpp" />
+    <ClCompile Include="opengl\tools\src\timer.cpp" />
+    <ClCompile Include="opengl\tools\src\window.cpp" />
+    <ClCompile Include="opengl\tools\src\window_input.cpp" />
+    <ClCompile Include="opengl\tools\src\scope_exiter.cpp" />
+    <ClCompile Include="src\engine.cpp" />
+    <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="opengl\glUtil\src\uniform_buffer.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="opengl\glUtil\include\uniform_buffer.inl" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
