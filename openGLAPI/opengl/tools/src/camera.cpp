@@ -163,14 +163,9 @@ namespace tools
 	{
 		move_and_turn_dir(dir, deltaTime);
 
-		if (is_moving())
-		{
-			std::cout << "Camera is moving\n";
-		}
-
 		_view = glm::lookAt(_position, _target, _up);
 
-		PRINT_MAT4("view: ", _view);
+		//PRINT_MAT4("view: ", _view);
 
 	}
 
@@ -183,14 +178,18 @@ namespace tools
 
 	bool Camera::event_key(double deltaTime, float xMove, float yMove)
 	{
-
-		pitch(deltaTime, xMove);
-		yaw(deltaTime, yMove);
-
-		PRINT_VEC3("Rotation: ", _rotation);
+		if (xMove != 0)
+		{
+			yaw(deltaTime, xMove);
+		}
+		if (yMove != 0)
+		{
+			pitch(deltaTime, yMove);
+		}
 
 		rotate_calc();
-	
+
+		//PRINT_VEC3("Rotation: ", _rotation);
 		return true;
 	}
 
@@ -238,14 +237,14 @@ namespace tools
 		KeyCombInputOne(Keys::E, Action::Press)
 		};
 
-		std::array<Direction, 10> dirs = 
+		std::array<Direction, 6> dirs = 
 		{
 		Direction::Up,
 		Direction::Down,
 		Direction::Left,
 		Direction::Right,
 		Direction::Forward,
-		Direction::Backward,
+		Direction::Backward
 
 		};
 
@@ -317,32 +316,31 @@ namespace tools
 			move_up(deltaTime, false);
 		}
 
-		if (BOOL(dir & Direction::TurnUp))
-		{
-			pitch(deltaTime, true);
-			rotate = true;
-		}
-		else if (BOOL(dir & Direction::TurnDown))
-		{
-			pitch(deltaTime, false);
-			rotate = true;
-		}
+		//if (BOOL(dir & Direction::TurnUp))
+		//{
+		//	pitch(deltaTime, true);
+		//	rotate = true;
+		//}
+		//else if (BOOL(dir & Direction::TurnDown))
+		//{
+		//	pitch(deltaTime, false);
+		//	rotate = true;
+		//}
 
-		if (BOOL(dir & Direction::TurnLeft))
-		{
-			yaw(deltaTime, false);
-			rotate = true;
-		}
-		else if (BOOL(dir & Direction::TurnRight))
-		{
-			yaw(deltaTime, true);
-			rotate = true;
-		}
-
-		if (rotate)
-		{
-			rotate_calc();
-		}
+		//if (BOOL(dir & Direction::TurnLeft))
+		//{
+		//	yaw(deltaTime, false);
+		//	rotate = true;
+		//}
+		//else if (BOOL(dir & Direction::TurnRight))
+		//{
+		//	yaw(deltaTime, true);
+		//	rotate = true;
+		//}
+		//if (rotate)
+		//{
+		//	rotate_calc();
+		//}
 	}
 
 	bool Camera::is_moving()

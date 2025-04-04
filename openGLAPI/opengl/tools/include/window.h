@@ -86,6 +86,8 @@ namespace tools {
 
 		void set_escape_button(Keys key, std::optional<Mods> mod = std::nullopt);
 
+		bool is_updated();
+
 		~Window();
 
 	private:
@@ -108,6 +110,7 @@ namespace tools {
 
 		std::string _name = "";
 
+		bool _updated = false; // develop this to know if the window has been updated or not, used in the main loop to check for updates.
 
 
 	private:

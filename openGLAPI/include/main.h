@@ -34,9 +34,6 @@ namespace Renderer
 
 		Mesh mesh;
 
-
-
-
 		MeshBundle bundle;
 
 
@@ -96,12 +93,12 @@ namespace Renderer
 		tools::KeyUsageRegistry& keys = tools::KeyUsageRegistry::get_instance();
 
 
-		for (const auto& [key, mod] : keys.keys_in_use())
+		for (const auto& [key, mod] : keys.a_to_z_keys_in_use())
 		{
-			std::function<bool()> func = [&matrix, &camera, val = window.FindKeyComb(key)]() -> bool
+			std::function<bool()> func = [&matrix, &camera, val = window.FindKeyComb(key), key]() -> bool
 				{
+					std::cout << "Key is FROM UPDATER :" << INT(val->get_key()) << std::endl;
 					val->change_parameters(0.1);
-					matrix.view = camera.get_view();
 					return true;
 				};
 
@@ -110,7 +107,7 @@ namespace Renderer
 
 		window.SetMouseChangeUpdater([&matrix, &camera, mouseMove = window.GetMouseMove(), &window]() -> bool
 			{
-				mouseMove->change_parameters(0.1, window.GetMouseChangeYf(), window.GetMouseChangeXf());
+				mouseMove->change_parameters(0.1, window.GetMouseChangeXf(), window.GetMouseChangeYf());
 				std::cout << "Change X: " << window.GetMouseChangeXf() << " Change Y: " << window.GetMouseChangeYf() << std::endl;
 				matrix.view = camera.get_view();
 				return true;
@@ -125,24 +122,25 @@ namespace Renderer
 
 		while (!window.get_should_close())
 		{
-			uniformBuffer.update_data(matrix);
-			
-			uniformBuffer.bind();
+			window.poll_events();
 
+			program.use_shaders();
+
+			uniformBuffer.bind();
+			uniformBuffer.update_data(camera.get_view(), 1);
 
 			glClearColor(1.0f, 0.5f, 0.0f, 0.5f);
 			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-			program.use_shaders();
 			
 			mesh.render();
+			glFlush();
 			
-			window.poll_events();
 			window.swap_buffers();	
-			
-			uniformBuffer.unbind();
 
+			uniformBuffer.unbind();
 		}
 
+		std::cout << "Exiting application..." << std::endl;
 	}
 }

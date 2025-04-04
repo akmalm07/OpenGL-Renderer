@@ -88,6 +88,16 @@ namespace tools {
 		);
 	}
 
+	bool Window::is_updated()
+	{
+		if (_updated)
+		{
+			_updated = false;
+			return true;
+		}
+		return false;
+	}
+
 	bool Window::create_window(bool disableCursor, bool isOrtho)
 	{
 		std::cout << "Window count: " << g_numOfWindows << "\n";
@@ -498,9 +508,9 @@ namespace tools {
 
 			for (const auto& [ky, val] : act)
 			{
-
 				if (val->is_pressed(INT(key), INT(mode)))
 				{
+					_updated = true;
 					_keys[key] = true;
 
 					val->execute();
@@ -517,12 +527,13 @@ namespace tools {
 			{
 				return;
 			}
+			
+			_keys[key] = false;
+			
 			for (const auto& [ky, val] : act)
 			{
 				if (val->is_pressed(INT(key), INT(mode)))
 				{
-					_keys[key] = false;
-
 					val->execute();
 				}
 			}
@@ -537,6 +548,8 @@ namespace tools {
 			{
 				if (val->is_pressed(INT(key), INT(mode)))
 				{
+					_keys[key] = true;
+
 					val->execute();
 				}
 			}

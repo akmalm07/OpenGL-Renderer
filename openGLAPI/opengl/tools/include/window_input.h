@@ -76,7 +76,7 @@ namespace tools
 		}
 
 		template <class ... Args>
-		void change_parameters(Args... args)
+		void change_parameters(Args... args)// TO KNOW: This function throws an exception if the dynamic cast fails, which usually happens when the args list isn't matching the parameter of the specific function.
 		{
 			auto* derived = dynamic_cast<MouseMovement<Args...>*>(this);
 			if (!derived)
@@ -114,7 +114,7 @@ namespace tools
 		void set_updater(std::function<bool()> updater);
 
 		template <class ... Args>
-		void change_parameters(Args... args)
+		void change_parameters(Args... args)// TO KNOW: This function throws an exception if the dynamic cast fails, which usually happens when the args list isn't matching the parameter of the specific function.
 		{
 			auto* derived = dynamic_cast<AABButton<Args...>*>(this);
 			if (!derived)
@@ -153,12 +153,16 @@ namespace tools
 		
 		bool is_pressed(GLFWwindow* window, int mods) const;
 
+		Keys get_key();
+
+		std::array<Keys, KEY_MAX> get_keys();
+
 		void set_updater(std::function<bool()> updater);
 
 		virtual bool execute() const = 0;
 
 		template <class ... Args>
-		void change_parameters(Args... args)
+		void change_parameters(Args... args) // TO KNOW: This function throws an exception if the dynamic cast fails, which usually happens when the args list isn't matching the parameter of the specific function.
 		{
 			auto* derived = dynamic_cast<KeyComb<Args...>*>(this);
 			if (!derived)

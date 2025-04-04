@@ -189,6 +189,16 @@ namespace tools {
 		return true;
 	}
 
+	Keys KeyCombB::get_key()
+	{
+		return _charater[0];
+	}
+
+	std::array<Keys, KEY_MAX> KeyCombB::get_keys()
+	{
+		return _charater;
+	}
+
 
 
 	KeyCombB::~KeyCombB()
