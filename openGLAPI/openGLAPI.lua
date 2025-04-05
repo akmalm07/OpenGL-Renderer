@@ -61,7 +61,7 @@ project "openGLAPI"
         "kernel32.lib"
     }
 
-    pchheader "headers.h"
+    pchheader "global/headers.h"
     pchsource "headers.cpp"
 
     defines {"GLEW_STATIC"}
