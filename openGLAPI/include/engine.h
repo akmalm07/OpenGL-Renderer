@@ -2,48 +2,66 @@
 
 #include "config.h"
 
-#include "tools\include\base_engine.h"
+#include "tools/include/stride.h"
+#include "tools/include/camera.h"
+#include "tools/include/timer.h"
+#include "tools/include/window.h"
+#include "glInit/include/program.h"
+#include "glUtil/include/mesh.h"
+#include "glUtil/include/uniform_buffer.h"
 
-#include "tools\include\scene.h"
-#include "glUtil\include\mesh.h"
-
-
-class Engine : public BaseEngine
+namespace Program
 {
-public:
+	tools::Camera create_camera_ortho(tools::Window& window);
 
-	Engine();
+	tools::Camera create_camera_persp(tools::Window& window);
 
-	Engine(int width, int height, bool orthoOrperspective, bool debug);
+	glInit::GLProgram create_program();
 
-	Engine(const tools::Window& window, bool orthoOrperspective, bool debug);
+	glUtil::Mesh create_demo_mesh();
 
-	Engine(GLFWwindow* glfwWindow, bool orthoOrperspective, bool debug);
+	void clear_color();
 
-	void load_meshes(std::vector<Mesh>& meshes) const;
-	
-	void load_meshes(std::vector<glType::Vertex>& meshes, std::vector<glType::Index>& indices) const;
+	tools::Window create_window(int width = 800, int height = 600, const std::string& title = "OpenGL");
 
-	void load_mesh(const Mesh& mesh) const;
-
-	void game_logic(const double& deltaTime) override;
-
-	void camera_logic() override;
-
-	void draw() const override;  
-
-	~Engine() override;
+	template<class T>
+	inline glUtil::UniformBuffer create_camera_uniform_buffer(const T& matrix);
 
 
-private:
 
-	mutable std::vector<std::function<void()>> _pushConstCalls;  
+	class Engine
+	{
+	public:
+		Engine();
 
-	std::vector<Mesh> _mesh;
+		Engine(int width, int height, bool orthoOrPerspective, bool debug);
 
-private:
-};
+		void run();
+	private:
+		tools::Window _window;	
+		tools::Camera _camera;	
+		glInit::GLProgram _program;
+		glUtil::UniformBuffer _cameraUniform;
+		glUtil::Mesh _demoMesh;
+
+		std::vector<glUtil::Mesh> _meshes;
+
+		std::vector<glUtil::UniformBuffer> _uniformBuffs;
+
+		struct Matrix
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			glm::mat4 view = glm::mat4(1.0f);
+			glm::mat4 projection = glm::mat4(1.0f);
+		}_matrix;
+	};
+
+}
 
 
-//void load_scene(std::unique_ptr<Scene> scene);
-//void draw_scene(vk::CommandBuffer& cmdBuffer) const;
+template<class T>
+glUtil::UniformBuffer Program::create_camera_uniform_buffer(const T& matrix)
+{
+	glUtil::UniformBuffer uniformBuffer(0, matrix, sizeof(glm::mat4), 3, false);
+	return uniformBuffer;
+}

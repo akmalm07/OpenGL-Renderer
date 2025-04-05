@@ -13,8 +13,11 @@ namespace glUtil
 		
 		UniformBuffer(bool debugMode);
 
+		UniformBuffer(UniformBuffer&& other) noexcept; 
+		UniformBuffer& operator=(UniformBuffer&& other) noexcept;
+
 		UniformBuffer(const UniformBuffer&) = delete;
-		UniformBuffer& operator=(const UniformBuffer&) = delete;
+		UniformBuffer& operator=(const UniformBuffer&) = delete; 
 
 		template <class T>
 		UniformBuffer(unsigned int bindingPoint, const T& data, const std::vector<size_t>& sizesInBytes, bool debugMode);
@@ -25,8 +28,6 @@ namespace glUtil
 		template <class T>
 		UniformBuffer(unsigned int bindingPoint, const T& data, size_t eachItemByte, size_t count, bool debugMode);
 
-		UniformBuffer(UniformBuffer&& other) noexcept;
-		UniformBuffer& operator=(UniformBuffer&& other) noexcept;
 
 		void bind() const;
 		void unbind() const;

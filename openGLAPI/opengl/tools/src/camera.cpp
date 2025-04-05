@@ -9,9 +9,71 @@ namespace tools
 	Camera::Camera() = default;
 
 
-	Camera::Camera(Camera&& other) = default;
+	Camera::Camera(Camera&& other)
+	{
+		_worldUp = other._worldUp;
+		_position = other._position;
+		_rotation = other._rotation;
+		_speed = other._speed;
+		_front = other._front;
+		_up = other._up;
+		_right = other._right;
+		_target = other._target;
+		_projection = other._projection;
+		_view = other._view;
+		_prevPosition = other._prevPosition;
+		_prevRotation = other._prevRotation;
 
-	Camera& Camera::operator=(Camera&& other) = default;
+		// Move the other to a safe state
+		other._worldUp = glm::vec3(0.0f);
+		other._position = glm::vec3(0.0f);
+		other._rotation = glm::vec3(0.0f);
+		other._speed = 0.0f;
+		other._front = glm::vec3(0.0f);
+		other._up = glm::vec3(0.0f);
+		other._right = glm::vec3(0.0f);
+		other._target = glm::vec3(0.0f);
+		other._projection = glm::mat4(1.0f); // Reset to identity
+		other._view = glm::mat4(1.0f); // Reset to identity
+		other._prevPosition = glm::vec3(0.0f);
+		other._prevRotation = glm::vec3(0.0f);
+
+	}
+
+	Camera& Camera::operator=(Camera&& other)
+	{
+		if (this != &other)
+		{
+			_worldUp = other._worldUp;
+			_position = other._position;
+			_rotation = other._rotation;
+			_speed = other._speed;
+			_front = other._front;
+			_up = other._up;
+			_right = other._right;
+			_target = other._target;
+			_projection = other._projection;
+			_view = other._view;
+			_prevPosition = other._prevPosition;
+			_prevRotation = other._prevRotation;
+			// Move the other to a safe state
+			other._worldUp = glm::vec3(0.0f);
+			other._position = glm::vec3(0.0f);
+			other._rotation = glm::vec3(0.0f);
+			other._speed = 0.0f;
+			other._front = glm::vec3(0.0f);
+			other._up = glm::vec3(0.0f);
+			other._right = glm::vec3(0.0f);
+			other._target = glm::vec3(0.0f);
+			other._projection = glm::mat4(1.0f); // Reset to identity
+			other._view = glm::mat4(1.0f); // Reset to identity
+			other._prevPosition = glm::vec3(0.0f);
+			other._prevRotation = glm::vec3(0.0f);
+
+		}
+
+		return *this;
+	}
 
 	Camera::Camera(CameraBundlePerspective bundle)
 	{
@@ -357,7 +419,7 @@ namespace tools
 
 	Camera::~Camera() = default;
 
-}//namespace vkUtil
+}//namespace tools
 
 
 //void Camera::debug_position()

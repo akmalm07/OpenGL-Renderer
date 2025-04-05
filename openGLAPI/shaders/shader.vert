@@ -3,8 +3,7 @@
 layout(location = 0) in vec3 Pos;  
 layout(location = 1) in vec3 Col;  
 
-layout(location = 0) out vec3 fragColor; 
-
+out vec3 fragColor;  
 
 layout(std140, binding = 0) uniform Matrices
 {

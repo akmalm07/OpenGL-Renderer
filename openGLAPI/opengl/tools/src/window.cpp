@@ -46,9 +46,80 @@ namespace tools {
 		_mouseCurrentY = _height / 2;
 	}
 
-	Window::Window(Window&& other) noexcept = default;
+	Window::Window(Window&& other) noexcept
+	{
+		_AABButtons = std::move(other._AABButtons); 
+		_keyCombs = std::move(other._keyCombs);
+		_mainWindow = other._mainWindow; 
+		_width = other._width;
+		_height = other._height;
+		_bufferWidth = other._bufferWidth;
+		_bufferHeight = other._bufferHeight;
+		_aspectRatio = other._aspectRatio;
+		_leftOrtho = other._leftOrtho;
+		_rightOrtho = other._rightOrtho;
+		_topOrtho = other._topOrtho;
+		_bottomOrtho = other._bottomOrtho;
+		_timer = std::move(other._timer); 
+		_deltaTime = other._deltaTime; 
+		_name = std::move(other._name);
+		_updated = other._updated; 
 
-	Window& Window::operator=(Window&& other) noexcept = default;
+		_mouseMove = other._mouseMove;  
+
+		other._mouseMove = nullptr;
+		other._mainWindow = nullptr; 
+		other._width = 0.0f; 
+		other._height = 0.0f;
+		other._bufferWidth = 0; 
+		other._bufferHeight = 0; 
+		other._aspectRatio = 1.0f; 
+		other._leftOrtho = std::nullopt; 
+
+		other._rightOrtho = std::nullopt;
+		other._topOrtho = std::nullopt;
+		other._bottomOrtho = std::nullopt;
+
+	}
+
+	Window& Window::operator=(Window&& other) noexcept
+	{
+		if (this != nullptr)
+		{
+			_AABButtons = std::move(other._AABButtons);
+			_keyCombs = std::move(other._keyCombs);
+			_mainWindow = other._mainWindow;
+			_width = other._width;
+			_height = other._height;
+			_bufferWidth = other._bufferWidth;
+			_bufferHeight = other._bufferHeight;
+			_aspectRatio = other._aspectRatio;
+			_leftOrtho = other._leftOrtho;
+			_rightOrtho = other._rightOrtho;
+			_topOrtho = other._topOrtho;
+			_bottomOrtho = other._bottomOrtho;
+			_timer = std::move(other._timer);
+			_deltaTime = other._deltaTime;
+			_name = std::move(other._name);
+			_updated = other._updated;
+
+			_mouseMove = other._mouseMove;
+
+			other._mouseMove = nullptr;
+			other._mainWindow = nullptr;
+			other._width = 0.0f;
+			other._height = 0.0f;
+			other._bufferWidth = 0;
+			other._bufferHeight = 0;
+			other._aspectRatio = 1.0f;
+			other._leftOrtho = std::nullopt;
+
+			other._rightOrtho = std::nullopt;
+			other._topOrtho = std::nullopt;
+			other._bottomOrtho = std::nullopt;
+		}
+		return *this;
+	}
 
 	void Window::set_ortho()
 	{
@@ -96,6 +167,21 @@ namespace tools {
 			return true;
 		}
 		return false;
+	}
+
+	void Window::reset_delta_time()
+	{
+		_deltaTime = _timer.get_delta_time(false);
+	}
+
+	double Window::get_delta_time() const
+	{
+		return _deltaTime;
+	}
+
+	const double& Window::get_delta_time_ref()
+	{
+		return _deltaTime;
 	}
 
 	bool Window::create_window(bool disableCursor, bool isOrtho)
@@ -175,55 +261,68 @@ namespace tools {
 
 	bool Window::create_window(float windowWidth, float windowHeight, const std::string& name, bool disableCursor, bool isOrtho)
 	{
+		std::cout << "Window count: " << g_numOfWindows << "\n";
+
 		if (g_numOfWindows == 0)
 		{
 			if (glfwInit() == GLFW_FALSE)
 			{
-				std::cerr << "Error Initializing GLFW! \n";
+				std::cerr << "Error initializing GLFW! \n";
+				return false;
 			}
-			glfwSetErrorCallback([](int error, const char* description)
-				{
-					fprintf(stderr, "GLFW Error: %s\n", description);
+
+			glfwSetErrorCallback([](int error, const char* description) {
+				fprintf(stderr, "GLFW Error: %s\n", description);
 				});
+
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		}
 
-		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
 
-		_name = name;
-		_width = windowWidth;
-		_height = windowHeight;
-
-		if (_mainWindow = glfwCreateWindow(windowWidth, windowHeight, name.c_str(), nullptr, nullptr))
-		{
-			std::cout << "Successfully made a GLFW window called \"" << name << "\", windowWidth: " << windowWidth <<
-				", windowHeight: " << windowHeight << ", name: " << name << '\n';
-		}
-		else
+		_mainWindow = glfwCreateWindow(windowWidth, windowHeight, name.c_str(), nullptr, nullptr);
+		if (!_mainWindow)
 		{
 			throw std::runtime_error("GLFW window creation failed!");
+		}
+
+		std::cout << "Successfully created GLFW window \"" << name << "\", "
+			<< "width: " << windowWidth << ", height: " << windowHeight << "\n";
+
+		if (g_numOfWindows == 0)
+		{
+			glfwMakeContextCurrent(_mainWindow);
+			glewExperimental = GL_TRUE;
+
+			if (glewInit() != GLEW_OK)
+			{
+				std::cerr << "Error initializing GLEW! \n";
+				return false;
+			}
+
+			glEnable(GL_BLEND);
+			glEnable(GL_DEPTH_TEST);
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
 		g_numOfWindows++;
 
 		glfwGetFramebufferSize(_mainWindow, &_bufferWidth, &_bufferHeight);
 
+		int theWidth = static_cast<int>(windowWidth);
+		int theHeight = static_cast<int>(windowHeight);
+		glfwGetWindowSize(_mainWindow, &theWidth, &theHeight);
 
-		int thewidth = (int)windowWidth;
-		int theheight = (int)windowHeight;
+		glfwSetCursorPos(_mainWindow, theWidth / 2, theHeight / 2);
 
-		glfwGetWindowSize(_mainWindow, &thewidth, &theheight);
-
-		glfwSetCursorPos(_mainWindow, thewidth / 2, theheight / 2);
-
-		glfwMakeContextCurrent(_mainWindow);
-
-		CreateCallbacks();
-
-		if (!disableCursor)
+		if (disableCursor)
 		{
 			glfwSetInputMode(_mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 		}
+
+		CreateCallbacks();
 
 		glfwSetWindowUserPointer(_mainWindow, this);
 
@@ -231,6 +330,11 @@ namespace tools {
 		{
 			set_ortho();
 		}
+
+		_width = windowWidth; 
+		_height = windowHeight;
+		_aspectRatio = _width / _height; 
+		_name = name;
 
 		return true;
 	}

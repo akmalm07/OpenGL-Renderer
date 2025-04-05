@@ -8,6 +8,7 @@
 #include "tools\include\key_control.h"
 #include "tools\include\aabb_button_control.h"
 #include "tools\include\mouse_control.h"
+#include "tools\include\timer.h"
 
 
 namespace tools {
@@ -88,6 +89,12 @@ namespace tools {
 
 		bool is_updated();
 
+		void reset_delta_time();
+
+		double get_delta_time() const;
+		
+		const double& get_delta_time_ref();
+
 		~Window();
 
 	private:
@@ -107,6 +114,10 @@ namespace tools {
 		int _bufferWidth = 0, _bufferHeight = 0;
 
 		std::optional<float> _leftOrtho, _rightOrtho, _topOrtho, _bottomOrtho;
+
+		tools::Timer _timer; 
+
+		double _deltaTime = 0.0; 
 
 		std::string _name = "";
 

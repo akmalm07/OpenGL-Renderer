@@ -69,7 +69,7 @@ namespace glUtil
 		}
 		if (index >= bufferSizes.size())
 		{
-			std::cerr << "Error: Index out of range for Uniform Buffer update!" << std::endl;
+			std::cerr << "Error: Index out of range for Uniform Buffer update! Index must be less then: " << bufferSizes.size() << std::endl;
 			return;
 		}
 

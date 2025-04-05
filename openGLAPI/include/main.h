@@ -1,10 +1,6 @@
 #pragma once
 
-#include "tools/include/window.h"
-#include "glUtil/include/mesh.h"
-#include "glInit/include/program.h"
-#include "glUtil/include/uniform_buffer.h"
-#include "tools/include/camera.h"
+#include "engine.h"
 #include "config.h"
 
 
@@ -14,70 +10,17 @@ namespace Renderer
 	{
 		using namespace tools;
 		using namespace glUtil;
+		using namespace glInit;
 
-		Window window(800, 600, "OpenGL");
-		window.create_window(false, true);
-		
-		CameraBundleOrthographic cameraBundleOrtho = {};
-		cameraBundleOrtho.position = glm::vec3(0.0f, 0.0f, 1.0f); 
-		cameraBundleOrtho.front = glm::vec3(0.0f, 0.0f, -1.0f);
-		cameraBundleOrtho.worldUp = glm::vec3(0.0f, 1.0f, 0.0f); 
-		cameraBundleOrtho.left = window.get_left_ortho();
-		cameraBundleOrtho.right = window.get_right_ortho();
-		cameraBundleOrtho.bottom = window.get_bottom_ortho();
-		cameraBundleOrtho.top = window.get_top_ortho();
-		cameraBundleOrtho.nearZ = 0.1f; 
-		cameraBundleOrtho.farZ = 1000.0f; 
-		cameraBundleOrtho.speed = 1.0f; 
+		Window window = Program::create_window(1000, 1000);
 
-		Camera camera(cameraBundleOrtho);
+		Camera camera = Program::create_camera_persp(window);
 
-		Mesh mesh;
+		GLProgram program = Program::create_program();
 
-		MeshBundle bundle;
+		Mesh mesh = Program::create_demo_mesh();
 
 
-		std::array<float, 24> vertices = {
-			0.5f,  -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-			0.5f,  0.5f,  0.0f, 1.0f, 1.0f, 0.0f,
-			-0.5f, 0.5f,  0.0f, 0.0f, 1.0f, 0.0f,
-			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f
-		};
-
-		std::array<unsigned int, 6> indices = {
-			0, 1, 2,  
-			2, 3, 0  
-		};
-		
-		GLProgram program;
-
-		program.create_shaders_from_files("shaders/shader.vert", "shaders/shader.frag");
-
-
-		ArrayBufferLayout layout1;
-		layout1.location = 0;
-		layout1.stride = Stride::STRIDE_3D;
-		layout1.type = StrideType::POS;
-		ArrayBufferLayout layout2;
-		layout2.location = 1;
-		layout2.stride = Stride::STRIDE_3D;
-		layout2.type = StrideType::COL;
-
-		bundle.indexCount = indices.size();
-		bundle.vertexCount = vertices.size();
-		bundle.pVertices = vertices.data();
-		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_6D;
-		bundle.pLayout1 = &layout1;
-		bundle.pLayout2 = &layout2;
-
-
-		mesh.init(bundle, true);
-
-		window.set_escape_button(Keys::Esc);
-
-		camera.set_commands_to_window(window); 
-		
 		struct Matrix
 		{
 			glm::mat4 model = glm::mat4(1.0f);
@@ -86,42 +29,17 @@ namespace Renderer
 		}matrix;
 
 		matrix.projection = camera.get_projection();
-		matrix.view = camera.get_view(); 
-		
-		bool change = false;
-
-		tools::KeyUsageRegistry& keys = tools::KeyUsageRegistry::get_instance();
+		matrix.view = camera.get_view();
 
 
-		for (const auto& [key, mod] : keys.a_to_z_keys_in_use())
-		{
-			std::function<bool()> func = [&matrix, &camera, val = window.FindKeyComb(key), key]() -> bool
-				{
-					std::cout << "Key is FROM UPDATER :" << INT(val->get_key()) << std::endl;
-					val->change_parameters(0.1);
-					return true;
-				};
-
-			window.SetFuncParamUpdaterKeys(key, std::move(func), mod);
-		}
-
-		window.SetMouseChangeUpdater([&matrix, &camera, mouseMove = window.GetMouseMove(), &window]() -> bool
-			{
-				mouseMove->change_parameters(0.1, window.GetMouseChangeXf(), window.GetMouseChangeYf());
-				std::cout << "Change X: " << window.GetMouseChangeXf() << " Change Y: " << window.GetMouseChangeYf() << std::endl;
-				matrix.view = camera.get_view();
-				return true;
-			}
-		);
-
-		window.set_cursor_locked(); 
-
-		glUtil::UniformBuffer uniformBuffer(0, matrix, sizeof(glm::mat4), 3, false);
+		glUtil::UniformBuffer uniformBuffer = Program::create_camera_uniform_buffer(matrix);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		while (!window.get_should_close())
 		{
+			window.reset_delta_time();
+
 			window.poll_events();
 
 			program.use_shaders();
@@ -129,14 +47,11 @@ namespace Renderer
 			uniformBuffer.bind();
 			uniformBuffer.update_data(camera.get_view(), 1);
 
-			glClearColor(1.0f, 0.5f, 0.0f, 0.5f);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+			Program::clear_color();
 
-			
 			mesh.render();
-			glFlush();
-			
-			window.swap_buffers();	
+
+			window.swap_buffers();
 
 			uniformBuffer.unbind();
 		}

@@ -24,6 +24,7 @@ namespace glUtil
             UBO = other.UBO;
             totBufferSize = other.totBufferSize;
             bindingPoint = other.bindingPoint;
+            bufferSizes = std::move(other.bufferSizes);
 
             other.UBO = 0;
         }
