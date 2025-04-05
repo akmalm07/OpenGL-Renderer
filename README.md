@@ -63,6 +63,7 @@ The camera can be controlled using basic input keys:
 - **W, A, S, D**: Move the camera forward, left, backward, and right.
 - **Mouse Movement**: Use the mouse to look around.
 - **Esc**: Close the window and exit the application.
+- These are just the basics for camera movement, you can add more with the Window::AddKeyComb. Please explore all options.
 
 You can modify the camera speed and other parameters in the code to customize the movement.
 
