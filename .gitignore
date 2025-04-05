@@ -6,6 +6,9 @@
 *.exe
 *.dll
 *.lib
+
+!vendor/**/*.lib
+
 *.so
 *.pdb
 *.ilk
