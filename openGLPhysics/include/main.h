@@ -20,6 +20,7 @@ namespace Renderer
 
 		Mesh mesh = Program::create_demo_mesh();
 
+		DirectionalLight directionalLight = Program::create_directional_light(camera, program);
 
 		struct Matrix
 		{
@@ -32,10 +33,11 @@ namespace Renderer
 		matrix.view = camera.get_view();
 
 
-		glUtil::UniformBuffer uniformBuffer = Program::create_camera_uniform_buffer(matrix);
+		//glUtil::UniformBuffer uniformBuffer = Program::create_camera_uniform_buffer(matrix);
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
+		directionalLight.bind();
 		while (!window.get_should_close())
 		{
 			window.reset_delta_time();
@@ -44,8 +46,16 @@ namespace Renderer
 
 			program.use_shaders();
 
-			uniformBuffer.bind();
-			uniformBuffer.update_data(camera.get_view(), 1);
+			program.link_projection_matrix(matrix.projection); 
+			program.link_model_matrix(matrix.model); 
+		
+			matrix.view = camera.get_view(); 
+			program.link_view_matrix(matrix.view); 
+
+			directionalLight.link_camera_pos(camera.get_position()); 
+
+			//uniformBuffer.bind();
+			//uniformBuffer.update_data(camera.get_view(), 1);
 
 			Program::clear_color();
 
@@ -53,8 +63,9 @@ namespace Renderer
 
 			window.swap_buffers();
 
-			uniformBuffer.unbind();
+			//uniformBuffer.unbind();
 		}
+		directionalLight.unbind();
 
 		std::cout << "Exiting application..." << std::endl;
 	}

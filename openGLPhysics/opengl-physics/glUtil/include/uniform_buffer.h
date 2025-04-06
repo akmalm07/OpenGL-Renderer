@@ -28,6 +28,11 @@ namespace glUtil
 		template <class T>
 		UniformBuffer(unsigned int bindingPoint, const T& data, size_t eachItemByte, size_t count, bool debugMode);
 
+		template <class T>
+		void init(unsigned int bindingPoint, const T& data, size_t eachItemByte, size_t count, bool debugMode);
+
+		template <class T> // Critical Contition -- dod not TEST
+		void init(unsigned int bindingPoint, const T& data, const std::vector<size_t>& sizesInBytes, bool debugMode);
 
 		void bind() const;
 		void unbind() const;

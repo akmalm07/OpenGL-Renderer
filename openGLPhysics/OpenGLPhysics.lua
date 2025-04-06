@@ -1,4 +1,4 @@
-project "openGLAPI"
+project "OpenGLAPI"
     kind "ConsoleApp"
     language "C++"
     cppdialect "C++latest"
@@ -18,7 +18,7 @@ project "openGLAPI"
         "global",            
         "include",           
         "shaders",
-        "opengl",
+        "opengl-physics",
         "json",
         "src"
     }
@@ -27,16 +27,20 @@ project "openGLAPI"
     files 
     {
         "src/**.cpp",           
-        "opengl/tools/src/**.cpp", 
-        "opengl/glInit/src/**.cpp",
-        "opengl/glUtil/src/**.cpp", 
+        "opengl-physics/tools/src/**.cpp", 
+        "opengl-physics/glInit/src/**.cpp",
+        "opengl-physics/glUtil/src/**.cpp", 
+        "opengl-physics/physics/src/**.cpp", 
         "include/**.h",           
-        "opengl/tools/include/**.h", 
-        "opengl/glInit/include/**.h",
-        "opengl/glUtil/include/**.h", 
-        "opengl/tools/include/**.inl", 
-        "opengl/glInit/include/**.inl",
-        "opengl/glUtil/include/**.inl",
+        "opengl-physics/tools/include/**.h", 
+        "opengl-physics/glInit/include/**.h",
+        "opengl-physics/glUtil/include/**.h", 
+        "opengl-physics/physics/include/**.h",
+
+        "opengl-physics/tools/include/**.inl", 
+        "opengl-physics/glInit/include/**.inl",
+        "opengl-physics/glUtil/include/**.inl",
+        "opengl-physics/physics/include/**.inl",
         "global/**.h",
         "global/**.cpp",
         "json/**.json",

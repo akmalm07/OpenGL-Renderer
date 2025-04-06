@@ -273,6 +273,11 @@ namespace tools
 		_position = position;
 	}
 
+	glm::vec3 Camera::get_position()
+	{
+		return _position;
+	}
+
 
 	glm::mat4 Camera::get_view() 
 	{

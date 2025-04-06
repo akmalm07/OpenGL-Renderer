@@ -31,6 +31,8 @@ namespace tools
 		float get_speed() const;
 
 		void set_position(const glm::vec3& position);
+		
+		glm::vec3 get_position();
 
 		glm::mat4 get_view();
 

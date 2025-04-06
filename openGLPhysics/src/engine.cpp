@@ -104,7 +104,7 @@ namespace Program
 	glUtil::Mesh create_demo_mesh()
 	{
 
-		std::array<glType::Vertex, 48> vertices = {
+		std::vector<glType::Vertex> vertices = {
 		-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
 		 0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
 		 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
@@ -115,32 +115,53 @@ namespace Program
 		-0.5f,  0.5f, -0.5f, 0.3f, 0.3f, 0.3f
 		};
 
-		std::array<glType::Index, 36> indices = {
-			0, 1, 2, 2, 3, 0,
-			1, 5, 6, 6, 2, 1,
-			5, 4, 7, 7, 6, 5,
-			4, 0, 3, 3, 7, 4,
-			3, 2, 6, 6, 7, 3,
-			4, 5, 1, 1, 0, 4
+
+		std::vector<glType::Index> indices = {
+			0, 1, 2, 
+			2, 3, 0,
+
+			1, 5, 6,
+			6, 2, 1,
+
+			5, 4, 7,
+			7, 6, 5,
+
+			4, 0, 3,
+			3, 7, 4,
+
+			3, 2, 6,
+			6, 7, 3,
+			
+			4, 5, 1,
+			1, 0, 4
 		};
+
+		vertices = tools::calculate_vertex_normals(vertices, indices);
 
 		MeshBundle bundle;
 		ArrayBufferLayout layout1;
 		layout1.location = 0;
 		layout1.stride = Stride::STRIDE_3D;
 		layout1.type = StrideType::POS;
+
 		ArrayBufferLayout layout2;
 		layout2.location = 1;
 		layout2.stride = Stride::STRIDE_3D;
 		layout2.type = StrideType::COL;
 
+		ArrayBufferLayout layout3;
+		layout2.location = 1;
+		layout2.stride = Stride::STRIDE_3D;
+		layout2.type = StrideType::NORM;
+
 		bundle.indexCount = indices.size();
 		bundle.vertexCount = vertices.size();
 		bundle.pVertices = vertices.data();
 		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_6D;
+		bundle.fullStride = FullStride::STRIDE_9D;
 		bundle.pLayout1 = &layout1;
 		bundle.pLayout2 = &layout2;
+		bundle.pLayout3 = &layout3;
 
 
 		return glUtil::Mesh(bundle, true);
@@ -160,6 +181,15 @@ namespace Program
 		window.set_escape_button(tools::Keys::Esc);
 
 		return window;
+	}
+
+	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program, const glm::vec3& direction, const glm::vec3& color)
+	{
+		tools::DirectionalLight dirLight(direction, color);
+
+		dirLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
+
+		return dirLight;
 	}
 
 

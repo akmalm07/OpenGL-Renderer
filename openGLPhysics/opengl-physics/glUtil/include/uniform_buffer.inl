@@ -6,26 +6,8 @@ namespace glUtil
 {
 	template <class T>
 	UniformBuffer::UniformBuffer(unsigned int bindingPoint, const T& data, const std::vector<size_t>& sizes, bool debugMode)
-		: bindingPoint(bindingPoint), bufferSizes(sizes)
 	{
-		size_t thesize = 0;
-		for (const auto& size : sizes)
-		{
-			thesize += size; 
-		}
-
-		if (sizeof(data) == thesize)
-		{
-			totBufferSize = thesize;
-		}
-		else
-		{
-			std::cerr << "Error: Total size of data does not match the expected size for Uniform Buffer!" << std::endl;
-			totBufferSize = 0;
-			return;
-		}
-		
-		allocate_buffer(data);
+		init(bindingPoint, data, sizes, debugMode);
 	}
 
 	template<class T>
@@ -39,8 +21,15 @@ namespace glUtil
 
 	template<class T>
 	inline UniformBuffer::UniformBuffer(unsigned int bindingPoint, const T& data, size_t eachItemByte, size_t count, bool debugMode)
-		: bindingPoint(bindingPoint), debug(debugMode)
 	{
+		init(bindingPoint, data, eachItemByte, count, debugMode); 
+	}
+
+	template<class T>
+	inline void UniformBuffer::init(unsigned int bindingPoint, const T& data, size_t eachItemByte, size_t count, bool debugMode)
+	{
+		this->bindingPoint = bindingPoint;
+		debug = debugMode;
 		for (size_t i = 0; i < count; ++i)
 		{
 			bufferSizes.push_back(eachItemByte);
@@ -48,7 +37,33 @@ namespace glUtil
 
 		if (eachItemByte * count == sizeof(data))
 		{
-			totBufferSize = eachItemByte * count; 
+			totBufferSize = eachItemByte * count;
+		}
+		else
+		{
+			std::cerr << "Error: Total size of data does not match the expected size for Uniform Buffer!" << std::endl;
+			totBufferSize = 0;
+			return;
+		}
+
+		allocate_buffer(data);
+	}
+
+	template<class T>
+	inline void UniformBuffer::init(unsigned int bindingPoint, const T& data, const std::vector<size_t>& sizesInBytes, bool debugMode)
+	{
+		this->bindingPoint = bindingPoint;
+		bufferSizes = std::move(sizesInBytes);
+
+		size_t thesize = 0;
+		for (const auto& size : bufferSizes)
+		{
+			thesize += size;
+		}
+
+		if (sizeof(data) == thesize)
+		{
+			totBufferSize = thesize;
 		}
 		else
 		{

@@ -20,5 +20,5 @@ LibDir["GLFW"] = "../vendor/GLFW/lib"
 LibDir["GLEW"] = "../vendor/GLEW/lib"
 
 
-group "OpenGLAPI"
-    include "OpenGLAPI/OpenGLAPI.lua"
+group "OpenGLPhysics"
+    include "OpenGLPhysics/OpenGLPhysics.lua"

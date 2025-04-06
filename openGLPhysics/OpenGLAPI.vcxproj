@@ -11,10 +11,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{84B15F35-F01B-14AC-395A-C551A503F200}</ProjectGuid>
+    <ProjectGuid>{6491D1A5-D0FB-851C-193A-37C285E36371}</ProjectGuid>
     <IgnoreWarnCompileDuplicatedFilename>true</IgnoreWarnCompileDuplicatedFilename>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>openGLAPI</RootNamespace>
+    <RootNamespace>OpenGLAPI</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -42,16 +42,16 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>bin\Debug-windows-x86_64\openGLAPI\</OutDir>
-    <IntDir>bin-int\Debug-windows-x86_64\openGLAPI\</IntDir>
-    <TargetName>openGLAPI</TargetName>
+    <OutDir>bin\Debug-windows-x86_64\OpenGLAPI\</OutDir>
+    <IntDir>bin-int\Debug-windows-x86_64\OpenGLAPI\</IntDir>
+    <TargetName>OpenGLAPI</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <OutDir>bin\Release-windows-x86_64\openGLAPI\</OutDir>
-    <IntDir>bin-int\Release-windows-x86_64\openGLAPI\</IntDir>
-    <TargetName>openGLAPI</TargetName>
+    <OutDir>bin\Release-windows-x86_64\OpenGLAPI\</OutDir>
+    <IntDir>bin-int\Release-windows-x86_64\OpenGLAPI\</IntDir>
+    <TargetName>OpenGLAPI</TargetName>
     <TargetExt>.exe</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -60,7 +60,7 @@
       <PrecompiledHeaderFile>headers.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;DEBUG;PLATFORM_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl-physics;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>headers.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;PLATFORM_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl-physics;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -101,72 +101,80 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="opengl\glInit\include\config.h" />
     <ClInclude Include="global\config.h" />
     <ClInclude Include="global\headers.h" />
     <ClInclude Include="include\engine.h" />
     <ClInclude Include="include\main.h" />
-    <ClInclude Include="opengl\glUtil\include\mesh_bundle.h" />
-    <ClInclude Include="opengl\glInit\include\program.h" />
-    <ClInclude Include="opengl\glUtil\include\mesh.h" />
-    <ClInclude Include="opengl\glUtil\include\stride_composition.h" />
-    <ClInclude Include="opengl\glUtil\include\texture.h" />
-    <ClInclude Include="opengl\tools\include\aabb_button_control.h" />
-    <ClInclude Include="opengl\tools\include\aabb_button_control.inl" />
-    <ClInclude Include="opengl\tools\include\base_engine.h" />
-    <ClInclude Include="opengl\tools\include\camera.h" />
-    <ClInclude Include="opengl\tools\include\camera_bundle.h" />
-    <ClInclude Include="opengl\tools\include\json_reader.h" />
-    <ClInclude Include="opengl\tools\include\key_control.h" />
-    <ClInclude Include="opengl\tools\include\key_control.inl" />
-    <ClInclude Include="opengl\tools\include\key_usage_registry.h" />
-    <ClInclude Include="opengl\tools\include\keys.h" />
-    <ClInclude Include="opengl\tools\include\memory_pool.h" />
-    <ClInclude Include="opengl\tools\include\memory_pool_container.h" />
-    <ClInclude Include="opengl\tools\include\mouse_control.h" />
-    <ClInclude Include="opengl\tools\include\scene.h" />
-    <ClInclude Include="opengl\tools\include\stride.h" />
-    <ClInclude Include="opengl\tools\include\thread.h" />
-    <ClInclude Include="opengl\tools\include\timer.h" />
-    <ClInclude Include="opengl\tools\include\types.h" />
-    <ClInclude Include="opengl\tools\include\window.h" />
-    <ClInclude Include="opengl\tools\include\window_input.h" />
-    <ClInclude Include="opengl\tools\include\window_input_bundles.h" />
-    <ClInclude Include="opengl\glUtil\include\uniform_buffer.h" />
-    <ClInclude Include="opengl\tools\include\scope_exiter.h" />
+    <ClInclude Include="opengl-physics\glInit\include\config.h" />
+    <ClInclude Include="opengl-physics\glInit\include\program.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\mesh.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\mesh_bundle.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\stride_composition.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\texture.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\uniform_buffer.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\uniform_buffer.inl" />
+    <ClInclude Include="opengl-physics\physics\include\world.h" />
+    <ClInclude Include="opengl-physics\physics\include\world.inl" />
+    <ClInclude Include="opengl-physics\tools\include\aabb_button_control.h" />
+    <ClInclude Include="opengl-physics\tools\include\aabb_button_control.inl" />
+    <ClInclude Include="opengl-physics\tools\include\base_engine.h" />
+    <ClInclude Include="opengl-physics\tools\include\camera.h" />
+    <ClInclude Include="opengl-physics\tools\include\camera_bundle.h" />
+    <ClInclude Include="opengl-physics\tools\include\directional_light.h" />
+    <ClInclude Include="opengl-physics\tools\include\json_reader.h" />
+    <ClInclude Include="opengl-physics\tools\include\key_control.h" />
+    <ClInclude Include="opengl-physics\tools\include\key_control.inl" />
+    <ClInclude Include="opengl-physics\tools\include\key_usage_registry.h" />
+    <ClInclude Include="opengl-physics\tools\include\keys.h" />
+    <ClInclude Include="opengl-physics\tools\include\memory_pool.h" />
+    <ClInclude Include="opengl-physics\tools\include\memory_pool_container.h" />
+    <ClInclude Include="opengl-physics\tools\include\mouse_control.h" />
+    <ClInclude Include="opengl-physics\tools\include\scene.h" />
+    <ClInclude Include="opengl-physics\tools\include\scope_exiter.h" />
+    <ClInclude Include="opengl-physics\tools\include\stride.h" />
+    <ClInclude Include="opengl-physics\tools\include\thread.h" />
+    <ClInclude Include="opengl-physics\tools\include\timer.h" />
+    <ClInclude Include="opengl-physics\tools\include\types.h" />
+    <ClInclude Include="opengl-physics\tools\include\window.h" />
+    <ClInclude Include="opengl-physics\tools\include\window_input.h" />
+    <ClInclude Include="opengl-physics\tools\include\window_input_bundles.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="opengl\glInit\src\config.cpp" />
     <ClCompile Include="global\headers.cpp">
+      <PrecompiledHeader>Create</PrecompiledHeader>
       <AdditionalOptions>/Ycheaders.h %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
-    <ClCompile Include="opengl\glInit\src\program.cpp" />
-    <ClCompile Include="opengl\glUtil\src\mesh.cpp" />
-    <ClCompile Include="opengl\glUtil\src\stb_image.cpp" />
-    <ClCompile Include="opengl\glUtil\src\stride_composition.cpp" />
-    <ClCompile Include="opengl\glUtil\src\texture.cpp" />
-    <ClCompile Include="opengl\tools\src\aabb_button_control.cpp" />
-    <ClCompile Include="opengl\tools\src\base_engine.cpp" />
-    <ClCompile Include="opengl\tools\src\camera.cpp" />
-    <ClCompile Include="opengl\tools\src\json_reader.cpp" />
-    <ClCompile Include="opengl\tools\src\key_control.cpp" />
-    <ClCompile Include="opengl\tools\src\key_usage_registry.cpp" />
-    <ClCompile Include="opengl\tools\src\memory_pool.cpp" />
-    <ClCompile Include="opengl\tools\src\memory_pool_container.cpp" />
-    <ClCompile Include="opengl\tools\src\mouse_control.cpp" />
-    <ClCompile Include="opengl\tools\src\scene.cpp" />
-    <ClCompile Include="opengl\tools\src\stride.cpp" />
-    <ClCompile Include="opengl\tools\src\thread.cpp" />
-    <ClCompile Include="opengl\tools\src\timer.cpp" />
-    <ClCompile Include="opengl\tools\src\window.cpp" />
-    <ClCompile Include="opengl\tools\src\window_input.cpp" />
-    <ClCompile Include="opengl\tools\src\scope_exiter.cpp" />
+    <ClCompile Include="opengl-physics\glInit\src\config.cpp" />
+    <ClCompile Include="opengl-physics\glInit\src\program.cpp" />
+    <ClCompile Include="opengl-physics\glUtil\src\mesh.cpp" />
+    <ClCompile Include="opengl-physics\glUtil\src\stb_image.cpp" />
+    <ClCompile Include="opengl-physics\glUtil\src\stride_composition.cpp" />
+    <ClCompile Include="opengl-physics\glUtil\src\texture.cpp" />
+    <ClCompile Include="opengl-physics\glUtil\src\uniform_buffer.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\world.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\aabb_button_control.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\base_engine.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\camera.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\directional_light.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\json_reader.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\key_control.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\key_usage_registry.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\memory_pool.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\memory_pool_container.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\mouse_control.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\scene.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\scope_exiter.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\stride.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\thread.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\timer.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\window.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\window_input.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="opengl\glUtil\src\uniform_buffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="opengl\glUtil\include\uniform_buffer.inl" />
+    <None Include="shaders\shader.frag" />
+    <None Include="shaders\shader.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
