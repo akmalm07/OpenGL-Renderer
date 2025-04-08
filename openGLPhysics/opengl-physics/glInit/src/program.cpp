@@ -52,6 +52,7 @@ namespace glInit
 
 		glAttachShader(_shaderId, computeShader);
 		glLinkProgram(_shaderId);
+		//glUseProgram(_shaderId);
 
 		glGetProgramiv(_shaderId, GL_LINK_STATUS, &success);
 		if (!success)
@@ -123,6 +124,8 @@ namespace glInit
 
 	unsigned int GLProgram::add_uniform(std::string_view name)
 	{
+		//glLinkProgram(_shaderId);
+		//glUseProgram(_shaderId);
 		unsigned int location = glGetUniformLocation(_shaderId, name.data());
 		if (location == -1)
 		{
@@ -146,6 +149,11 @@ namespace glInit
 			return 0;
 		}
 
+	}
+
+	unsigned int GLProgram::get_id() const
+	{
+		return _shaderId;
 	}
 
 
@@ -214,6 +222,8 @@ namespace glInit
 		char eLog[1024] = { 0 };
 
 		glLinkProgram(_shaderId);
+		//glUseProgram(_shaderId);
+
 		glGetProgramiv(_shaderId, GL_LINK_STATUS, &result);
 		if (!result)
 		{

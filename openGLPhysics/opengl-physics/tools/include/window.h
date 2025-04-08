@@ -25,6 +25,7 @@ namespace tools {
 
 		Window& operator=(Window&& other) noexcept;
 
+		bool is_key_pressed(Keys key) const;
 
 		void set_ortho();
 

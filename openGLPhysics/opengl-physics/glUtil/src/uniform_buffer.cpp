@@ -1,68 +1,158 @@
 #include "headers.h"
 #include "glUtil/include/uniform_buffer.h"
+#include <numeric> 
 
 namespace glUtil
 {
-    UniformBuffer::UniformBuffer() = default;
-
-    UniformBuffer::UniformBuffer(bool debugMode)
+    UniformBuffer::UniformBuffer()
     {
-		debug = debugMode;
+    }
+    UniformBuffer::UniformBuffer(bool debug)
+    {
+        _debug = debug;
+    }
+
+    UniformBuffer::UniformBuffer(const UniformBuffer& other)
+    {
+        _ubo = 0; 
+        _bindingPoint = other._bindingPoint;
+        _totalSize = other._totalSize;
+        _usage = other._usage;
+        _isInit = false; 
+        _debug = other._debug;
+        _offsets = other._offsets; 
+        _sizes = other._sizes;     
+
+    }
+
+    UniformBuffer& UniformBuffer::operator=(const UniformBuffer& other)
+    {
+        if (this != &other)
+        {
+            destroy();
+
+            _ubo = 0; 
+            _bindingPoint = other._bindingPoint;
+            _totalSize = other._totalSize;
+            _usage = other._usage;
+            _isInit = false; 
+            _debug = other._debug;
+            _offsets = other._offsets; 
+            _sizes = other._sizes;     
+
+        }
+        return *this;
     }
 
     UniformBuffer::UniformBuffer(UniformBuffer&& other) noexcept
-        : UBO(other.UBO), totBufferSize(other.totBufferSize), bindingPoint(other.bindingPoint)
     {
-        other.UBO = 0;
+        *this = std::move(other);
     }
 
     UniformBuffer& UniformBuffer::operator=(UniformBuffer&& other) noexcept
     {
         if (this != &other)
         {
-            glDeleteBuffers(1, &UBO);
-            UBO = other.UBO;
-            totBufferSize = other.totBufferSize;
-            bindingPoint = other.bindingPoint;
-            bufferSizes = std::move(other.bufferSizes);
-
-            other.UBO = 0;
+            destroy();
+            _ubo = other._ubo;
+            _bindingPoint = other._bindingPoint;
+            _totalSize = other._totalSize;
+            _usage = other._usage;
+            _isInit = other._isInit;
+            _debug = other._debug;
+            _offsets = std::move(other._offsets);
+            _sizes = std::move(other._sizes);
+            other._ubo = 0;
+            other._isInit = false;
         }
         return *this;
+    }
+
+    bool UniformBuffer::init(unsigned int programID, std::string_view blockName, unsigned int bindingPoint, bool usage)
+    {
+        _bindingPoint = bindingPoint;
+        _usage = (usage ? GL_STATIC_DRAW : GL_DYNAMIC_DRAW);
+
+        GLuint blockIndex = glGetUniformBlockIndex(programID, blockName.data());
+        if (blockIndex == GL_INVALID_INDEX)
+        {
+            std::cerr << "Uniform block '" << blockName << "' not found." << std::endl;
+            return false;
+        }
+
+        GLint blockSize = 0;
+        glGetActiveUniformBlockiv(programID, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize);
+        _totalSize = blockSize;
+
+        if (_debug)
+        {
+            std::cout << "UBO block size: " << _totalSize << " bytes" << std::endl;
+        }
+
+        glGenBuffers(1, &_ubo);
+        glBindBuffer(GL_UNIFORM_BUFFER, _ubo);
+        glBufferData(GL_UNIFORM_BUFFER, _totalSize, nullptr, _usage);
+        glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, _ubo);
+        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+
+        GLint activeUniforms = 0;
+        glGetActiveUniformBlockiv(programID, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &activeUniforms);
+
+        std::vector<GLuint> uniformIndices(activeUniforms);
+        glGetActiveUniformBlockiv(programID, blockIndex, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, reinterpret_cast<GLint*>(uniformIndices.data()));
+
+        std::vector<GLint> offsets(activeUniforms);
+        std::vector<GLint> sizes(activeUniforms);
+        glGetActiveUniformsiv(programID, static_cast<GLsizei>(uniformIndices.size()), uniformIndices.data(), GL_UNIFORM_OFFSET, offsets.data());
+        glGetActiveUniformsiv(programID, static_cast<GLsizei>(uniformIndices.size()), uniformIndices.data(), GL_UNIFORM_SIZE, sizes.data());
+
+        for (int i = 0; i < activeUniforms; ++i)
+        {
+            char nameBuffer[128];
+            GLsizei length = 0;
+            glGetActiveUniformName(programID, uniformIndices[i], sizeof(nameBuffer), &length, nameBuffer);
+
+            std::string uniformName(nameBuffer, length);
+            _offsets.emplace(uniformName, offsets[i]);
+            _sizes.emplace(uniformName, sizes[i]);
+
+            if (_debug)
+            {
+                std::cout << "Uniform '" << uniformName << "' offset: " << offsets[i] << ", size: " << sizes[i] << std::endl;
+            }
+        }
+
+        _isInit = true;
+        return true;
     }
 
 
     void UniformBuffer::bind() const
     {
-        glBindBuffer(GL_UNIFORM_BUFFER, UBO);
+        glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, _ubo);
     }
 
     void UniformBuffer::unbind() const
     {
-        glBindBuffer(GL_UNIFORM_BUFFER, 0);
+        glBindBufferBase(GL_UNIFORM_BUFFER, _bindingPoint, 0);
+    }
+
+    void UniformBuffer::destroy()
+    {
+        if (_ubo != 0)
+        {
+            glDeleteBuffers(1, &_ubo);
+            _ubo = 0;
+        }
+        _offsets.clear();
+        _sizes.clear();
+        _isInit = false;
     }
 
     UniformBuffer::~UniformBuffer()
     {
-        if (UBO != 0)
-        {
-            glDeleteBuffers(1, &UBO);
-        }
+        destroy();
     }
-    unsigned int UniformBuffer::get_offset_from_index(size_t index)
-    {
-        if (index > bufferSizes.size())
-        {
-            std::cerr << "Uniform Buffer: Index provided is larger then the size!" << std::endl;
-            return 0;
-        }
 
-        unsigned int offset = 0;
 
-        for (size_t i = 0; i < index; i++)
-        {
-            offset += bufferSizes[index];
-        }
-		return offset;
-    }
 }

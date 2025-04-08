@@ -48,6 +48,8 @@ namespace glInit
 		unsigned int add_uniform(std::string_view name);
 		unsigned int get_uniform_loc(std::string_view name) const;
 
+		unsigned int get_id() const;
+
 		void link_model_matrix(const glm::mat4& modelMatrix);
 		void link_projection_matrix(const glm::mat4& projectionMatrix);
 		void link_view_matrix(const glm::mat4& viewMatrix);

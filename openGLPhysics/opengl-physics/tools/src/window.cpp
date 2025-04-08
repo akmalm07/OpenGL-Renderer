@@ -121,6 +121,11 @@ namespace tools {
 		return *this;
 	}
 
+	bool Window::is_key_pressed(Keys key) const
+	{
+		return _keys[SIZET(key)];
+	}
+
 	void Window::set_ortho()
 	{
 		_isOrtho = true;

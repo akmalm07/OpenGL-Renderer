@@ -185,9 +185,16 @@ namespace Program
 
 	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program, const glm::vec3& direction, const glm::vec3& color)
 	{
-		tools::DirectionalLight dirLight(direction, color);
+		tools::DirectionalLightBundle dirLightBundle;
+		dirLightBundle.direction = direction;
+		dirLightBundle.color = color;
+
+
+		tools::DirectionalLight dirLight(dirLightBundle, program.get_id(), true);
 
 		dirLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
+		
+		dirLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
 
 		return dirLight;
 	}
@@ -210,7 +217,7 @@ namespace Program
 
 		std::cout << "Matrix: " << sizeof(_matrix) << "\n";
 
-		_cameraUniform = Program::create_camera_uniform_buffer(_matrix);
+		_cameraUniform = Program::create_camera_uniform_buffer(_program, _matrix);
 
 	}
 
@@ -227,7 +234,7 @@ namespace Program
 
 		_matrix.view = _camera.get_view();
 
-		_cameraUniform = Program::create_camera_uniform_buffer(_matrix); 
+		_cameraUniform = Program::create_camera_uniform_buffer(_program, _matrix);
 
 		_demoMesh = Program::create_demo_mesh();
 
@@ -247,7 +254,7 @@ namespace Program
 
 			_cameraUniform.bind();
 
-			_cameraUniform.update_data(_camera.get_view(), 1);
+			_cameraUniform.update_data(_camera.get_view(), "view");
 
 			_demoMesh.render();
 

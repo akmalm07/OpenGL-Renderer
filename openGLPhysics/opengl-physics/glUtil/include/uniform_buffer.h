@@ -4,65 +4,45 @@
 
 namespace glUtil
 {
-
 	class UniformBuffer
 	{
 	public:
-
 		UniformBuffer();
-		
-		UniformBuffer(bool debugMode);
+		UniformBuffer(bool debug);
 
-		UniformBuffer(UniformBuffer&& other) noexcept; 
+		UniformBuffer(const UniformBuffer&);
+		UniformBuffer& operator=(const UniformBuffer&);
+
+		UniformBuffer(UniformBuffer&& other) noexcept;
 		UniformBuffer& operator=(UniformBuffer&& other) noexcept;
 
-		UniformBuffer(const UniformBuffer&) = delete;
-		UniformBuffer& operator=(const UniformBuffer&) = delete; 
-
-		template <class T>
-		UniformBuffer(unsigned int bindingPoint, const T& data, const std::vector<size_t>& sizesInBytes, bool debugMode);
-
-		template <class T>
-		UniformBuffer(unsigned int bindingPoint, const T& data, bool debugMode);
-
-		template <class T>
-		UniformBuffer(unsigned int bindingPoint, const T& data, size_t eachItemByte, size_t count, bool debugMode);
-
-		template <class T>
-		void init(unsigned int bindingPoint, const T& data, size_t eachItemByte, size_t count, bool debugMode);
-
-		template <class T> // Critical Contition -- dod not TEST
-		void init(unsigned int bindingPoint, const T& data, const std::vector<size_t>& sizesInBytes, bool debugMode);
-
+		bool init(unsigned int programID, std::string_view blockName, unsigned int bindingPoint, bool usage);
+		
 		void bind() const;
 		void unbind() const;
 
 		template <class T>
-		void update_data(const T& data, size_t index);
-		
-		template <class T>
-		void update_data(const T& data);
+		void update_data(const T& data, const std::string& name);
 
 		~UniformBuffer();
 
 	private:
-		unsigned int UBO;
-		std::vector<size_t> bufferSizes;
-		size_t totBufferSize = 0;
-		unsigned int bindingPoint;
+		unsigned int _ubo = 0;
+		unsigned int _bindingPoint = 0;
+		size_t _totalSize = 0;
+		bool _isInit = false;
+		bool _debug = true;
+		int _usage = 0;
 
-		bool isInit = false;
+		std::unordered_map<std::string, int> _offsets;
+		std::unordered_map<std::string, int> _sizes;
 
-		bool debug = false;
+		//add types check later 
+		//std::unordered_map<std::string, int> _types;
 
 	private:
-
-		template<class T>
-		void allocate_buffer(const T& data);
-
-		unsigned int get_offset_from_index(size_t index);
+		void destroy();
 	};
-
 
 }
 

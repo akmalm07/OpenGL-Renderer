@@ -1,4 +1,4 @@
-workspace "OpenGL Renderer"
+workspace "OpenGL Physics Renderer"
     architecture "x64"
     startproject "VulkanAPI"
 
