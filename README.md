@@ -4,6 +4,7 @@ This is a simple OpenGL application that demonstrates basic graphics functionali
 
 ## Features
 - **Moving Camera**: A basic camera system that you can control, allowing you to explore the scene.
+- **Lighting**: A flat lighting implementation with the help of a geomatry shader
 - **OpenGL Rendering**: Basic rendering of 3D objects with shaders.
 - **Support for Visual Studio**: If you’re using Visual Studio, the solution file (`.sln`) is included.
 - **Premake Support**: If you're not using Visual Studio, you can easily set up the project with Premake. A `run_premake5.bat` file is included to automatically create the necessary files.
