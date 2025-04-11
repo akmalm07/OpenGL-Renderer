@@ -46,11 +46,15 @@ namespace glUtil {
 	void Mesh::init(const MeshBundle& bundle)
 	{
 		indexCount = bundle.indexCount;
+		vertexCount = bundle.vertexCount;
+
+		indexed = (bundle.indexed || bundle.indexCount == 0 ? true : false);
 
 		glGenVertexArrays(1, &VAO);
 		glBindVertexArray(VAO);
 
-		if (debug) {
+		if (debug)
+		{
 			std::cout << "Creating VAO ID: " << VAO << "\n";
 		}
 
@@ -58,7 +62,8 @@ namespace glUtil {
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glType::Vertex) * bundle.vertexCount, bundle.pVertices, GL_STATIC_DRAW);
 
-		if (debug) {
+		if (debug) 
+		{
 			std::cout << "\tCreating VBO ID: " << VBO << "\n";
 			std::cout << "\tVertex Count: " << bundle.vertexCount << " * " << sizeof(glType::Vertex) << "\n";
 			std::cout << "\tBuffer Data: " << "\n";
@@ -74,10 +79,12 @@ namespace glUtil {
 		}
 
 
-
-		glGenBuffers(1, &IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glType::Index) * bundle.indexCount, bundle.pIndices, GL_STATIC_DRAW);
+		if (indexed)
+		{
+			glGenBuffers(1, &IBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glType::Index) * bundle.indexCount, bundle.pIndices, GL_STATIC_DRAW);
+		}
 
 		if (bundle.pLayout1)
 		{
@@ -98,7 +105,11 @@ namespace glUtil {
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		if (indexed)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
 
 		isInit = true;
 	}
@@ -107,9 +118,20 @@ namespace glUtil {
 	{
 
 		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		
+		if (indexed)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
+		else
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		}
 		glBindVertexArray(0);
 	}
 

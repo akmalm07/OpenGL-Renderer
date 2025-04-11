@@ -1,21 +1,22 @@
 #version 460 core
+ 
 
-layout(location = 0) in vec3 Pos;  
-layout(location = 1) in vec3 Col;  
+ layout(location = 0) in vec3 aPos;
+ layout(location = 1) in vec3 aCol;
+ 
 
-out vec3 fragColor;  
-
-layout(std140, binding = 0) uniform Matrices
-{
-    mat4 model;
-    mat4 view;
-    mat4 projection;
-}camera;
+ out vec3 vPos;
+ out vec3 vertexColor;
 
 
-void main()
-{
-    mat4 MVP = camera.projection * camera.view * camera.model;
-    gl_Position = MVP * vec4(Pos, 1.0);  
-    fragColor = Col; 
-}
+ uniform mat4 uModel;
+ uniform mat4 uView;
+ uniform mat4 uProjection;
+
+ 
+
+ void main() {
+     gl_Position = uProjection * uView * uModel * vec4(aPos, 1.0);
+     vPos = vec3(uModel * vec4(aPos, 1.0));
+     vertexColor = aCol;
+ }

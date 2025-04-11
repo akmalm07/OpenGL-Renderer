@@ -284,6 +284,11 @@ namespace tools
 	{
 		return _projection;
 	}
+
+	glm::vec3 Camera::get_position() const
+	{
+		return _position;
+	}
 	
 
 	void Camera::set_commands_to_window(tools::Window& window)

@@ -11,25 +11,82 @@ namespace glInit
 		_debugMode = debug;
 	}
 
-	void GLProgram::create_shaders_from_string(const char* vertex_code, const char* fragment_code)
+	void GLProgram::create_shaders_from_string(const char* vertexCode, const char* fragmentCode, const char* geomatry_shader)
 	{
-		compile_shader(vertex_code, fragment_code);
+		compile_shader(vertexCode, fragmentCode);
 	}
 
-	void GLProgram::create_shaders_from_files(const std::filesystem::path& vertex_location, const std::filesystem::path& fragment_location)
+	void GLProgram::create_compute_shader_from_string(const char* compute_code)
+	{
+		compile_compute_shader(compute_code);
+	}
+
+	void GLProgram::create_compute_shader_from_file(const std::filesystem::path& compute_path)
+	{
+		std::string code = read_file(compute_path.string());
+		compile_compute_shader(code);
+	}
+
+	void GLProgram::compile_compute_shader(std::string_view compute_code)
+	{
+		if (!_isInit)
+		{
+			_shaderId = glCreateProgram();
+			_isInit = true;
+		}
+
+		unsigned int computeShader = glCreateShader(GL_COMPUTE_SHADER);
+
+		const char* code = compute_code.data();
+		glShaderSource(computeShader, 1, &code, nullptr);
+		glCompileShader(computeShader);
+
+		int success;
+		glGetShaderiv(computeShader, GL_COMPILE_STATUS, &success);
+		if (!success)
+		{
+			char infoLog[512];
+			glGetShaderInfoLog(computeShader, 512, nullptr, infoLog);
+			std::cerr << "ERROR: Compute Shader Compilation Failed\n" << infoLog << std::endl;
+		}
+
+		glAttachShader(_shaderId, computeShader);
+		glLinkProgram(_shaderId);
+		//glUseProgram(_shaderId);
+
+		glGetProgramiv(_shaderId, GL_LINK_STATUS, &success);
+		if (!success)
+		{
+			char infoLog[512];
+			glGetProgramInfoLog(_shaderId, 512, nullptr, infoLog);
+			std::cerr << "ERROR: Shader Program Linking Failed\n" << infoLog << std::endl;
+		}
+
+		glDeleteShader(computeShader);
+	}
+
+	void GLProgram::dispatch(unsigned int x, unsigned int y, unsigned int z)
+	{
+		use_shaders();
+		glDispatchCompute(x, y, z);
+		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
+	}
+
+	void GLProgram::create_shaders_from_files(const std::filesystem::path& vertex_location, const std::filesystem::path& fragment_location, const std::filesystem::path& geomatry_location)
 	{
 		if (_debugMode)
 		{
 			std::cout << "Creating shaders from files:\n"
 				<< "\tVertex Shader: " << vertex_location.string() << "\n"
-				<< "\tFragment Shader: " << fragment_location.string() << "\n";
+				<< "\tFragment Shader: " << fragment_location.string() << "\n"
+				<< "\Geometry Shader: " << geomatry_location.string() << "\n";
 		}
 
 		if (std::filesystem::exists(vertex_location) && std::filesystem::exists(fragment_location))
 		{
 			compile_shader(
 				read_file(vertex_location.string()),
-				read_file(fragment_location.string())
+				read_file(fragment_location.string()), (std::filesystem::exists(geomatry_location) ? read_file(geomatry_location.string()) : "")
 			);
 		}
 	}
@@ -66,15 +123,18 @@ namespace glInit
 		return _uniformModel;
 	}
 
-	void GLProgram::add_uniform(std::string_view name)
+	unsigned int GLProgram::add_uniform(std::string_view name)
 	{
+		//glLinkProgram(_shaderId);
+		//glUseProgram(_shaderId);
 		unsigned int location = glGetUniformLocation(_shaderId, name.data());
 		if (location == -1)
 		{
-			std::cerr << "Warning: uniform '" << name << "' not found in shader program! Did you forget to add it?" << std::endl;
-			return;
+			std::cerr << "Warning: uniform '" << name << "' not found in shader program! Did you forget to add it?" << std::endl; // EROR HERE, PORGRAM CANNO FIND THE ITEM
+			return 0;
 		}
-		_uniforms[name] = location;
+		_uniforms[name].location = location;
+		return location;
 	}
 
 	unsigned int GLProgram::get_uniform_loc(std::string_view name) const
@@ -82,7 +142,7 @@ namespace glInit
 		auto it = _uniforms.find(name);
 		if (it != _uniforms.end())
 		{
-			return it->second;
+			return it->second.location;
 		}
 		else
 		{
@@ -92,14 +152,26 @@ namespace glInit
 
 	}
 
-	void GLProgram::link_model_matrix(glm::mat4& model_matrix)
+	unsigned int GLProgram::get_id() const
 	{
-		glUniformMatrix4fv(_uniformModel, 1, GL_FALSE, glm::value_ptr(model_matrix));
+		return _shaderId;
 	}
 
-	void GLProgram::link_projection_matrix(glm::mat4& projection_matrix)
+
+	void GLProgram::link_model_matrix(const glm::mat4& modelMatrix)
 	{
-		glUniformMatrix4fv(_uniformProjection, 1, GL_FALSE, glm::value_ptr(projection_matrix));
+		glUniformMatrix4fv(_uniformModel, 1, GL_FALSE, glm::value_ptr(modelMatrix));
+	}
+
+	void GLProgram::link_projection_matrix(const glm::mat4& projectionMatrix)
+	{
+		glUniformMatrix4fv(_uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+	}
+
+	void GLProgram::link_view_matrix(const glm::mat4& viewMatrix)
+	{
+		glUniformMatrix4fv(_uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
+
 	}
 
 	void GLProgram::use_shaders()
@@ -130,9 +202,14 @@ namespace glInit
 		clear_shaders();
 	}
 
-	void GLProgram::compile_shader(std::string_view vertex_code, std::string_view fragment_code)
+	void GLProgram::compile_shader(std::string_view vertex_code, std::string_view fragment_code, std::string_view geo_code)
 	{
-		_shaderId = glCreateProgram();
+		if (!_isInit)
+		{
+			_shaderId = glCreateProgram();
+			_isInit = true;
+		}
+
 		if (!_shaderId)
 		{
 			std::cerr << "Error creating shader program!" << std::endl;
@@ -141,11 +218,17 @@ namespace glInit
 
 		add_shader(_shaderId, vertex_code, GL_VERTEX_SHADER);
 		add_shader(_shaderId, fragment_code, GL_FRAGMENT_SHADER);
+		if (geo_code != "")
+		{
+			add_shader(_shaderId, geo_code, GL_GEOMETRY_SHADER);
+		}
 
 		int result = 0;
 		char eLog[1024] = { 0 };
 
 		glLinkProgram(_shaderId);
+		//glUseProgram(_shaderId);
+
 		glGetProgramiv(_shaderId, GL_LINK_STATUS, &result);
 		if (!result)
 		{
@@ -166,15 +249,15 @@ namespace glInit
 		linking_uniforms();
 	}
 
-	void GLProgram::add_shader(unsigned int the_program, std::string_view shader_code, unsigned int shader_type)
+	void GLProgram::add_shader(unsigned int theProgram, std::string_view shaderCode, unsigned int shaderType)
 	{
-		unsigned int theShader = glCreateShader(shader_type);
+		unsigned int theShader = glCreateShader(shaderType);
 
 		const char* theCode[1];
-		theCode[0] = shader_code.data();
+		theCode[0] = shaderCode.data();
 
 		int codeLength[1];
-		codeLength[0] = shader_code.length();
+		codeLength[0] = shaderCode.length();
 
 		glShaderSource(theShader, 1, theCode, codeLength);
 		glCompileShader(theShader);
@@ -186,17 +269,17 @@ namespace glInit
 		if (!result)
 		{
 			glGetShaderInfoLog(theShader, sizeof(eLog), NULL, eLog);
-			std::cerr << "Error compiling the " << shader_type << " shader: " << eLog << std::endl;
+			std::cerr << "Error compiling the " << shaderType << " shader: " << eLog << std::endl;
 			return;
 		}
 
-		glAttachShader(the_program, theShader);
+		glAttachShader(theProgram, theShader);
 	}
 
 	void GLProgram::linking_uniforms()
 	{
-		_uniformProjection = glGetUniformLocation(_shaderId, "projection");
-		_uniformModel = glGetUniformLocation(_shaderId, "model");
-		_uniformView = glGetUniformLocation(_shaderId, "view");
+		_uniformProjection = glGetUniformLocation(_shaderId, "uProjection");
+		_uniformModel = glGetUniformLocation(_shaderId, "uModel");
+		_uniformView = glGetUniformLocation(_shaderId, "uView");
 	}
 }

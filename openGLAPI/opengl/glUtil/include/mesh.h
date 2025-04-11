@@ -36,8 +36,10 @@ namespace glUtil
 
 		unsigned int VAO, VBO, IBO;
 		size_t indexCount;
+		size_t vertexCount;
 
 		bool  isInit = false;
+		bool indexed = true;
 		bool debug = false;
 
 		unsigned int offsetCount = 0;

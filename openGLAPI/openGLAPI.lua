@@ -41,6 +41,7 @@ project "openGLAPI"
         "global/**.cpp",
         "json/**.json",
         "shaders/**.vert",
+        "shaders/**.geom",
         "shaders/**.frag"
     }
 

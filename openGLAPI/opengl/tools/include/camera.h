@@ -36,6 +36,8 @@ namespace tools
 
 		glm::mat4 get_projection() const;
 
+		glm::vec3 get_position() const;
+
 		void set_commands_to_window(tools::Window& win);
 
 		void move_and_turn_dir(Direction dir, double deltaTime);

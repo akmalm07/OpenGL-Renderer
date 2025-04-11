@@ -96,59 +96,159 @@ namespace Program
 		auto& config = Config::instance();
 
 		glInit::GLProgram program;
-		program.create_shaders_from_files(config.get_vert_shader_path(), config.get_frag_shader_path());
+		program.create_shaders_from_files(config.get_vert_shader_path(), config.get_frag_shader_path(), config.get_geom_shader_path());
 
 		return program;
+	}
+
+
+	std::vector<float> create_sphere_vertices(float radius, int num_segments, int num_rings) {
+		std::vector<float> vertices;
+		for (int y = 0; y <= num_rings; ++y) {
+			float v = (float)y / num_rings;
+			float phi = glm::pi<float>() * v;
+
+
+			for (int x = 0; x <= num_segments; ++x) {
+				float u = (float)x / num_segments;
+				float theta = 2.0f * glm::pi<float>() * u;
+
+
+				float xPos = radius * cos(theta) * sin(phi);
+				float yPos = radius * cos(phi);
+				float zPos = radius * sin(theta) * sin(phi);
+
+
+				// Position
+				vertices.push_back(xPos);
+				vertices.push_back(yPos);
+				vertices.push_back(zPos);
+
+
+				// Normal (for a sphere, the normal is the normalized position vector)
+				vertices.push_back(xPos);
+				vertices.push_back(yPos);
+				vertices.push_back(zPos);
+
+
+				vertices.push_back(1.0f);
+				vertices.push_back(1.0f);
+				vertices.push_back(0.0f);
+			}
+		}
+		return vertices;
+	}
+
+
+	std::vector<unsigned int> create_sphere_indices(int num_segments, int num_rings) {
+		std::vector<unsigned int> indices;
+		for (int y = 0; y < num_rings; ++y) {
+			for (int x = 0; x < num_segments; ++x) {
+				unsigned int first = (y * (num_segments + 1)) + x;
+				unsigned int second = first + num_segments + 1;
+
+
+				indices.push_back(first);
+				indices.push_back(second);
+				indices.push_back(first + 1);
+
+
+				indices.push_back(second);
+				indices.push_back(second + 1);
+				indices.push_back(first + 1);
+			}
+		}
+		return indices;
+	}
+
+
+	std::vector<float> create_circle_vertices(float radius, int num_segments) {
+		std::vector<float> vertices;
+		vertices.push_back(0.0f); // Center x
+		vertices.push_back(0.0f); // Center y
+		vertices.push_back(0.0f); // Z coordinate (0 for 2D)
+
+
+		// Color for center (example: red)
+		vertices.push_back(1.0f);
+		vertices.push_back(1.0f);
+		vertices.push_back(0.0f);
+
+
+		for (int i = 0; i <= num_segments; ++i) {
+			float theta = 2.0f * glm::pi<float>() * (float)i / num_segments;
+
+
+			float x = radius * cos(theta);
+			float y = radius * sin(theta);
+
+
+			// Position
+			vertices.push_back(x);
+			vertices.push_back(y);
+			vertices.push_back(0.0f); // Z coordinate (0 for 2D)
+
+
+			// Color (example: white)
+			vertices.push_back(1.0f);
+			vertices.push_back(0.0f);
+			vertices.push_back(0.0f);
+		}
+		return vertices;
+	}
+
+
+	std::vector<unsigned int> create_circle_indices(int num_segments) {
+		std::vector<unsigned int> indices;
+		for (int i = 1; i <= num_segments; ++i) {
+			indices.push_back(0); // Center vertex
+			indices.push_back(i);
+			indices.push_back(i + 1);
+		}
+		indices.push_back(0); // Connect last segment to the first
+		indices.push_back(num_segments + 1);
+		indices.push_back(1);
+
+
+		return indices;
 	}
 
 	glUtil::Mesh create_demo_mesh()
 	{
 
-		std::array<glType::Vertex, 48> vertices = {
-		-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f, 1.0f, 0.5f, 0.5f,
-		-0.5f,  0.5f, -0.5f, 0.3f, 0.3f, 0.3f
-		};
+		std::vector<glType::Vertex> vertices = create_sphere_vertices(0.5, 5, 5);
 
-		std::array<glType::Index, 36> indices = {
-			0, 1, 2, 2, 3, 0,
-			1, 5, 6, 6, 2, 1,
-			5, 4, 7, 7, 6, 5,
-			4, 0, 3, 3, 7, 4,
-			3, 2, 6, 6, 7, 3,
-			4, 5, 1, 1, 0, 4
-		};
+
+		std::vector<glType::Index> indices = create_sphere_indices(5, 5);
+
+		//vertices = tools::calculate_face_normals(vertices, indices);
 
 		MeshBundle bundle;
 		ArrayBufferLayout layout1;
 		layout1.location = 0;
 		layout1.stride = Stride::STRIDE_3D;
 		layout1.type = StrideType::POS;
+
 		ArrayBufferLayout layout2;
 		layout2.location = 1;
 		layout2.stride = Stride::STRIDE_3D;
 		layout2.type = StrideType::COL;
 
-		bundle.indexCount = indices.size();
 		bundle.vertexCount = vertices.size();
 		bundle.pVertices = vertices.data();
+		bundle.indexCount = indices.size();
 		bundle.pIndices = indices.data();
 		bundle.fullStride = FullStride::STRIDE_6D;
+		bundle.indexed = true;
 		bundle.pLayout1 = &layout1;
 		bundle.pLayout2 = &layout2;
-
 
 		return glUtil::Mesh(bundle, true);
 	}
 
 	void clear_color()
 	{
-		glClearColor(1.0f, 0.5f, 0.0f, 0.5f);
+		glClearColor(1.0f, 0.5f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -162,10 +262,26 @@ namespace Program
 		return window;
 	}
 
+	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program, const glm::vec3& direction, const glm::vec3& color)
+	{
+		tools::DirectionalLightBundle dirLightBundle;
+		dirLightBundle.direction = direction;
+		dirLightBundle.color = color;
+
+
+		tools::DirectionalLight dirLight(dirLightBundle, program.get_id(), true);
+
+		dirLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
+
+		dirLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
+
+		return dirLight;
+	}
+
 
 	Engine::Engine()
 	{
-		_window.create_window(1000, 1000, "OpenGL",true, true);
+		_window.create_window(1000, 1000, "OpenGL", true, true);
 		_window.set_escape_button(tools::Keys::Esc);
 
 		_camera = Program::create_camera_persp(_window);
@@ -180,7 +296,7 @@ namespace Program
 
 		std::cout << "Matrix: " << sizeof(_matrix) << "\n";
 
-		_cameraUniform = Program::create_camera_uniform_buffer(_matrix);
+		_cameraUniform = Program::create_camera_uniform_buffer(_program, _matrix);
 
 	}
 
@@ -190,14 +306,14 @@ namespace Program
 		_window = Program::create_window(width, height);
 
 		_camera = (orthoOrPerspective ? Program::create_camera_persp(_window) : Program::create_camera_ortho(_window));
-		
+
 		_program = Program::create_program();
-		
+
 		_matrix.projection = _camera.get_projection();
 
 		_matrix.view = _camera.get_view();
 
-		_cameraUniform = Program::create_camera_uniform_buffer(_matrix); 
+		_cameraUniform = Program::create_camera_uniform_buffer(_program, _matrix);
 
 		_demoMesh = Program::create_demo_mesh();
 
@@ -217,7 +333,7 @@ namespace Program
 
 			_cameraUniform.bind();
 
-			_cameraUniform.update_data(_camera.get_view(), 1);
+			_cameraUniform.update_data(_camera.get_view(), "view");
 
 			_demoMesh.render();
 

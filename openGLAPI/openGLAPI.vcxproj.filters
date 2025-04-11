@@ -37,6 +37,9 @@
     <Filter Include="opengl\tools\src">
       <UniqueIdentifier>{212ED443-0D27-F395-3659-D81A22B1D2A1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="shaders">
+      <UniqueIdentifier>{0F45D591-7B24-542D-843C-DF03F09ABA8E}</UniqueIdentifier>
+    </Filter>
     <Filter Include="src">
       <UniqueIdentifier>{2DAB880B-99B4-887C-2230-9F7C8E38947C}</UniqueIdentifier>
     </Filter>
@@ -54,16 +57,28 @@
     <ClInclude Include="include\main.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="opengl\glInit\include\config.h">
+      <Filter>opengl\glInit\include</Filter>
+    </ClInclude>
     <ClInclude Include="opengl\glInit\include\program.h">
       <Filter>opengl\glInit\include</Filter>
     </ClInclude>
     <ClInclude Include="opengl\glUtil\include\mesh.h">
       <Filter>opengl\glUtil\include</Filter>
     </ClInclude>
+    <ClInclude Include="opengl\glUtil\include\mesh_bundle.h">
+      <Filter>opengl\glUtil\include</Filter>
+    </ClInclude>
     <ClInclude Include="opengl\glUtil\include\stride_composition.h">
       <Filter>opengl\glUtil\include</Filter>
     </ClInclude>
     <ClInclude Include="opengl\glUtil\include\texture.h">
+      <Filter>opengl\glUtil\include</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl\glUtil\include\uniform_buffer.h">
+      <Filter>opengl\glUtil\include</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl\glUtil\include\uniform_buffer.inl">
       <Filter>opengl\glUtil\include</Filter>
     </ClInclude>
     <ClInclude Include="opengl\tools\include\aabb_button_control.h">
@@ -79,6 +94,9 @@
       <Filter>opengl\tools\include</Filter>
     </ClInclude>
     <ClInclude Include="opengl\tools\include\camera_bundle.h">
+      <Filter>opengl\tools\include</Filter>
+    </ClInclude>
+    <ClInclude Include="opengl\tools\include\directional_light.h">
       <Filter>opengl\tools\include</Filter>
     </ClInclude>
     <ClInclude Include="opengl\tools\include\json_reader.h">
@@ -108,6 +126,9 @@
     <ClInclude Include="opengl\tools\include\scene.h">
       <Filter>opengl\tools\include</Filter>
     </ClInclude>
+    <ClInclude Include="opengl\tools\include\scope_exiter.h">
+      <Filter>opengl\tools\include</Filter>
+    </ClInclude>
     <ClInclude Include="opengl\tools\include\stride.h">
       <Filter>opengl\tools\include</Filter>
     </ClInclude>
@@ -129,14 +150,13 @@
     <ClInclude Include="opengl\tools\include\window_input_bundles.h">
       <Filter>opengl\tools\include</Filter>
     </ClInclude>
-    <ClInclude Include="opengl\glUtil\include\mesh_bundle.h" />
-    <ClInclude Include="opengl\glUtil\include\uniform_buffer.h" />
-    <ClInclude Include="opengl\glInit\include\config.h" />
-    <ClInclude Include="opengl\tools\include\scope_exiter.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="global\headers.cpp">
       <Filter>global</Filter>
+    </ClCompile>
+    <ClCompile Include="opengl\glInit\src\config.cpp">
+      <Filter>opengl\glInit\src</Filter>
     </ClCompile>
     <ClCompile Include="opengl\glInit\src\program.cpp">
       <Filter>opengl\glInit\src</Filter>
@@ -153,6 +173,9 @@
     <ClCompile Include="opengl\glUtil\src\texture.cpp">
       <Filter>opengl\glUtil\src</Filter>
     </ClCompile>
+    <ClCompile Include="opengl\glUtil\src\uniform_buffer.cpp">
+      <Filter>opengl\glUtil\src</Filter>
+    </ClCompile>
     <ClCompile Include="opengl\tools\src\aabb_button_control.cpp">
       <Filter>opengl\tools\src</Filter>
     </ClCompile>
@@ -160,6 +183,9 @@
       <Filter>opengl\tools\src</Filter>
     </ClCompile>
     <ClCompile Include="opengl\tools\src\camera.cpp">
+      <Filter>opengl\tools\src</Filter>
+    </ClCompile>
+    <ClCompile Include="opengl\tools\src\directional_light.cpp">
       <Filter>opengl\tools\src</Filter>
     </ClCompile>
     <ClCompile Include="opengl\tools\src\json_reader.cpp">
@@ -183,6 +209,9 @@
     <ClCompile Include="opengl\tools\src\scene.cpp">
       <Filter>opengl\tools\src</Filter>
     </ClCompile>
+    <ClCompile Include="opengl\tools\src\scope_exiter.cpp">
+      <Filter>opengl\tools\src</Filter>
+    </ClCompile>
     <ClCompile Include="opengl\tools\src\stride.cpp">
       <Filter>opengl\tools\src</Filter>
     </ClCompile>
@@ -204,11 +233,16 @@
     <ClCompile Include="src\main.cpp">
       <Filter>src</Filter>
     </ClCompile>
-    <ClCompile Include="opengl\glUtil\src\uniform_buffer.cpp" />
-    <ClCompile Include="opengl\glInit\src\config.cpp" />
-    <ClCompile Include="opengl\tools\src\scope_exiter.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="opengl\glUtil\include\uniform_buffer.inl" />
+    <None Include="shaders\shader.frag">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\shader.geom">
+      <Filter>shaders</Filter>
+    </None>
+    <None Include="shaders\shader.vert">
+      <Filter>shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

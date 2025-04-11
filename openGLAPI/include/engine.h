@@ -6,6 +6,7 @@
 #include "tools/include/camera.h"
 #include "tools/include/timer.h"
 #include "tools/include/window.h"
+#include "tools/include/directional_light.h"
 #include "glInit/include/program.h"
 #include "glUtil/include/mesh.h"
 #include "glUtil/include/uniform_buffer.h"
@@ -24,8 +25,11 @@ namespace Program
 
 	tools::Window create_window(int width = 800, int height = 600, const std::string& title = "OpenGL");
 
+	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program,
+		const glm::vec3& direction = glm::vec3(1.0f, -1.0f, 0.0f), const glm::vec3& color = glm::vec3(0.1f, 1.0f, 1.0f));
+
 	template<class T>
-	inline glUtil::UniformBuffer create_camera_uniform_buffer(const T& matrix);
+	inline glUtil::UniformBuffer create_camera_uniform_buffer(const glInit::GLProgram& program, const T& matrix);
 
 
 
@@ -38,8 +42,8 @@ namespace Program
 
 		void run();
 	private:
-		tools::Window _window;	
-		tools::Camera _camera;	
+		tools::Window _window;
+		tools::Camera _camera;
 		glInit::GLProgram _program;
 		glUtil::UniformBuffer _cameraUniform;
 		glUtil::Mesh _demoMesh;
@@ -60,8 +64,14 @@ namespace Program
 
 
 template<class T>
-glUtil::UniformBuffer Program::create_camera_uniform_buffer(const T& matrix)
+glUtil::UniformBuffer Program::create_camera_uniform_buffer(const glInit::GLProgram& program, const T& matrix)
 {
-	glUtil::UniformBuffer uniformBuffer(0, matrix, sizeof(glm::mat4), 3, false);
+	glUtil::UniformBuffer uniformBuffer;
+	uniformBuffer.init(program.get_id(), "CameraData", 0, false);
+
+	uniformBuffer.update_data(matrix.model, "model");
+	uniformBuffer.update_data(matrix.view, "view");
+	uniformBuffer.update_data(matrix.projection, "projection");
+
 	return uniformBuffer;
 }
