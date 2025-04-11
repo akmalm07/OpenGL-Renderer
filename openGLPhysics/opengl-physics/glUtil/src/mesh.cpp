@@ -3,7 +3,9 @@
 
 
 //bool Mesh::_firstInstance = true;
-namespace glUtil {
+namespace glUtil
+{
+
 	Mesh::Mesh()
 	{
 		VAO = 0;
@@ -46,11 +48,15 @@ namespace glUtil {
 	void Mesh::init(const MeshBundle& bundle)
 	{
 		indexCount = bundle.indexCount;
+		vertexCount = bundle.vertexCount;
+
+		indexed = (bundle.indexed || bundle.indexCount == 0 ? true : false);
 
 		glGenVertexArrays(1, &VAO);
 		glBindVertexArray(VAO);
 
-		if (debug) {
+		if (debug)
+		{
 			std::cout << "Creating VAO ID: " << VAO << "\n";
 		}
 
@@ -58,11 +64,12 @@ namespace glUtil {
 		glBindBuffer(GL_ARRAY_BUFFER, VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glType::Vertex) * bundle.vertexCount, bundle.pVertices, GL_STATIC_DRAW);
 
-		if (debug) {
+		if (debug)
+		{
 			std::cout << "\tCreating VBO ID: " << VBO << "\n";
 			std::cout << "\tVertex Count: " << bundle.vertexCount << " * " << sizeof(glType::Vertex) << "\n";
 			std::cout << "\tBuffer Data: " << "\n";
-			for (size_t i = 0; i < bundle.vertexCount; ++i)
+			for (size_t i = 0; i < bundle.vertexCount; i++)
 			{
 				if (i % SIZET(bundle.fullStride) == 0)
 				{
@@ -71,13 +78,27 @@ namespace glUtil {
 				std::cout << bundle.pVertices[i] << " ";
 			}
 			std::cout << std::endl;
+
+			std::cout << "\tIndex data: " << std::endl;
+
+			for (size_t i = 0; i < bundle.indexCount; i++)
+			{
+				if (i % 3 == 0)
+				{
+					std::cout << "\n\t\t";
+				}
+				std::cout << bundle.pIndices[i] << " ";
+			}
+			std::cout << std::endl;
 		}
 
 
-
-		glGenBuffers(1, &IBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glType::Index) * bundle.indexCount, bundle.pIndices, GL_STATIC_DRAW);
+		if (indexed)
+		{
+			glGenBuffers(1, &IBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glType::Index) * bundle.indexCount, bundle.pIndices, GL_STATIC_DRAW);
+		}
 
 		if (bundle.pLayout1)
 		{
@@ -98,7 +119,11 @@ namespace glUtil {
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		if (indexed)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
 
 		isInit = true;
 	}
@@ -107,9 +132,20 @@ namespace glUtil {
 	{
 
 		glBindVertexArray(VAO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-		glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+		if (indexed)
+		{
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+		}
+		else
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, VBO);
+			glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+		}
 		glBindVertexArray(0);
 	}
 
@@ -151,11 +187,126 @@ namespace glUtil {
 				<< "\n\tOffset: " << offsetCount
 				<< std::endl;
 		}
-		
+
 		offsetCount += stride * sizeof(glType::Vertex);
 
 	}
 
+
+
+	std::vector<float> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color)
+	{
+		if (segments < 3)
+		{
+			std::cerr << "Error: Circle must have at least 3 segments." << std::endl;
+			return {};
+		}
+		std::vector<float> vertices;
+		vertices.push_back(center.x);
+		vertices.push_back(center.y);
+		vertices.push_back(center.z);
+
+		vertices.push_back(color.r);
+		vertices.push_back(color.g);
+		vertices.push_back(color.b);
+
+		for (int i = 0; i <= segments; i++)
+		{
+			float theta = 2.0f * glm::pi<float>() * (float)i / segments;
+
+			float x = center.x + radius * cos(theta);
+			float y = center.y + radius * sin(theta);
+
+			vertices.push_back(x);
+			vertices.push_back(y);
+			vertices.push_back(center.z);
+
+			vertices.push_back(color.r);
+			vertices.push_back(color.g);
+			vertices.push_back(color.b);
+		}
+		return vertices;
+	}
+
+}
+
+namespace tools
+{
+	std::vector<unsigned int> create_circle_indices(int segments)
+	{
+		if (segments < 3)
+		{
+			std::cerr << "Error: Circle must have at least 3 segments." << std::endl;
+			return {};
+		}
+		std::vector<unsigned int> indices;
+		for (int i = 1; i <= segments; i++)
+		{
+			indices.push_back(0);
+			indices.push_back(i);
+			indices.push_back(i + 1);
+		}
+		indices.push_back(0);
+		indices.push_back(segments + 1);
+		indices.push_back(1);
+
+		return indices;
+	}
+
+	std::vector<float> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size) {
+		std::vector<float> vertices;
+		float halfSize = size / 2.0f;
+
+
+		float cubeVertices[] = {
+			-halfSize, -halfSize, halfSize, color.r, color.g, color.b,
+			halfSize, -halfSize, halfSize, color.r, color.g, color.b, 
+			halfSize, halfSize, halfSize, color.r, color.g, color.b, 
+			-halfSize, halfSize, halfSize, color.r, color.g, color.b, 
+
+			-halfSize, -halfSize, -halfSize, color.r, color.g, color.b, 
+			halfSize, -halfSize, -halfSize, color.r, color.g, color.b, 
+			halfSize, halfSize, -halfSize, color.r, color.g, color.b, 
+			-halfSize, halfSize, -halfSize, color.r, color.g, color.b, 
+		};
+
+
+		for (int i = 0; i < 8; ++i) {
+			vertices.push_back(cubeVertices[i * 6 + 0] + center.x);
+			vertices.push_back(cubeVertices[i * 6 + 1] + center.y);
+			vertices.push_back(cubeVertices[i * 6 + 2] + center.z);
+			vertices.push_back(cubeVertices[i * 6 + 3]);
+			vertices.push_back(cubeVertices[i * 6 + 4]);
+			vertices.push_back(cubeVertices[i * 6 + 5]);
+		}
+
+
+		return vertices;
+	}
+
+	std::vector<unsigned int> create_cube_indices()
+	{
+		return
+		{
+			0, 1, 2,
+			2, 3, 0,
+
+			1, 5, 6,
+			6, 2, 1,
+
+			5, 4, 7,
+			7, 6, 5,
+
+			4, 0, 3,
+			3, 7, 4,
+
+			4, 5, 1,
+			1, 0, 4,
+
+			3, 2, 6,
+			6, 7, 3
+		};
+	}
 
 
 }

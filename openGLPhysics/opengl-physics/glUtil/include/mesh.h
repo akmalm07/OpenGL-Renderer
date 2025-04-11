@@ -36,8 +36,10 @@ namespace glUtil
 
 		unsigned int VAO, VBO, IBO;
 		size_t indexCount;
+		size_t vertexCount;
 
 		bool  isInit = false;
+		bool indexed = true;
 		bool debug = false;
 
 		unsigned int offsetCount = 0;
@@ -48,6 +50,19 @@ namespace glUtil
 		void set_vertex_attribs(const ArrayBufferLayout& arrLayout, FullStride absoluteStride);
 
 	};
+
+}
+
+namespace tools
+{
+
+	std::vector<float> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color);
+
+	std::vector<unsigned int> create_circle_indices(int segments);
+
+	std::vector<float> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size);
+
+	std::vector<unsigned int> create_cube_indices();
 }
 
 //

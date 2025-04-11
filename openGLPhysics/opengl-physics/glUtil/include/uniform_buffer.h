@@ -17,7 +17,7 @@ namespace glUtil
 		UniformBuffer& operator=(UniformBuffer&& other) noexcept;
 
 		bool init(unsigned int programID, std::string_view blockName, unsigned int bindingPoint, bool usage);
-		
+
 		void bind() const;
 		void unbind() const;
 

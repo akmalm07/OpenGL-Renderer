@@ -13,10 +13,10 @@ namespace glUtil
 
         auto it = _offsets.find(name);
 
-		//for (const auto& [key, value] : _offsets) // debugging
-		//{
-		//	std::cout << "Key: " << key << ", Value: " << value << std::endl;
-		//}
+        //for (const auto& [key, value] : _offsets) // debugging
+        //{
+        //	std::cout << "Key: " << key << ", Value: " << value << std::endl;
+        //}
 
         if (it == _offsets.end())
         {

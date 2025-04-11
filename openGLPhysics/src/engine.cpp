@@ -96,7 +96,7 @@ namespace Program
 		auto& config = Config::instance();
 
 		glInit::GLProgram program;
-		program.create_shaders_from_files(config.get_vert_shader_path(), config.get_frag_shader_path());
+		program.create_shaders_from_files(config.get_vert_shader_path(), config.get_frag_shader_path(), config.get_geom_shader_path());
 
 		return program;
 	}
@@ -104,39 +104,12 @@ namespace Program
 	glUtil::Mesh create_demo_mesh()
 	{
 
-		std::vector<glType::Vertex> vertices = {
-		-0.5f, -0.5f,  0.5f, 1.0f, 0.0f, 0.0f,
-		 0.5f, -0.5f,  0.5f, 0.0f, 1.0f, 0.0f,
-		 0.5f,  0.5f,  0.5f, 0.0f, 0.0f, 1.0f,
-		-0.5f,  0.5f,  0.5f, 1.0f, 1.0f, 0.0f,
-		-0.5f, -0.5f, -0.5f, 1.0f, 0.0f, 1.0f,
-		 0.5f, -0.5f, -0.5f, 0.0f, 1.0f, 1.0f,
-		 0.5f,  0.5f, -0.5f, 1.0f, 0.5f, 0.5f,
-		-0.5f,  0.5f, -0.5f, 0.3f, 0.3f, 0.3f
-		};
+		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.5f, 0.5f), 1.0f);
 
 
-		std::vector<glType::Index> indices = {
-			0, 1, 2, 
-			2, 3, 0,
+		std::vector<glType::Index> indices = tools::create_cube_indices();
 
-			1, 5, 6,
-			6, 2, 1,
-
-			5, 4, 7,
-			7, 6, 5,
-
-			4, 0, 3,
-			3, 7, 4,
-
-			3, 2, 6,
-			6, 7, 3,
-			
-			4, 5, 1,
-			1, 0, 4
-		};
-
-		vertices = tools::calculate_vertex_normals(vertices, indices);
+		vertices = tools::calculate_face_normals(vertices, indices);
 
 		MeshBundle bundle;
 		ArrayBufferLayout layout1;
@@ -149,27 +122,21 @@ namespace Program
 		layout2.stride = Stride::STRIDE_3D;
 		layout2.type = StrideType::COL;
 
-		ArrayBufferLayout layout3;
-		layout2.location = 1;
-		layout2.stride = Stride::STRIDE_3D;
-		layout2.type = StrideType::NORM;
-
-		bundle.indexCount = indices.size();
 		bundle.vertexCount = vertices.size();
 		bundle.pVertices = vertices.data();
+		bundle.indexCount = indices.size();
 		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_9D;
+		bundle.fullStride = FullStride::STRIDE_6D;
+		bundle.indexed = true;
 		bundle.pLayout1 = &layout1;
 		bundle.pLayout2 = &layout2;
-		bundle.pLayout3 = &layout3;
-
 
 		return glUtil::Mesh(bundle, true);
 	}
 
 	void clear_color()
 	{
-		glClearColor(1.0f, 0.5f, 0.0f, 0.5f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -193,7 +160,7 @@ namespace Program
 		tools::DirectionalLight dirLight(dirLightBundle, program.get_id(), true);
 
 		dirLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
-		
+
 		dirLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
 
 		return dirLight;
@@ -202,7 +169,7 @@ namespace Program
 
 	Engine::Engine()
 	{
-		_window.create_window(1000, 1000, "OpenGL",true, true);
+		_window.create_window(1000, 1000, "OpenGL", true, true);
 		_window.set_escape_button(tools::Keys::Esc);
 
 		_camera = Program::create_camera_persp(_window);
@@ -227,9 +194,9 @@ namespace Program
 		_window = Program::create_window(width, height);
 
 		_camera = (orthoOrPerspective ? Program::create_camera_persp(_window) : Program::create_camera_ortho(_window));
-		
+
 		_program = Program::create_program();
-		
+
 		_matrix.projection = _camera.get_projection();
 
 		_matrix.view = _camera.get_view();

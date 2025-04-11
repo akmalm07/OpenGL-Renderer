@@ -121,11 +121,6 @@ namespace tools {
 		return *this;
 	}
 
-	bool Window::is_key_pressed(Keys key) const
-	{
-		return _keys[SIZET(key)];
-	}
-
 	void Window::set_ortho()
 	{
 		_isOrtho = true;
@@ -231,6 +226,10 @@ namespace tools {
 				std::cerr << "Error initializing GLEW! \n";
 				return false;
 			}
+			
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			glFrontFace(GL_CW);
 
 			glEnable(GL_BLEND);
 			glEnable(GL_DEPTH_TEST);

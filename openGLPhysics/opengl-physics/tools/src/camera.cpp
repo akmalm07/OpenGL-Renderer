@@ -273,11 +273,6 @@ namespace tools
 		_position = position;
 	}
 
-	glm::vec3 Camera::get_position()
-	{
-		return _position;
-	}
-
 
 	glm::mat4 Camera::get_view() 
 	{
@@ -288,6 +283,11 @@ namespace tools
 	glm::mat4 Camera::get_projection() const
 	{
 		return _projection;
+	}
+
+	glm::vec3 Camera::get_position() const
+	{
+		return _position;
 	}
 	
 

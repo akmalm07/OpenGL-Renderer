@@ -25,9 +25,9 @@ namespace glInit
 		GLProgram();
 		GLProgram(bool debug);
 
-		// Vertex/Fragment shader
-		void create_shaders_from_string(const char* vertex_code, const char* fragment_code);
-		void create_shaders_from_files(const std::filesystem::path& vertex_location, const std::filesystem::path& fragment_location);
+		// Vertex/Fragment shader shader.geom
+		void create_shaders_from_string(const char* vertex_code, const char* fragment_code, const char* geomatry_shader = "");
+		void create_shaders_from_files(const std::filesystem::path& vertex_location, const std::filesystem::path& fragment_location, const std::filesystem::path& geomatry_shader = "");
 
 		// Compute shader UNTESTED -- Very risky 
 		void create_compute_shader_from_string(const char* compute_code);
@@ -68,14 +68,15 @@ namespace glInit
 		struct Uniform
 		{
 			unsigned int location;
-			UnformType type; 
+			UnformType type;
 		};
 
 		std::unordered_map<std::string_view, Uniform> _uniforms;
 		bool _debugMode = false;
 
 	private:
-		void compile_shader(std::string_view vertex_code, std::string_view fragment_code);
+		void compile_shader(std::string_view vertex_code, std::string_view fragment_code, std::string_view geo_code = "");
+
 		void add_shader(unsigned int theProgram, std::string_view shaderCode, unsigned int shaderType);
 
 		void compile_compute_shader(std::string_view compute_code);

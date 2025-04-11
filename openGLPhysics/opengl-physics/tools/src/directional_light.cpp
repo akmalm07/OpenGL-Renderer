@@ -41,16 +41,22 @@ namespace tools
 		return normals;
 	}
 
+
 	std::vector<glType::Vertex> calculate_vertex_normals(const std::vector<glType::Vertex>& vertices, const std::vector<glType::Index>& indices)
 	{
-		const size_t vertex_count = vertices.size() / 6;
+		if (vertices.size() % 6 != 0)
+		{
+			std::cerr << "Error: Invalid vertex data size." << std::endl;
+			return {};
+		}
+
+		size_t vertex_count = vertices.size() / 6;
 		std::vector<glm::vec3> positions(vertex_count);
 		std::vector<glm::vec3> colors(vertex_count);
 		std::vector<glm::vec3> normals(vertex_count, glm::vec3(0.0f));
 		std::vector<glType::Vertex> result;
 
-		// Step 1: Split positions and colors
-		for (size_t i = 0; i < vertex_count; ++i)
+		for (size_t i = 0; i < vertex_count; i++) 
 		{
 			positions[i] = glm::vec3(
 				vertices[i * 6 + 0],
@@ -64,12 +70,22 @@ namespace tools
 			);
 		}
 
-		// Step 2: Calculate normals
-		for (size_t i = 0; i < indices.size(); i += 3)
+		for (size_t i = 0; i < indices.size(); i += 3) 
 		{
+			if (i + 2 >= indices.size()) {
+				std::cerr << "Error: Invalid index data." << std::endl;
+				break;
+			}
+
 			glType::Index i0 = indices[i];
 			glType::Index i1 = indices[i + 1];
 			glType::Index i2 = indices[i + 2];
+
+			if (i0 >= positions.size() || i1 >= positions.size() || i2 >= positions.size()) 
+			{
+				std::cerr << "Error: Index out of bounds." << std::endl;
+				continue;
+			}
 
 			const glm::vec3& v0 = positions[i0];
 			const glm::vec3& v1 = positions[i1];
@@ -84,8 +100,7 @@ namespace tools
 			normals[i2] += face_normal;
 		}
 
-		// Step 3: Interleave everything back into result vector
-		for (size_t i = 0; i < vertex_count; ++i)
+		for (size_t i = 0; i < vertex_count; i++) 
 		{
 			glm::vec3 normal = glm::normalize(normals[i]);
 
@@ -95,8 +110,6 @@ namespace tools
 
 			result.push_back(colors[i].r);
 			result.push_back(colors[i].g);
-			result.push_back(colors[i].b);
-
 			result.push_back(normal.x);
 			result.push_back(normal.y);
 			result.push_back(normal.z);
@@ -105,6 +118,71 @@ namespace tools
 		return result;
 	}
 
+
+	std::vector<float> calculate_face_normals(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) 
+	{
+		if (vertices.size() % 6 != 0) {
+			std::cerr << "Error: Invalid vertex data size." << std::endl;
+			return {};
+		}
+
+		std::vector<float> result;
+
+		for (size_t i = 0; i < indices.size(); i += 3) 
+		{
+			if (i + 2 >= indices.size()) 
+			{
+				std::cerr << "Error: Invalid index data." << std::endl;
+				break;
+			}
+
+			unsigned int i0 = indices[i];
+			unsigned int i1 = indices[i + 1];
+			unsigned int i2 = indices[i + 2];
+
+			glm::vec3 v0(vertices[i0 * 6 + 0], vertices[i0 * 6 + 1], vertices[i0 * 6 + 2]);
+			glm::vec3 v1(vertices[i1 * 6 + 0], vertices[i1 * 6 + 1], vertices[i1 * 6 + 2]);
+			glm::vec3 v2(vertices[i2 * 6 + 0], vertices[i2 * 6 + 1], vertices[i2 * 6 + 2]);
+
+			glm::vec3 edge1 = v1 - v0;
+			glm::vec3 edge2 = v2 - v0;
+			glm::vec3 face_normal = glm::normalize(glm::cross(edge1, edge2));
+
+			result.push_back(v0.x);
+			result.push_back(v0.y);
+			result.push_back(v0.z);
+
+			result.push_back(vertices[i0 * 6 + 3]);
+			result.push_back(vertices[i0 * 6 + 4]);
+			result.push_back(vertices[i0 * 6 + 5]);
+
+			result.push_back(face_normal.x);
+			result.push_back(face_normal.y);
+			result.push_back(face_normal.z);
+
+			result.push_back(v1.x);
+			result.push_back(v1.y);
+			result.push_back(v1.z);
+			result.push_back(vertices[i1 * 6 + 3]);
+			result.push_back(vertices[i1 * 6 + 4]);
+			result.push_back(vertices[i1 * 6 + 5]);
+			result.push_back(face_normal.x);
+			result.push_back(face_normal.y);
+			result.push_back(face_normal.z);
+
+
+			result.push_back(v2.x);
+			result.push_back(v2.y);
+			result.push_back(v2.z);
+			result.push_back(vertices[i2 * 6 + 3]);
+			result.push_back(vertices[i2 * 6 + 4]);
+			result.push_back(vertices[i2 * 6 + 5]);
+			result.push_back(face_normal.x);
+			result.push_back(face_normal.y);
+			result.push_back(face_normal.z);
+		}
+		return result;
+	}
 
 	DirectionalLight::DirectionalLight(unsigned int programID, bool debug)
 	{
@@ -118,7 +196,7 @@ namespace tools
 	{
 		_light.direction = dir;
 		_light.color = col;
-	   
+
 		clamp_light_values();
 		_uniformBuffer = debug;
 		_uniformBuffer.init(programID, "LightData", 0, true);
@@ -160,7 +238,7 @@ namespace tools
 
 	void DirectionalLight::bind() const
 	{
-		_uniformBuffer.bind(); 
+		_uniformBuffer.bind();
 	}
 
 	void DirectionalLight::unbind() const

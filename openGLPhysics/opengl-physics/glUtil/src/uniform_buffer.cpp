@@ -1,6 +1,5 @@
 #include "headers.h"
 #include "glUtil/include/uniform_buffer.h"
-#include <numeric> 
 
 namespace glUtil
 {
@@ -14,14 +13,14 @@ namespace glUtil
 
     UniformBuffer::UniformBuffer(const UniformBuffer& other)
     {
-        _ubo = 0; 
+        _ubo = 0;
         _bindingPoint = other._bindingPoint;
         _totalSize = other._totalSize;
         _usage = other._usage;
-        _isInit = false; 
+        _isInit = false;
         _debug = other._debug;
-        _offsets = other._offsets; 
-        _sizes = other._sizes;     
+        _offsets = other._offsets;
+        _sizes = other._sizes;
 
     }
 
@@ -31,14 +30,14 @@ namespace glUtil
         {
             destroy();
 
-            _ubo = 0; 
+            _ubo = 0;
             _bindingPoint = other._bindingPoint;
             _totalSize = other._totalSize;
             _usage = other._usage;
-            _isInit = false; 
+            _isInit = false;
             _debug = other._debug;
-            _offsets = other._offsets; 
-            _sizes = other._sizes;     
+            _offsets = other._offsets;
+            _sizes = other._sizes;
 
         }
         return *this;

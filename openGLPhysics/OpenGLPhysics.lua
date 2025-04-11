@@ -45,7 +45,8 @@ project "OpenGLAPI"
         "global/**.cpp",
         "json/**.json",
         "shaders/**.vert",
-        "shaders/**.frag"
+        "shaders/**.frag",
+        "shaders/**.geom"
     }
 
     -- Library directories

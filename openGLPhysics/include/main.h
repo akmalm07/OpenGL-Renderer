@@ -33,7 +33,7 @@ namespace Renderer
 		matrix.view = camera.get_view();
 
 
-		//directionalLight.set_normal_mat(glm::transpose(glm::inverse(glm::mat3(matrix.model))));
+		directionalLight.set_normal_mat(glm::transpose(glm::inverse(glm::mat3(matrix.model))));
 
 		//glUtil::UniformBuffer uniformBuffer = Program::create_camera_uniform_buffer(matrix);
 		directionalLight.bind();
@@ -48,13 +48,13 @@ namespace Renderer
 
 			program.use_shaders();
 
-			program.link_projection_matrix(matrix.projection); 
-			program.link_model_matrix(matrix.model); 
-		
-			matrix.view = camera.get_view(); 
-			program.link_view_matrix(matrix.view); 
+			program.link_projection_matrix(matrix.projection);
+			program.link_model_matrix(matrix.model);
 
-			//directionalLight.link_camera_pos(camera.get_position()); 
+			matrix.view = camera.get_view();
+			program.link_view_matrix(matrix.view);
+
+			directionalLight.link_camera_pos(camera.get_position()); 
 			//directionalLight.link_normal_mat();
 			//uniformBuffer.bind();
 			//uniformBuffer.update_data(camera.get_view(), 1);

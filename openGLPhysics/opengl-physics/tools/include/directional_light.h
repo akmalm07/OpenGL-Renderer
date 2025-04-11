@@ -10,16 +10,17 @@ namespace tools
 
 	std::vector<glm::vec3> calculate_vertex_normal(const std::vector<glm::vec3>& vertices, const std::vector<unsigned int>& indices);
 	std::vector<glType::Vertex> calculate_vertex_normals(const std::vector<glType::Vertex>& vertices, const std::vector<glType::Index>& indices);
+	std::vector<glType::Vertex> calculate_face_normals(const std::vector<glType::Vertex>& vertices, const std::vector<glType::Index>& indices);
 
 	struct DirectionalLightBundle
 	{
-		glm::vec3 direction = glm::vec3(0.0f, -1.0f, 0.0f);
-		glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 ambient = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 diffuse = glm::vec3(1.0f, 1.0f, 1.0f);
-		glm::vec3 specular = glm::vec3(1.0f, 1.0f, 1.0f);
+		glm::vec3 direction = glm::vec3(1.0f, -1.0f, 0.0f);
+		glm::vec3 color = glm::vec3(    0.0f, 0.5f, 0.5f);
+		glm::vec3 ambient = glm::vec3(  0.0f, 0.5f, 0.5f);
+		glm::vec3 diffuse = glm::vec3(  0.0f, 0.5f, 0.5f);
+		glm::vec3 specular = glm::vec3( 0.0f, 0.5f, 0.5f);
 
-		float ambInstensity =  0.4f;
+		float ambInstensity = 0.1f;
 		float diffInstensity = 1.0f;
 		float specInstensity = 1.0f;
 	};
@@ -33,15 +34,15 @@ namespace tools
 
 		DirectionalLight(const DirectionalLightBundle& dir, unsigned int programID, bool debug);
 
-		DirectionalLight(DirectionalLight&& other) noexcept; 
+		DirectionalLight(DirectionalLight&& other) noexcept;
 		DirectionalLight& operator=(DirectionalLight&& other) noexcept;
 
 		void set_amb_intensity(float val);
 		void set_diff_intensity(float val);
 		void set_spec_intensity(float val);
 
-		void bind() const; 
-		void unbind() const; 
+		void bind() const;
+		void unbind() const;
 
 		//void set_intencity_loc(unsigned int loc);
 		//void set_intencity(float val);
@@ -72,7 +73,7 @@ namespace tools
 		DirectionalLightBundle _light;
 
 		glm::vec3 _cameraPos = glm::vec3(0.0f);
-		unsigned int _cameraPosLoc = 0; 
+		unsigned int _cameraPosLoc = 0;
 
 		glm::mat3 _normalMatrix = glm::mat3(1.0f);
 		unsigned int _normalMatrixLoc = 0;

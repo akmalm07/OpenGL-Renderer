@@ -20,5 +20,7 @@ struct MeshBundle
 
     size_t vertexCount = 0;
     size_t indexCount = 0;
+    
+    bool indexed = true;
 
 };

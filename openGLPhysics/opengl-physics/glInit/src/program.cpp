@@ -11,11 +11,11 @@ namespace glInit
 		_debugMode = debug;
 	}
 
-	void GLProgram::create_shaders_from_string(const char* vertexCode, const char* fragmentCode)
+	void GLProgram::create_shaders_from_string(const char* vertexCode, const char* fragmentCode, const char* geomatry_shader)
 	{
 		compile_shader(vertexCode, fragmentCode);
 	}
-	
+
 	void GLProgram::create_compute_shader_from_string(const char* compute_code)
 	{
 		compile_compute_shader(compute_code);
@@ -72,20 +72,21 @@ namespace glInit
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	}
 
-	void GLProgram::create_shaders_from_files(const std::filesystem::path& vertex_location, const std::filesystem::path& fragment_location)
+	void GLProgram::create_shaders_from_files(const std::filesystem::path& vertex_location, const std::filesystem::path& fragment_location, const std::filesystem::path& geomatry_location)
 	{
 		if (_debugMode)
 		{
 			std::cout << "Creating shaders from files:\n"
 				<< "\tVertex Shader: " << vertex_location.string() << "\n"
-				<< "\tFragment Shader: " << fragment_location.string() << "\n";
+				<< "\tFragment Shader: " << fragment_location.string() << "\n"
+				<< "\Geometry Shader: " << geomatry_location.string() << "\n";
 		}
 
 		if (std::filesystem::exists(vertex_location) && std::filesystem::exists(fragment_location))
 		{
 			compile_shader(
 				read_file(vertex_location.string()),
-				read_file(fragment_location.string())
+				read_file(fragment_location.string()), (std::filesystem::exists(geomatry_location) ? read_file(geomatry_location.string()) : "")
 			);
 		}
 	}
@@ -133,7 +134,7 @@ namespace glInit
 			return 0;
 		}
 		_uniforms[name].location = location;
-		return location; 
+		return location;
 	}
 
 	unsigned int GLProgram::get_uniform_loc(std::string_view name) const
@@ -201,12 +202,12 @@ namespace glInit
 		clear_shaders();
 	}
 
-	void GLProgram::compile_shader(std::string_view vertexCode, std::string_view fragmentCode)
+	void GLProgram::compile_shader(std::string_view vertex_code, std::string_view fragment_code, std::string_view geo_code)
 	{
 		if (!_isInit)
 		{
 			_shaderId = glCreateProgram();
-			_isInit = true; 
+			_isInit = true;
 		}
 
 		if (!_shaderId)
@@ -215,8 +216,12 @@ namespace glInit
 			return;
 		}
 
-		add_shader(_shaderId, vertexCode, GL_VERTEX_SHADER);
-		add_shader(_shaderId, fragmentCode, GL_FRAGMENT_SHADER);
+		add_shader(_shaderId, vertex_code, GL_VERTEX_SHADER);
+		add_shader(_shaderId, fragment_code, GL_FRAGMENT_SHADER);
+		if (geo_code != "")
+		{
+			add_shader(_shaderId, geo_code, GL_GEOMETRY_SHADER);
+		}
 
 		int result = 0;
 		char eLog[1024] = { 0 };

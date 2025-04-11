@@ -16,6 +16,11 @@ std::filesystem::path Config::get_vert_shader_path() const
 	return vert_shader_path;
 }
 
+std::filesystem::path Config::get_geom_shader_path() const
+{
+	return geom_shader_path;
+}
+
 Config& Config::instance()
 {
 	static Config instance;
