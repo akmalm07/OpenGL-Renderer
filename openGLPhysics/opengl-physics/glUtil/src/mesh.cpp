@@ -128,6 +128,14 @@ namespace glUtil
 		isInit = true;
 	}
 
+	void Mesh::add_gravity(const glm::vec3& val)
+	{}
+
+	glm::mat4 Mesh::get_model_matrix() const
+	{
+		return glm::mat4(1.0f);
+	}
+
 	void Mesh::render()
 	{
 
@@ -271,7 +279,8 @@ namespace tools
 		};
 
 
-		for (int i = 0; i < 8; ++i) {
+		for (int i = 0; i < 8; ++i)
+		{
 			vertices.push_back(cubeVertices[i * 6 + 0] + center.x);
 			vertices.push_back(cubeVertices[i * 6 + 1] + center.y);
 			vertices.push_back(cubeVertices[i * 6 + 2] + center.z);

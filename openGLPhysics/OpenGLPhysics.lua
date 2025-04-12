@@ -14,6 +14,7 @@ project "OpenGLAPI"
         "%{IncludeDir.GLFW}",
         "%{IncludeDir.JSON}",
         "%{IncludeDir.GLM}",
+        "%{IncludeDir.ASSIMP}",
         "%{IncludeDir.STB_COMPLEX}",
         "global",            
         "include",           
@@ -53,7 +54,9 @@ project "OpenGLAPI"
     libdirs 
     { 
         "%{LibDir.GLEW}",
-        "%{LibDir.GLFW}"
+        "%{LibDir.GLFW}",
+        "%{LibDir.ASSIMP}",
+        "%{LibDir.ASSIMP_ZLIB}"
     }
 
     -- Links
@@ -63,7 +66,9 @@ project "OpenGLAPI"
         "opengl32.lib",
         "glfw3_mt.lib",
         "libcmt.lib",
-        "kernel32.lib"
+        "kernel32.lib",
+        "zs.lib",
+        "assimp-vc143-mt.lib"
     }
 
     pchheader "headers.h"

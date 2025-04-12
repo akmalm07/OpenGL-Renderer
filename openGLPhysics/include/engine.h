@@ -8,8 +8,11 @@
 #include "tools/include/window.h"
 #include "tools/include/directional_light.h"
 #include "glInit/include/program.h"
-#include "glUtil/include/mesh.h"
+#include "physics/include/meshes.h"
 #include "glUtil/include/uniform_buffer.h"
+#include "physics/include/world.h"
+
+
 
 namespace Program
 {
@@ -18,6 +21,8 @@ namespace Program
 	tools::Camera create_camera_persp(tools::Window& window);
 
 	glInit::GLProgram create_program();
+
+	physics::World create_world(glInit::GLProgram& program, bool debug = false); 
 
 	glUtil::Mesh create_demo_mesh();
 

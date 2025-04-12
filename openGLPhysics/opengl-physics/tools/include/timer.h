@@ -16,9 +16,17 @@ namespace tools
 
 		Timer(bool start);
 
-		double stop_time(bool debug);
+		double stop_time(bool debug = false);
 
-		double reset(bool debug);
+		void start_time();
+
+		double current_time_ms() const;
+
+		double current_time_s() const;
+
+		double reset(bool debug = false);
+
+		bool get_state() const;
 
 		double get_delta_time(bool debug);
 
@@ -28,6 +36,8 @@ namespace tools
 
 		std::chrono::high_resolution_clock::time_point _timeStarted;
 		std::chrono::high_resolution_clock::time_point _timeEnded;
+
+		bool _state;
 
 		bool _isStopped;
 

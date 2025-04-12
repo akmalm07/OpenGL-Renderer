@@ -184,6 +184,9 @@ namespace tools
 		return result;
 	}
 
+	DirectionalLight::DirectionalLight() = default;
+
+
 	DirectionalLight::DirectionalLight(unsigned int programID, bool debug)
 	{
 		clamp_light_values();

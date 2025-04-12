@@ -8,14 +8,19 @@ namespace glUtil
     Texture::Texture() = default;
 
 
-    Texture::Texture(const std::string& texAddress)
+    Texture::Texture(const std::filesystem::path& texAddress)
         : _textureLoc(texAddress), _textureId(0), _height(0), _width(0), _bitDepth(0), _isLoaded(false) {
+    }
+
+    std::filesystem::path Texture::get_path() const
+    {
+        return _textureLoc;
     }
 
 
     bool Texture::load_texture()
     {
-        unsigned char* texData = stbi_load(_textureLoc.c_str(), &_width, &_height, &_bitDepth, 0);
+        unsigned char* texData = stbi_load(_textureLoc.string().c_str(), &_width, &_height, &_bitDepth, 0);
         if (!texData)
         {
             std::cerr << "Failed to find: " << _textureLoc << std::endl;

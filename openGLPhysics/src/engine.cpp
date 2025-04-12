@@ -101,6 +101,11 @@ namespace Program
 		return program;
 	}
 
+	physics::World create_world(glInit::GLProgram& program, bool debug)
+	{
+		return physics::World(program, debug);
+	}
+
 	glUtil::Mesh create_demo_mesh()
 	{
 
@@ -165,7 +170,6 @@ namespace Program
 
 		return dirLight;
 	}
-
 
 	Engine::Engine()
 	{

@@ -15,19 +15,22 @@ namespace tools
 	struct DirectionalLightBundle
 	{
 		glm::vec3 direction = glm::vec3(1.0f, -1.0f, 0.0f);
-		glm::vec3 color = glm::vec3(    0.0f, 0.5f, 0.5f);
-		glm::vec3 ambient = glm::vec3(  0.0f, 0.5f, 0.5f);
-		glm::vec3 diffuse = glm::vec3(  0.0f, 0.5f, 0.5f);
-		glm::vec3 specular = glm::vec3( 0.0f, 0.5f, 0.5f);
+		glm::vec3 color = glm::vec3(    1.0f, 1.0f, 1.0f);
+		glm::vec3 ambient = glm::vec3(  1.0f, 1.0f, 1.0f);
+		glm::vec3 diffuse = glm::vec3(  1.0f, 1.0f, 1.0f);
+		glm::vec3 specular = glm::vec3( 1.0f, 1.0f, 1.0f);
 
 		float ambInstensity = 0.1f;
-		float diffInstensity = 1.0f;
+		float diffInstensity = 0.5f;
 		float specInstensity = 1.0f;
 	};
 
 	class DirectionalLight
 	{
 	public:
+
+		DirectionalLight();
+
 		DirectionalLight(unsigned int programID, bool debug);
 
 		DirectionalLight(const glm::vec3& dir, const glm::vec3& col, unsigned int programID, bool debug);

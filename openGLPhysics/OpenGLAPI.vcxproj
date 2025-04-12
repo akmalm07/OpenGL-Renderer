@@ -60,7 +60,7 @@
       <PrecompiledHeaderFile>headers.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;DEBUG;PLATFORM_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl-physics;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\ASSIMP\include;..\vendor\STB_COMPLEX;global;include;shaders;opengl-physics;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
@@ -70,8 +70,8 @@
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3_mt.lib;libcmt.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\vendor\GLEW\lib;..\vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3_mt.lib;libcmt.lib;kernel32.lib;zs.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\GLEW\lib;..\vendor\GLFW\lib;..\vendor\ASSIMP\lib;..\vendor\ASSIMP\ZLIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -80,7 +80,7 @@
       <PrecompiledHeaderFile>headers.h</PrecompiledHeaderFile>
       <WarningLevel>Level3</WarningLevel>
       <PreprocessorDefinitions>GLEW_STATIC;NDEBUG;PLATFORM_WINDOWS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\STB_COMPLEX;global;include;shaders;opengl-physics;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\vendor\GLEW\include;..\vendor\GLFW\include;..\vendor\JSON;..\vendor\GLM;..\vendor\ASSIMP\include;..\vendor\STB_COMPLEX;global;include;shaders;opengl-physics;json;src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DebugInformationFormat>None</DebugInformationFormat>
       <Optimization>Full</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
@@ -96,8 +96,8 @@
       <GenerateDebugInformation>false</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3_mt.lib;libcmt.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <AdditionalLibraryDirectories>..\vendor\GLEW\lib;..\vendor\GLFW\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>glew32s.lib;opengl32.lib;glfw3_mt.lib;libcmt.lib;kernel32.lib;zs.lib;assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>..\vendor\GLEW\lib;..\vendor\GLFW\lib;..\vendor\ASSIMP\lib;..\vendor\ASSIMP\ZLIB;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -113,8 +113,23 @@
     <ClInclude Include="opengl-physics\glUtil\include\texture.h" />
     <ClInclude Include="opengl-physics\glUtil\include\uniform_buffer.h" />
     <ClInclude Include="opengl-physics\glUtil\include\uniform_buffer.inl" />
+    <ClInclude Include="opengl-physics\physics\include\aabb_box.h" />
+    <ClInclude Include="opengl-physics\physics\include\aabb_cube.h" />
+    <ClInclude Include="opengl-physics\physics\include\acceleration.h" />
+    <ClInclude Include="opengl-physics\physics\include\cube_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\meshes.h" />
+    <ClInclude Include="opengl-physics\physics\include\moveible_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\moveible_rigid_cube_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\moveible_rigid_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\moveible_soft_cube_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\moveible_soft_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\rigid_cube_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\rigid_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\soft_cube_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\soft_mesh.h" />
+    <ClInclude Include="opengl-physics\physics\include\universal_time.h" />
+    <ClInclude Include="opengl-physics\physics\include\volocity.h" />
     <ClInclude Include="opengl-physics\physics\include\world.h" />
-    <ClInclude Include="opengl-physics\physics\include\world.inl" />
     <ClInclude Include="opengl-physics\tools\include\aabb_button_control.h" />
     <ClInclude Include="opengl-physics\tools\include\aabb_button_control.inl" />
     <ClInclude Include="opengl-physics\tools\include\base_engine.h" />
@@ -151,6 +166,21 @@
     <ClCompile Include="opengl-physics\glUtil\src\stride_composition.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\texture.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\uniform_buffer.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\aabb_box.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\aabb_cube.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\acceleration.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\cube_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\moveible_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\moveible_rigid_cube_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\moveible_rigid_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\moveible_soft_cube_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\moveible_soft_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\rigid_cube_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\rigid_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\soft_cube_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\soft_mesh.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\universal_time.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\volocity.cpp" />
     <ClCompile Include="opengl-physics\physics\src\world.cpp" />
     <ClCompile Include="opengl-physics\tools\src\aabb_button_control.cpp" />
     <ClCompile Include="opengl-physics\tools\src\base_engine.cpp" />

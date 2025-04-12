@@ -27,12 +27,16 @@ namespace glUtil
 
 		void init(const MeshBundle& bundle);
 
-		void render();
+		virtual void add_gravity(const glm::vec3& val);
+
+		virtual glm::mat4 get_model_matrix() const;
+
+		virtual void render();
 
 		void clear();
 
-		~Mesh();
-	private:
+		virtual ~Mesh();
+	protected:
 
 		unsigned int VAO, VBO, IBO;
 		size_t indexCount;
@@ -40,6 +44,7 @@ namespace glUtil
 
 		bool  isInit = false;
 		bool indexed = true;
+
 		bool debug = false;
 
 		unsigned int offsetCount = 0;

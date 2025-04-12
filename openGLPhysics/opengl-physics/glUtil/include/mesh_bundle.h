@@ -24,3 +24,16 @@ struct MeshBundle
     bool indexed = true;
 
 };
+
+struct MoveibleMeshBundle : public MeshBundle
+{
+	glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	glm::vec3 rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+
+	float mass = 1.0f;
+
+	bool startTime = true;
+
+	bool gravityAffected = true;
+};

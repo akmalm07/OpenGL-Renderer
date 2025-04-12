@@ -38,6 +38,14 @@ namespace glType
 	using Vertex = float;
 
 
+	enum class MovementType
+	{
+		STATIC,
+		CONSTANT,
+		KINEMATIC
+	};
+
+
 	template <typename T, size_t S = 0>
 	struct ArrOrVec
 	{
