@@ -21,12 +21,13 @@ namespace physics
 		return _volocity;
 	}
 
-	glm::vec3 Volocity::get_distance() const
+	glm::vec3 Volocity::get_distance() const // MAKE MORE EFFICIENT SO THE TIME IS CHECKED ONLY ONCE --Dev note
 	{
+		auto currentTime = _timer.current_time_s();
 		return glm::vec3(
-			get_distance_x(),
-			get_distance_y(),
-			get_distance_z()
+			_volocity.x * currentTime,
+			_volocity.y * currentTime,
+			_volocity.z * currentTime
 		);
 	}
 
@@ -53,6 +54,22 @@ namespace physics
 		return _volocity.z * _timer.current_time_s();
 	}
 
+	double Volocity::get_volocity_x() const
+	{
+		return _volocity.x;
+	}
+	
+
+	double Volocity::get_volocity_y() const
+	{
+		return _volocity.y;
+	}
+	
+
+	double Volocity::get_volocity_z() const
+	{
+		return _volocity.z;
+	}
 
 	void Volocity::start_time()
 	{

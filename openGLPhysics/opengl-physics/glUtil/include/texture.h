@@ -2,33 +2,58 @@
 
 #include "config.h"
 
-
 namespace glUtil
 {
-    class Texture
+
+    enum class TextureUnit
+    {
+		TEX0 = 0,
+		TEX1 = 1,
+		TEX2 = 2,
+		TEX3 = 3,
+		TEX4 = 4,
+		TEX5 = 5,
+		TEX6 = 6,
+		TEX7 = 7,
+		TEX8 = 8,
+		TEX9 = 9,
+		TEX10 = 10,
+
+    };
+
+    class Texture // ADD Mip map level 
     {
     public:
         Texture();
-        Texture(const std::filesystem::path& texAddress);
+        Texture(const std::filesystem::path& texAddress, TextureUnit unit = TextureUnit::TEX0);
 
         std::filesystem::path get_path() const;
 
-        bool load_texture();
+        bool init(const std::filesystem::path& path, TextureUnit texUnit = TextureUnit::TEX0);
 
         bool is_loaded() const;
 
-        void use_texture(GLenum texUnit, GLuint textureLoc);
+		void set_texture_loc(unsigned int location);
+
+        void bind();
+        
+        void unbind();
 
         void clear_texture();
 
         ~Texture();
 
     private:
-        std::filesystem::path _textureLoc;
+
+		TextureUnit _textureUnit = TextureUnit::TEX0;
+
+		unsigned int _textureLocation = 0;
 
         unsigned int _textureId;
         int _height, _width, _bitDepth;
 
-        bool _isLoaded;
+        bool _isLoaded = false;
+        
+        std::filesystem::path _texturePath;
     };
 }

@@ -67,7 +67,7 @@ namespace glInit
 
 	void GLProgram::dispatch(unsigned int x, unsigned int y, unsigned int z)
 	{
-		use_shaders();
+		bind();
 		glDispatchCompute(x, y, z);
 		glMemoryBarrier(GL_SHADER_IMAGE_ACCESS_BARRIER_BIT);
 	}
@@ -127,10 +127,10 @@ namespace glInit
 	{
 		//glLinkProgram(_shaderId);
 		//glUseProgram(_shaderId);
-		unsigned int location = glGetUniformLocation(_shaderId, name.data());
+		int location = glGetUniformLocation(_shaderId, name.data());
 		if (location == -1)
 		{
-			std::cerr << "Warning: uniform '" << name << "' not found in shader program! Did you forget to add it?" << std::endl; // EROR HERE, PORGRAM CANNO FIND THE ITEM
+			std::cerr << "Warning: uniform '" << name << "' not found in shader program "<< _shaderId << "!Did you forget to add it ? " << std::endl; // EROR HERE, PORGRAM CANNO FIND THE ITEM
 			return 0;
 		}
 		_uniforms[name].location = location;
@@ -174,9 +174,14 @@ namespace glInit
 
 	}
 
-	void GLProgram::use_shaders()
+	void GLProgram::bind()
 	{
 		glUseProgram(_shaderId);
+	}
+
+	void GLProgram::unbind()
+	{
+		glUseProgram(0);
 	}
 
 	void GLProgram::clear_shaders()

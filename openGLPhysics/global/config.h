@@ -9,4 +9,6 @@
 #include <functional>
 #include <filesystem>
 
+#include <glm/glm.hpp>
+
 #include "tools/include/types.h"

@@ -227,12 +227,14 @@ namespace tools {
 				return false;
 			}
 			
-			glEnable(GL_CULL_FACE);
+			glEnable(GL_CULL_FACE); //DEBUG
 			glCullFace(GL_BACK);
-			glFrontFace(GL_CW);
+			glFrontFace(GL_CCW);
 
-			glEnable(GL_BLEND);
 			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
+			
+			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
@@ -306,8 +308,14 @@ namespace tools {
 				return false;
 			}
 
-			glEnable(GL_BLEND);
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+			glFrontFace(GL_CCW);
+
 			glEnable(GL_DEPTH_TEST);
+			glDepthFunc(GL_LESS);
+
+			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
@@ -425,11 +433,8 @@ namespace tools {
 
 	int Window::get_buffer_width()
 	{ 
-		if (_calledBufferSize)
-		{
-			glfwGetFramebufferSize(_mainWindow, &_bufferWidth, &_bufferHeight);
-			_calledBufferSize = false;
-		}
+		glfwGetFramebufferSize(_mainWindow, &_bufferWidth, &_bufferHeight);
+
 		return _bufferWidth; 
 	}
 
@@ -440,10 +445,23 @@ namespace tools {
 
 	int Window::get_buffer_height()
 	{ 
-		_calledBufferSize = true;
-
 		glfwGetFramebufferSize(_mainWindow, &_bufferWidth, &_bufferHeight); 
+
 		return _bufferHeight; 
+	}
+
+	const int* Window::get_buffer_width_p()
+	{
+		glfwGetFramebufferSize(_mainWindow, &_bufferWidth, &_bufferHeight);
+
+		return &_bufferWidth;
+	}
+
+	const int* Window::get_buffer_height_p()
+	{
+		glfwGetFramebufferSize(_mainWindow, &_bufferWidth, &_bufferHeight);
+
+		return &_bufferHeight;
 	}
 
 	GLFWwindow* Window::get_window() const

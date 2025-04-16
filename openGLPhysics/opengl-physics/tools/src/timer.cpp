@@ -64,7 +64,7 @@ namespace tools
 
 	double Timer::current_time_s() const
 	{
-		return static_cast<double>(std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - _timeStarted).count());
+		return static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - _timeStarted).count()) / 1000.0;
 	}
 
 	double Timer::reset(bool debug)

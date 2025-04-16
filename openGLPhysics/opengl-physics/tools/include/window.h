@@ -47,9 +47,13 @@ namespace tools {
 
 		int get_buffer_width();
 
-		bool is_ortho() const;
-
 		int get_buffer_height();
+
+		const int* get_buffer_width_p();
+
+		const int* get_buffer_height_p();
+
+		bool is_ortho() const;
 
 		GLFWwindow* get_window() const;
 

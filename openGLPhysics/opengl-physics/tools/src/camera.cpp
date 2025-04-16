@@ -77,19 +77,25 @@ namespace tools
 
 	Camera::Camera(CameraBundlePerspective bundle)
 	{
-		_projection = glm::perspective(glm::radians(bundle.fov), bundle.aspectRatio, bundle.nearZ, bundle.farZ);
-
-		initalize(bundle.worldUp, bundle.startPYR, bundle.position, bundle.front, bundle.speed, bundle.turnSpeed);
-
+		init(bundle);
 	}
 
 
 	Camera::Camera(CameraBundleOrthographic bundle)
 	{
-		_projection = glm::ortho(bundle.left, bundle.right, bundle.bottom, bundle.top, bundle.nearZ, bundle.farZ);
+		init(bundle);
+	}
 
+	void Camera::init(CameraBundlePerspective bundle)
+	{
+		_projection = glm::perspective(glm::radians(bundle.fov), bundle.aspectRatio, bundle.nearZ, bundle.farZ);
 		initalize(bundle.worldUp, bundle.startPYR, bundle.position, bundle.front, bundle.speed, bundle.turnSpeed);
+	}
 
+	void Camera::init(CameraBundleOrthographic bundle)
+	{
+		_projection = glm::ortho(bundle.left, bundle.right, bundle.bottom, bundle.top, bundle.nearZ, bundle.farZ);
+		initalize(bundle.worldUp, bundle.startPYR, bundle.position, bundle.front, bundle.speed, bundle.turnSpeed);
 	}
 
 	void Camera::initalize(glm::vec3 worldUp, glm::vec3 startPYR, glm::vec3 position, glm::vec3 front, float speed, float turnSpeed)
@@ -105,7 +111,7 @@ namespace tools
 		_prevPosition = _position;
 		_prevRotation = _rotation;
 
-		rotate_calc();
+		update_view_matrix();
 
 		_view = glm::lookAt(_position, _target, _up);
 	}
@@ -205,7 +211,7 @@ namespace tools
 	}
 
 
-	void Camera::rotate_calc()
+	void Camera::update_view_matrix()
 	{
 		_front.x = cos(glm::radians(_rotation.y)) * cos(glm::radians(_rotation.x));
 		_front.y = sin(glm::radians(_rotation.x));
@@ -249,7 +255,7 @@ namespace tools
 			pitch(deltaTime, yMove);
 		}
 
-		rotate_calc();
+		update_view_matrix();
 
 		//PRINT_VEC3("Rotation: ", _rotation);
 		return true;
@@ -354,60 +360,69 @@ namespace tools
 
 	void Camera::move_and_turn_dir(Direction dir, double deltaTime)
 	{
-		static uint64_t count = 0;
-		bool rotate = false;
+		bool move = false;
 		if (BOOL(dir & Direction::Forward))
 		{
 			move_forward(deltaTime, true);
+			move = true;
 		}
 		else if (BOOL(dir & Direction::Backward))
 		{
 			move_forward(deltaTime, false);
+			move = true;
 		}
+
 
 		if (BOOL(dir & Direction::Left))
 		{
 			move_right(deltaTime, false);
+			move = true;
 		}
 		else if (BOOL(dir & Direction::Right))
 		{
 			move_right(deltaTime, true);
+			move = true;
 		}
+
 
 		if (BOOL(dir & Direction::Up))
 		{
 			move_up(deltaTime, true);
+			move = true;
 		}
 		else if (BOOL(dir & Direction::Down))
 		{
 			move_up(deltaTime, false);
+			move = true;
 		}
 
-		//if (BOOL(dir & Direction::TurnUp))
-		//{
-		//	pitch(deltaTime, true);
-		//	rotate = true;
-		//}
-		//else if (BOOL(dir & Direction::TurnDown))
-		//{
-		//	pitch(deltaTime, false);
-		//	rotate = true;
-		//}
 
-		//if (BOOL(dir & Direction::TurnLeft))
-		//{
-		//	yaw(deltaTime, false);
-		//	rotate = true;
-		//}
-		//else if (BOOL(dir & Direction::TurnRight))
-		//{
-		//	yaw(deltaTime, true);
-		//	rotate = true;
-		//}
-		//if (rotate)
-		//{
-		//	rotate_calc();
-		//}
+		if (BOOL(dir & Direction::TurnUp))
+		{
+			pitch(deltaTime, 1.0f);
+			move = true;
+		}
+		else if (BOOL(dir & Direction::TurnDown))
+		{
+			pitch(deltaTime, -1.0f);
+			move = true;
+		}
+
+
+		if (BOOL(dir & Direction::TurnLeft))
+		{
+			yaw(deltaTime, -1.0f);
+			move = true;
+		}
+		else if (BOOL(dir & Direction::TurnRight))
+		{
+			yaw(deltaTime, 1.0f);
+			move = true;
+		}
+		if (move)
+		{
+			update_view_matrix();
+		}
 	}
 
 	bool Camera::is_moving()

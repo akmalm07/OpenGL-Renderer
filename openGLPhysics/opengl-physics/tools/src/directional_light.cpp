@@ -119,14 +119,14 @@ namespace tools
 	}
 
 
-	std::vector<float> calculate_face_normals(const std::vector<float>& vertices, const std::vector<unsigned int>& indices) 
+	std::vector<glType::Vertex> calculate_face_normals(const std::vector<glType::Vertex>& vertices, const std::vector<unsigned int>& indices) 
 	{
 		if (vertices.size() % 6 != 0) {
 			std::cerr << "Error: Invalid vertex data size." << std::endl;
 			return {};
 		}
 
-		std::vector<float> result;
+		std::vector<glType::Vertex> result;
 
 		for (size_t i = 0; i < indices.size(); i += 3) 
 		{
@@ -354,13 +354,13 @@ namespace tools
 
 	void DirectionalLight::update_uniform_buffer()
 	{
+		_uniformBuffer.update_data(_light.direction, "lightDir");
 		_uniformBuffer.update_data(_light.ambient, "lightAmbient");
 		_uniformBuffer.update_data(_light.diffuse, "lightDiffuse");
 		_uniformBuffer.update_data(_light.specular, "lightSpecular");
 		_uniformBuffer.update_data(_light.ambInstensity, "ambIntensity");
 		_uniformBuffer.update_data(_light.diffInstensity, "diffIntensity");
 		_uniformBuffer.update_data(_light.specInstensity, "specIntensity");
-		_uniformBuffer.update_data(_light.direction, "lightDir");
 		_uniformBuffer.update_data(_light.color, "lightColor");
 
 		if (_cameraPosLoc != 0)

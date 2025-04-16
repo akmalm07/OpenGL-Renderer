@@ -2,6 +2,7 @@
 
 #include "config.h"
 
+#include "tools/include/directional_light_bundle.h"
 #include "glUtil/include/uniform_buffer.h"
 
 
@@ -12,18 +13,6 @@ namespace tools
 	std::vector<glType::Vertex> calculate_vertex_normals(const std::vector<glType::Vertex>& vertices, const std::vector<glType::Index>& indices);
 	std::vector<glType::Vertex> calculate_face_normals(const std::vector<glType::Vertex>& vertices, const std::vector<glType::Index>& indices);
 
-	struct DirectionalLightBundle
-	{
-		glm::vec3 direction = glm::vec3(1.0f, -1.0f, 0.0f);
-		glm::vec3 color = glm::vec3(    1.0f, 1.0f, 1.0f);
-		glm::vec3 ambient = glm::vec3(  1.0f, 1.0f, 1.0f);
-		glm::vec3 diffuse = glm::vec3(  1.0f, 1.0f, 1.0f);
-		glm::vec3 specular = glm::vec3( 1.0f, 1.0f, 1.0f);
-
-		float ambInstensity = 0.1f;
-		float diffInstensity = 0.5f;
-		float specInstensity = 1.0f;
-	};
 
 	class DirectionalLight
 	{

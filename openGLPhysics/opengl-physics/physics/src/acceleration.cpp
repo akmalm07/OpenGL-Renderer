@@ -48,11 +48,6 @@ namespace physics
 		return _intialVol;
 	}
 
-	double Acceleration::get_distance_x() const
-	{
-		double time = _timer.current_time_s();
-		return (_intialVol.x * time) + (0.5 * _acceleration.x * (time * time));
-	}
 
 	glm::vec3 Acceleration::operator+(const glm::vec3& vec)
 	{
@@ -64,44 +59,58 @@ namespace physics
 		_acceleration += vec;
 	}
 
+	double Acceleration::get_distance_x() const
+	{
+		double currentTime = _timer.current_time_s();
+		return (_intialVol.x * currentTime) + (0.5 * _acceleration.x * (currentTime * currentTime));
+	}
+
 	double Acceleration::get_distance_y() const
 	{
-		double time = _timer.current_time_s();
-		return (_intialVol.y * time) + (0.5 * _acceleration.y * (time * time));
+		double currentTime = _timer.current_time_s();
+		return (_intialVol.y * currentTime) + (0.5 * _acceleration.y * (currentTime * currentTime));
 	}
 	
 	double Acceleration::get_distance_z() const
 	{
-		double time = _timer.current_time_s();
-		return (_intialVol.z * time) + (0.5 * _acceleration.z * (time * time));
+		double currentTime = _timer.current_time_s();
+		return (_intialVol.z * currentTime) + (0.5 * _acceleration.z * (currentTime * currentTime));
 	}
 
 	glm::vec3 Acceleration::get_distance() const
 	{
-		return glm::vec3(get_distance_x(), get_distance_y(), get_distance_z());
+		double currentTime = _timer.current_time_s();
+
+		return glm::vec3(
+			(_intialVol.x * currentTime) + (0.5 * (_acceleration.x * (currentTime * currentTime))),
+			(_intialVol.y * currentTime) + (0.5 * (_acceleration.y * (currentTime * currentTime))),
+			(_intialVol.z * currentTime) + (0.5 * (_acceleration.z * (currentTime * currentTime)))
+		);
 	}
 
 	double Acceleration::get_current_volocity_x() const
 	{
-		return _intialVol.x + _acceleration.x * _timer.current_time_s();
+		return _intialVol.x + (_acceleration.x * _timer.current_time_s());
 	}
 	
 	double Acceleration::get_current_volocity_y() const
 	{
-		return _intialVol.y + _acceleration.y * _timer.current_time_s();
+		return _intialVol.y + (_acceleration.y * _timer.current_time_s());
 	}
 	
 	double Acceleration::get_current_volocity_z() const
 	{
-		return _intialVol.z + _acceleration.z * _timer.current_time_s();
+		return _intialVol.z + (_acceleration.z * _timer.current_time_s());
 	}
 
 	glm::vec3 Acceleration::get_current_volocity() const
 	{
+		double currentTime = _timer.current_time_s();
+
 		return glm::vec3(
-			get_current_volocity_x(),
-			get_current_volocity_y(),
-			get_current_volocity_z()
+			(_intialVol.x + (_acceleration.x * currentTime)),
+			(_intialVol.y + (_acceleration.y * currentTime)),
+			(_intialVol.z + (_acceleration.z * currentTime))
 		);
 	}
 

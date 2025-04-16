@@ -1,0 +1,394 @@
+#include "headers.h"
+#include "tools/include/quaternion_camera.h"
+
+#include <glm/gtx/transform.hpp> 
+#include <glm/gtx/quaternion.hpp>
+
+
+namespace tools
+{
+	QuaternionCamera::QuaternionCamera() 
+		: _orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)) 
+	{
+		_worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		_position = glm::vec3(0.0f);
+		_speed = 0.0f;
+		_turnSpeed = 0.0f;
+		_front = glm::vec3(0.0f, 0.0f, -1.0f);
+		_up = glm::vec3(0.0f, 1.0f, 0.0f);
+		_right = glm::vec3(1.0f, 0.0f, 0.0f);
+		_prevPosition = glm::vec3(0.0f);
+		_prevOrientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+	}
+
+
+	QuaternionCamera::QuaternionCamera(QuaternionCamera&& other) noexcept 
+		: _orientation(1.0f, 0.0f, 0.0f, 0.0f) 
+	{
+		*this = std::move(other);
+	}
+
+
+	QuaternionCamera& QuaternionCamera::operator=(QuaternionCamera&& other) noexcept
+	{
+		if (this != &other) 
+		{
+			_worldUp = other._worldUp;
+			_position = other._position;
+			_orientation = other._orientation;
+			_speed = other._speed;
+			_front = other._front;
+			_up = other._up;
+			_right = other._right;
+			_projection = other._projection;
+			_view = other._view;
+			_prevPosition = other._prevPosition;
+			_prevOrientation = other._prevOrientation;
+
+
+			other._worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+			other._position = glm::vec3(0.0f);
+			other._orientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+			other._speed = 0.0f;
+			other._front = glm::vec3(0.0f);
+			other._up = glm::vec3(0.0f);
+			other._right = glm::vec3(0.0f);
+			other._projection = glm::mat4(1.0f); 
+			other._view = glm::mat4(1.0f); 
+			other._prevPosition = glm::vec3(0.0f);
+			other._prevOrientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+		}
+		return *this;
+	}
+
+
+	QuaternionCamera::QuaternionCamera(CameraBundlePerspective bundle)
+	{
+		init(bundle);
+	}
+
+
+	QuaternionCamera::QuaternionCamera(CameraBundleOrthographic bundle) 
+	{
+		init(bundle);
+	}
+
+	void QuaternionCamera::init(CameraBundlePerspective bundle)
+	{
+		_orientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+		_projection = glm::perspective(glm::radians(bundle.fov), bundle.aspectRatio, bundle.nearZ, bundle.farZ);
+		initialize(bundle.worldUp, bundle.startPYR, bundle.position, bundle.front, bundle.speed, bundle.turnSpeed);
+	}
+
+	void QuaternionCamera::init(CameraBundleOrthographic bundle)
+	{
+		_orientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
+		_projection = glm::ortho(bundle.left, bundle.right, bundle.bottom, bundle.top, bundle.nearZ, bundle.farZ);
+		initialize(bundle.worldUp, bundle.startPYR, bundle.position, bundle.front, bundle.speed, bundle.turnSpeed);
+	}
+
+
+	void QuaternionCamera::initialize(glm::vec3 worldUp, glm::vec3 startPYR, glm::vec3 position, glm::vec3 front, float speed, float turnSpeed)
+	{
+		_worldUp = glm::normalize(worldUp);
+		_position = position;
+		_speed = speed;
+		_turnSpeed = turnSpeed;
+		_front = front;
+		_prevPosition = _position;
+		_prevOrientation = _orientation;
+
+
+		glm::quat pitchQuat = glm::angleAxis(glm::radians(startPYR.x), glm::vec3(1.0f, 0.0f, 0.0f));
+		glm::quat yawQuat = glm::angleAxis(glm::radians(startPYR.y), glm::vec3(0.0f, 1.0f, 0.0f));
+		glm::quat rollQuat = glm::angleAxis(glm::radians(startPYR.z), glm::vec3(0.0f, 0.0f, 1.0f));
+		_orientation = glm::normalize(yawQuat * pitchQuat * rollQuat);
+
+
+		update_view_matrix();
+	}
+
+
+	void QuaternionCamera::move_forward(double deltaTime, bool forwardOrBack)
+	{
+		if (forwardOrBack) 
+		{
+			_position += _front * _speed * (float)deltaTime;
+		}
+		else
+		{
+			_position -= _front * _speed * (float)deltaTime;
+		}
+	}
+
+
+	void QuaternionCamera::move_up(double deltaTime, bool upOrDown)
+	{
+		if (upOrDown) 
+		{
+			_position += _up * _speed * (float)deltaTime;
+		}
+		else 
+		{
+			_position -= _up * _speed * (float)deltaTime;
+		}
+	}
+
+
+	void QuaternionCamera::move_right(double deltaTime, bool rightOrLeft) 
+	{
+		if (rightOrLeft) 
+		{
+			_position += _right * _speed * (float)deltaTime;
+		}
+		else 
+		{
+			_position -= _right * _speed * (float)deltaTime;
+		}
+	}
+
+
+	void QuaternionCamera::pitch(double deltaTime, float xMove)
+	{
+		glm::quat pitchQuat = glm::angleAxis(glm::radians(_turnSpeed * xMove * (float)deltaTime), glm::vec3(1.0f, 0.0f, 0.0f));
+		_orientation = glm::normalize(pitchQuat * _orientation);
+	}
+
+
+	void QuaternionCamera::yaw(double deltaTime, float yMove)
+	{
+		glm::quat yawQuat = glm::angleAxis(glm::radians(_turnSpeed * yMove * (float)deltaTime), glm::vec3(0.0f, 1.0f, 0.0f));
+		_orientation = glm::normalize(yawQuat * _orientation);
+	}
+
+
+	void QuaternionCamera::roll(double deltaTime, float zMove) 
+	{
+		glm::quat rollQuat = glm::angleAxis(glm::radians(_turnSpeed * zMove * (float)deltaTime), glm::vec3(0.0f, 0.0f, 1.0f));
+		_orientation = glm::normalize(rollQuat * _orientation);
+	}
+
+
+	void QuaternionCamera::update_view_matrix() 
+	{
+		_front = glm::normalize(glm::vec3(glm::rotate(_orientation, glm::vec3(0.0f, 0.0f, -1.0f))));
+		_right = glm::normalize(glm::cross(_front, _worldUp));
+		_up = glm::normalize(glm::cross(_right, _front));
+
+
+		_view = glm::lookAt(_position, _position + _front, _up);
+	}
+
+
+	void QuaternionCamera::update(Direction dir, double deltaTime) 
+	{
+		move_and_turn_dir(dir, deltaTime);
+		update_view_matrix();
+	}
+
+
+	bool QuaternionCamera::event_key(Direction dir, double deltaTime)
+	{
+		update(dir, deltaTime);
+		return true;
+	}
+
+
+	bool QuaternionCamera::event_key(double deltaTime, float xMove, float yMove) 
+	{
+		if (xMove != 0) 
+		{
+			yaw(deltaTime, xMove);
+		}
+		if (yMove != 0) 
+		{
+			pitch(deltaTime, yMove);
+		}
+		update_view_matrix();
+		return true;
+	}
+
+
+	void QuaternionCamera::set_speed(float speed) 
+	{
+		_speed = speed;
+	}
+
+
+	float QuaternionCamera::get_speed() const
+	{
+		return _speed;
+	}
+
+
+	void QuaternionCamera::set_position(const glm::vec3& position)
+	{
+		_position = position;
+		update_view_matrix();
+	}
+
+
+	glm::mat4 QuaternionCamera::get_view() 
+	{
+		return _view;
+	}
+
+
+	glm::mat4 QuaternionCamera::get_projection() const 
+	{
+		return _projection;
+	}
+
+
+	glm::vec3 QuaternionCamera::get_position() const
+	{
+		return _position;
+	}
+
+
+	void QuaternionCamera::set_commands_to_window(tools::Window& window) 
+	{
+		std::array<KeyCombInputOne, 6> input =
+		{
+		KeyCombInputOne(Keys::W, Action::Press),
+		KeyCombInputOne(Keys::S, Action::Press),
+		KeyCombInputOne(Keys::A, Action::Press),
+		KeyCombInputOne(Keys::D, Action::Press),
+		KeyCombInputOne(Keys::Q, Action::Press),
+		KeyCombInputOne(Keys::E, Action::Press)
+		};
+
+
+		std::array<Direction, 6> dirs =
+		{
+		Direction::Up,
+		Direction::Down,
+		Direction::Left,
+		Direction::Right,
+		Direction::Forward,
+		Direction::Backward
+		};
+
+
+		std::array<std::function<bool(double)>, 6> funcs;
+
+
+		for (size_t i = 0; i < funcs.size(); i++) 
+		{
+			funcs[i] = [this, dir = dirs[i]](double deltaTime) -> bool
+				{
+					return this->event_key(dir, deltaTime);
+				};
+		}
+
+
+		std::function<bool(double, float, float)> mouseFuncs = [this](double deltaTime, float xChange, float yChange) -> bool
+			{
+				return this->event_key(deltaTime, xChange, yChange);
+			};
+
+
+		window.AddMouseChange(
+			{ MouseChange::MoveX | MouseChange::MoveY, Mouse::None },
+			mouseFuncs,
+			0.0, 0.0f, 0.0f
+		);
+
+
+		for (size_t i = 0; i < funcs.size(); i++) 
+		{
+			window.AddKeyComb(
+				true,
+				input[i],
+				funcs[i],
+				0.0
+			);
+		}
+	}
+
+
+	void QuaternionCamera::move_and_turn_dir(Direction dir, double deltaTime) 
+	{
+		bool move = false;
+		if (BOOL(dir & Direction::Forward))
+		{
+			move_forward(deltaTime, true);
+			move = true;
+		}
+		else if (BOOL(dir & Direction::Backward)) 
+		{
+			move_forward(deltaTime, false);
+			move = true;
+		}
+
+
+		if (BOOL(dir & Direction::Left))
+		{
+			move_right(deltaTime, false);
+			move = true;
+		}
+		else if (BOOL(dir & Direction::Right))
+		{
+			move_right(deltaTime, true);
+			move = true;
+		}
+
+
+		if (BOOL(dir & Direction::Up))
+		{
+			move_up(deltaTime, true);
+			move = true;
+		}
+		else if (BOOL(dir & Direction::Down))
+		{
+			move_up(deltaTime, false);
+			move = true;
+		}
+
+
+		if (BOOL(dir & Direction::TurnUp)) 
+		{
+			pitch(deltaTime, 1.0f); 
+			move = true;
+		}
+		else if (BOOL(dir & Direction::TurnDown)) 
+		{
+			pitch(deltaTime, -1.0f); 
+			move = true;
+		}
+
+
+		if (BOOL(dir & Direction::TurnLeft)) 
+		{
+			yaw(deltaTime, -1.0f); 
+			move = true;
+		}
+		else if (BOOL(dir & Direction::TurnRight))
+		{
+			yaw(deltaTime, 1.0f); 
+			move = true;
+		}
+		if (move)
+		{
+			update_view_matrix();
+		}
+	}
+
+
+	bool QuaternionCamera::is_moving() 
+	{
+		bool positionChanged = glm::length(_position - _prevPosition) > 0.0001f;
+		bool orientationChanged = glm::dot(_orientation, _prevOrientation) < 0.9999f;
+
+
+		_prevPosition = _position;
+		_prevOrientation = _orientation;
+
+
+		return positionChanged || orientationChanged;
+	}
+
+
+	QuaternionCamera::~QuaternionCamera() = default;
+
+}

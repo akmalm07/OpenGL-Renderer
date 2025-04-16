@@ -61,38 +61,15 @@ namespace glUtil
 namespace tools
 {
 
-	std::vector<float> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color);
+	std::vector<glType::Vertex> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color);
 
-	std::vector<unsigned int> create_circle_indices(int segments);
+	std::vector<glType::Index> create_circle_indices(int segments);
 
-	std::vector<float> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size);
+	std::vector<glType::Vertex> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size);
+	
+	std::vector<glType::Index> create_cube_indices();
 
-	std::vector<unsigned int> create_cube_indices();
+	std::vector<glType::Vertex> create_floor_vertices(const glm::vec3& color, const glm::vec3& position, float size);
+	
+	std::vector<glType::Index> create_floor_indices();
 }
-
-//
-	//static bool _firstInstance;
-	//template <size_t VerticiesN, size_t IndiciesN>  
-	//inline void init(const std::array<glType::Vertex, VerticiesN>& vertices, const std::array<glType::Index, IndiciesN>& indices);
-//template <size_t VerticiesN, size_t IndiciesN>
-//inline void Mesh::init(const std::array<glType::Vertex, VerticiesN>& vertices, const std::array<glType::Index, IndiciesN>& indices)
-//{
-//
-//	indexCount = indices.size();
-//
-//	glGenVertexArrays(1, &VAO);
-//	glBindVertexArray(VAO);
-//
-//	glGenBuffers(1, &VBO);
-//	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-//	glBufferData(GL_ARRAY_BUFFER, sizeof(glType::Vertex) * vertices.size(), vertices.data(), GL_STATIC_DRAW);
-//
-//	glGenBuffers(1, &IBO);
-//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-//	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(unsigned int) * indices.size(), indices.data(), GL_STATIC_DRAW);
-//
-//
-//	glBindVertexArray(0);
-//	glBindBuffer(GL_ARRAY_BUFFER, 0);
-//	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-//}

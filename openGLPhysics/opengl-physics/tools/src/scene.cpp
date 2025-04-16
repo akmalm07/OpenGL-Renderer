@@ -150,7 +150,6 @@ namespace tools
             if (!skip)
             { 
                 glUtil::Texture texture(_directory.string() + "\\" + str.C_Str()); // CRITIAL lvl 5
-                texture.load_texture();
                 textures.push_back(texture);
                 _texturesloaded.push_back(texture); 
             }

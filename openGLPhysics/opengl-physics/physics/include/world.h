@@ -4,7 +4,10 @@
 #include "tools/include/scene.h"
 #include "glInit/include/program.h"
 #include "tools/include/directional_light.h"
+#include "tools/include/quaternion_camera.h"
+#include "tools/include/window.h"
 #include "physics/include/acceleration.h"
+//#include "glUtil/include/shadow_map.h"
 
 
 namespace physics
@@ -15,7 +18,7 @@ namespace physics
 	public:
 		World();
 
-		World(glInit::GLProgram& program, bool debug);
+		World(glInit::GLProgram& program, tools::Window& window, bool debug);
 
 		World(World&&) noexcept = default;
 		World& operator=(World&&) noexcept = default;
@@ -31,13 +34,23 @@ namespace physics
 		glm::mat4 get_view_matrix() const;
 		glm::mat4 get_projection_matrix() const;
 
+		//void bind_shadow_tex();
+		//void unbind_shadow_tex();
+
 		void set_model_matrix(const glm::mat4& mat);
 		void set_view_matrix(const glm::mat4& mat);
 		void set_projection_matrix(const glm::mat4& mat);
 
+		void update_model_matrix(const glm::mat4& mat);
+
 		void set_directional_light(tools::DirectionalLight& light);
 
 		void bind_light();
+
+		void update_mv_matrices(const glm::mat4& model = glm::mat4(1.0f));
+		void update_mv_matrices_and_link(glInit::GLProgram& program);
+
+		void render_meshes(glInit::GLProgram& program);
 
 		void unbind_light();
 
@@ -51,6 +64,7 @@ namespace physics
 
 		~World();
 
+		//void run_shadow_pass();
 	private:
 		std::shared_ptr<tools::Scene> _scene;
 
@@ -59,8 +73,11 @@ namespace physics
 
 		tools::DirectionalLight _directionalLight;
 
-		Acceleration _gravity = { glm::vec3(0.0f, 0.0f, 0.0f), false };
+		Acceleration _gravity = { glm::vec3(0.0f, -0.0f, 0.0f), false };
 		
+		//glUtil::ShadowMap _shadowMap;
+
+		tools::QuaternionCamera _camera;
 
 		struct Matrix
 		{
@@ -70,6 +87,9 @@ namespace physics
 		} _matrix;
 	
 		bool _debug;
+
+	private:
+		void init_quaternion_camera(tools::Window& window);
 	};
 
 }

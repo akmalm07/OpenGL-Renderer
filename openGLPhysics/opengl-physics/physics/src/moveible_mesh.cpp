@@ -11,6 +11,18 @@ namespace physics
 	MoveibleMesh<glType::MovementType::KINEMATIC>::MoveibleMesh(bool debugMode)
 		: glUtil::Mesh(debugMode)
 	{}
+
+	MoveibleMesh<glType::MovementType::STATIC>::MoveibleMesh()
+		: Mesh() {}
+
+	MoveibleMesh<glType::MovementType::STATIC>::MoveibleMesh(bool debugMode)
+		: Mesh(debugMode) {}
+
+	MoveibleMesh<glType::MovementType::STATIC>::MoveibleMesh(const glUtil::MeshBundle& bundle, bool debugMode)
+	: Mesh(bundle, debugMode) {}
+
+	MoveibleMesh<glType::MovementType::STATIC>::~MoveibleMesh() = default;
+
 	
 	MoveibleMesh<glType::MovementType::KINEMATIC>::MoveibleMesh(const MoveibleMeshBundle& bundle, bool debugMode)
 		: glUtil::Mesh(bundle, debugMode)
@@ -204,7 +216,7 @@ namespace physics
 
 	void MoveibleMesh<glType::MovementType::CONSTANT>::add_gravity(const glm::vec3& val)
 	{
-		if (_gravityAffected) 
+		if (_gravityAffected && val != glm::vec3(0.0f)) 
 		{
 			_volocity += val;
 			_gravityAffected = false;
@@ -213,7 +225,7 @@ namespace physics
 
 	void MoveibleMesh<glType::MovementType::KINEMATIC>::add_gravity(const glm::vec3& val)
 	{
-		if (_gravityAffected) 
+		if (_gravityAffected && val != glm::vec3(0.0f))
 		{
 			_acceleration += val;
 			_gravityAffected = false;
@@ -248,7 +260,6 @@ namespace physics
 	void MoveibleMesh<glType::MovementType::CONSTANT>::update_position()
 	{
 		_positionRelativeToStart = _volocity.get_distance();
-
 	}
 
 	MoveibleMesh<glType::MovementType::KINEMATIC>::~MoveibleMesh() = default;

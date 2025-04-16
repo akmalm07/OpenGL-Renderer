@@ -16,40 +16,19 @@ namespace Renderer
 
 		Window window = Program::create_window(1000, 1000);
 
-		Camera camera = Program::create_camera_persp(window);
-
 		GLProgram program = Program::create_program();
 
-		MoveibleMeshBundle bundle;
-		std::vector<Vertex> vertices = {
-			-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-			0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-			0.5f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-			-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 1.0f
-		};
-		std::vector<Index> indices = { 0, 1, 2, 2, 3, 0 };
-		bundle.vertexCount = vertices.size();
-		bundle.pVertices = vertices.data();
-		bundle.indexCount = indices.size();
-		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_6D;
-		bundle.pLayout1 = new ArrayBufferLayout{StrideType::POS, Stride::STRIDE_3D, 0};
-		bundle.pLayout2 = new ArrayBufferLayout{StrideType::COL, Stride::STRIDE_3D, 1};
-		bundle.startTime = false;
+		World world = Program::create_world(program, window, true);
 
-		std::shared_ptr<MoveibleMesh<MovementType::CONSTANT>> mesh = std::make_shared<MoveibleMesh<MovementType::CONSTANT>>(bundle, true);//Program::create_demo_mesh();
+		auto mesh = Program::create_demo_volocity_moveible_mesh();
+		
+		auto floor = Program::create_demo_floor_mesh();
 
-		World world = Program::create_world(program, true);
+		world.add_mesh(mesh);
+		world.add_mesh(floor);
 
-		//world.add_mesh(mesh);
+		world.update_mv_matrices();
 
-		world.set_projection_matrix(camera.get_projection());
-		world.set_view_matrix(camera.get_view());
-
-		//program.link_projection_matrix(matrix.projection);
-		//program.link_model_matrix(matrix.model);
-
-		//glUtil::UniformBuffer uniformBuffer = Program::create_camera_uniform_buffer(matrix);
 		world.bind_light();
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
@@ -60,29 +39,98 @@ namespace Renderer
 
 			window.poll_events();
 
-			program.use_shaders();
+			program.bind();
 
-			program.link_projection_matrix(world.get_projection_matrix());
-			program.link_model_matrix(world.get_model_matrix());
-
-			world.set_view_matrix(camera.get_view());
-			program.link_view_matrix(world.get_view_matrix());
-
-			world.update_camera_pos(camera.get_position());
-			//directionalLight.link_normal_mat();
-			//uniformBuffer.bind();
-			//uniformBuffer.update_data(camera.get_view(), 1);
+			world.update_mv_matrices_and_link(program);
 
 			Program::clear_color();
 
-			mesh->render();
+			world.render_meshes(program);
+
+			program.unbind();
 
 			window.swap_buffers();
-
-			//uniformBuffer.unbind();
 		}
+
 		world.unbind_light();
 
 		std::cout << "Exiting application..." << std::endl;
 	}
 }
+
+
+// EXTRA IMPLEMENTATIONS -- ONLY PARTIALLY TESTED
+//void Run()
+//{
+//	using namespace tools;
+//	using namespace glUtil;
+//	using namespace glInit;
+//	using namespace glType;
+//	using namespace physics;
+//
+//	Window window = Program::create_window(1000, 1000);
+//
+//	QuaternionCamera camera = Program::create_quanternion_camera_persp(window);
+//
+//	GLProgram program = Program::create_program();
+//
+//	World world = Program::create_world(program, window, true);
+//
+//	auto mesh = Program::create_demo_volocity_moveible_mesh();
+//
+//	auto floor = Program::create_demo_floor_mesh();
+//
+//	world.add_mesh(mesh);
+//	world.add_mesh(floor);
+//
+//	world.set_projection_matrix(camera.get_projection());
+//	world.set_view_matrix(camera.get_view());
+//
+//	//program.link_projection_matrix(matrix.projection);
+//	//program.link_model_matrix(matrix.model);
+//
+//	//glUtil::UniformBuffer uniformBuffer = Program::create_camera_uniform_buffer(matrix);
+//	world.bind_light();
+//
+//	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+//
+//	while (!window.get_should_close())
+//	{
+//		window.reset_delta_time();
+//
+//		window.poll_events();
+//
+//		//world.run_shadow_pass();
+//
+//		program.bind();
+//
+//		program.link_projection_matrix(world.get_projection_matrix());
+//		program.link_model_matrix(mesh->get_model_matrix());
+//		//world.update_model_matrix(mesh->get_model_matrix());
+//
+//		mesh->update_position();
+//
+//		world.set_view_matrix(camera.get_view());
+//		program.link_view_matrix(world.get_view_matrix());
+//
+//		world.update_camera_pos(camera.get_position());
+//		//directionalLight.link_normal_mat();
+//		//uniformBuffer.bind();
+//		//uniformBuffer.update_data(camera.get_view(), 1);
+//		//world.bind_shadow_tex();
+//
+//		Program::clear_color();
+//
+//		world.render_meshes();
+//
+//		//world.unbind_shadow_tex();
+//		program.unbind();
+//
+//		window.swap_buffers();
+//
+//		//uniformBuffer.unbind();
+//	}
+//	world.unbind_light();
+//
+//	std::cout << "Exiting application..." << std::endl;
+//}

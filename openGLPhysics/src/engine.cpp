@@ -46,13 +46,57 @@ namespace Program
 		return camera;
 	}
 
+	tools::QuaternionCamera create_quanternion_camera_persp(tools::Window& window)
+	{
+
+		tools::CameraBundlePerspective cameraBundlePersp = {};
+		cameraBundlePersp.nearZ = 0.1f;
+		cameraBundlePersp.farZ = 1000.0f;
+		cameraBundlePersp.speed = 0.05f;
+		cameraBundlePersp.turnSpeed = 0.05f;
+		cameraBundlePersp.position = glm::vec3(0.0f, 0.0f, 1.0f);
+		cameraBundlePersp.front = glm::vec3(0.0f, 0.0f, -1.0f);
+		cameraBundlePersp.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		cameraBundlePersp.fov = 45.0f;
+		cameraBundlePersp.aspectRatio = window.get_aspect_ratio();
+
+		tools::QuaternionCamera camera(cameraBundlePersp);
+
+		camera.set_commands_to_window(window);
+
+		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
+
+		for (const auto& [key, mod] : keys)
+		{
+			std::function<bool()> func = [val = window.FindKeyComb(key), &dt = window.get_delta_time_ref()]() -> bool
+				{
+					val->change_parameters(dt);
+					std::cout << "Updating camera with  dt: " << dt << "\n";
+					return true;
+				};
+
+			window.SetFuncParamUpdaterKeys(key, std::move(func), mod);
+		}
+
+		window.SetMouseChangeUpdater([mouseMove = window.GetMouseMove(), &window, &dt = window.get_delta_time_ref()]() -> bool
+			{
+				std::cout << "Updating camera with  dt: " << dt << "\n";
+				std::cout << "Mouse Xf: " << window.GetMouseChangeXf() << " Mouse Yf: " << window.GetMouseChangeYf() << "\n";
+				mouseMove->change_parameters(dt, - window.GetMouseChangeXf(), window.GetMouseChangeYf());
+				return true;
+			}
+		);
+
+		return camera;
+	}
+	
 	tools::Camera create_camera_persp(tools::Window& window)
 	{
 
 		tools::CameraBundlePerspective cameraBundlePersp = {};
 		cameraBundlePersp.nearZ = 0.1f;
 		cameraBundlePersp.farZ = 1000.0f;
-		cameraBundlePersp.speed = 0.01f;
+		cameraBundlePersp.speed = 0.1f;
 		cameraBundlePersp.turnSpeed = 0.1f;
 		cameraBundlePersp.position = glm::vec3(0.0f, 0.0f, 1.0f);
 		cameraBundlePersp.front = glm::vec3(0.0f, 0.0f, -1.0f);
@@ -101,22 +145,87 @@ namespace Program
 		return program;
 	}
 
-	physics::World create_world(glInit::GLProgram& program, bool debug)
+	physics::World create_world(glInit::GLProgram& program, tools::Window& window, bool debug)
 	{
-		return physics::World(program, debug);
+		return physics::World(program, window, debug);
+	}
+
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_volocity_moveible_mesh()
+	{
+
+		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
+
+		std::vector<glType::Index> indices = tools::create_cube_indices();
+
+		//vertices = tools::calculate_face_normals(vertices, indices);
+
+		physics::MoveibleMeshBundle bundle; // Change -- CRITICAL
+		ArrayBufferLayout layout1;
+		layout1.location = 0;
+		layout1.stride = Stride::STRIDE_3D;
+		layout1.type = StrideType::POS;
+
+		ArrayBufferLayout layout2;
+		layout2.location = 1;
+		layout2.stride = Stride::STRIDE_3D;
+		layout2.type = StrideType::COL;
+
+		bundle.vertexCount = vertices.size();
+		bundle.pVertices = vertices.data();
+		bundle.indexCount = indices.size();
+		bundle.pIndices = indices.data();
+		bundle.fullStride = FullStride::STRIDE_6D;
+		bundle.indexed = true;
+		bundle.pLayout1 = &layout1;
+		bundle.pLayout2 = &layout2;
+		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+		bundle.gravityAffected = true;
+
+		return std::make_shared<physics::MoveibleMesh<glType::MovementType::CONSTANT>>(bundle, true);
+	}
+	
+
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::KINEMATIC>> create_demo_acceleration_moveible_mesh()
+	{
+
+		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
+
+		std::vector<glType::Index> indices = tools::create_cube_indices();
+
+		//vertices = tools::calculate_face_normals(vertices, indices);
+
+		physics::MoveibleMeshBundle bundle; // Change -- CRITICAL
+		ArrayBufferLayout layout1;
+		layout1.location = 0;
+		layout1.stride = Stride::STRIDE_3D;
+		layout1.type = StrideType::POS;
+
+		ArrayBufferLayout layout2;
+		layout2.location = 1;
+		layout2.stride = Stride::STRIDE_3D;
+		layout2.type = StrideType::COL;
+
+		bundle.vertexCount = vertices.size();
+		bundle.pVertices = vertices.data();
+		bundle.indexCount = indices.size();
+		bundle.pIndices = indices.data();
+		bundle.fullStride = FullStride::STRIDE_6D;
+		bundle.indexed = true;
+		bundle.pLayout1 = &layout1;
+		bundle.pLayout2 = &layout2;
+		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+		bundle.gravityAffected = true;
+
+		return std::make_shared<physics::MoveibleMesh<glType::MovementType::KINEMATIC>>(bundle, true);
 	}
 
 	glUtil::Mesh create_demo_mesh()
 	{
+	std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
+	
+	std::vector<glType::Index> indices = tools::create_cube_indices();
 
-		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 0.5f, 0.5f), 1.0f);
-
-
-		std::vector<glType::Index> indices = tools::create_cube_indices();
-
-		vertices = tools::calculate_face_normals(vertices, indices);
-
-		MeshBundle bundle;
+		glUtil::MeshBundle bundle;
 		ArrayBufferLayout layout1;
 		layout1.location = 0;
 		layout1.stride = Stride::STRIDE_3D;
@@ -137,6 +246,38 @@ namespace Program
 		bundle.pLayout2 = &layout2;
 
 		return glUtil::Mesh(bundle, true);
+	}
+
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_floor_mesh()
+	{
+
+		std::vector<glType::Vertex> vertices = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 30.0f);
+		
+		std::vector<glType::Index> indices = tools::create_floor_indices();
+
+		physics::MoveibleMeshBundle bundle;
+		ArrayBufferLayout layout1;
+		layout1.location = 0;
+		layout1.stride = Stride::STRIDE_3D;
+		layout1.type = StrideType::POS;
+
+		ArrayBufferLayout layout2;
+		layout2.location = 1;
+		layout2.stride = Stride::STRIDE_3D;
+		layout2.type = StrideType::COL;
+
+		bundle.vertexCount = vertices.size();
+		bundle.pVertices = vertices.data();
+		bundle.indexCount = indices.size();
+		bundle.pIndices = indices.data();
+		bundle.fullStride = FullStride::STRIDE_6D;
+		bundle.indexed = true;
+		bundle.pLayout1 = &layout1;
+		bundle.pLayout2 = &layout2;
+		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+		bundle.gravityAffected = true;
+
+		return std::make_shared<physics::MoveibleMesh<glType::MovementType::CONSTANT>>(bundle, true);
 	}
 
 	void clear_color()
@@ -166,7 +307,7 @@ namespace Program
 
 		dirLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
 
-		dirLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
+		//dirLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
 
 		return dirLight;
 	}
@@ -180,7 +321,7 @@ namespace Program
 
 		_program = Program::create_program();
 
-		_demoMesh = Program::create_demo_mesh();
+		//_demoMesh = Program::create_demo_mesh();
 
 		_matrix.projection = _camera.get_projection();
 
@@ -207,7 +348,7 @@ namespace Program
 
 		_cameraUniform = Program::create_camera_uniform_buffer(_program, _matrix);
 
-		_demoMesh = Program::create_demo_mesh();
+		//_demoMesh = Program::create_demo_mesh();
 
 	}
 
@@ -221,7 +362,7 @@ namespace Program
 
 			Program::clear_color();
 
-			_program.use_shaders();
+			_program.bind();
 
 			_cameraUniform.bind();
 

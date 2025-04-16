@@ -101,6 +101,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="opengl-physics\tools\include\directional_light_bundle.h" />
     <ClInclude Include="global\config.h" />
     <ClInclude Include="global\headers.h" />
     <ClInclude Include="include\engine.h" />
@@ -153,6 +154,9 @@
     <ClInclude Include="opengl-physics\tools\include\window.h" />
     <ClInclude Include="opengl-physics\tools\include\window_input.h" />
     <ClInclude Include="opengl-physics\tools\include\window_input_bundles.h" />
+    <ClInclude Include="opengl-physics\tools\include\quaternion_camera.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\shadow_map.h" />
+    <ClInclude Include="opengl-physics\glUtil\include\shadow_map_bundle.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="global\headers.cpp">
@@ -199,6 +203,8 @@
     <ClCompile Include="opengl-physics\tools\src\timer.cpp" />
     <ClCompile Include="opengl-physics\tools\src\window.cpp" />
     <ClCompile Include="opengl-physics\tools\src\window_input.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\quaternion_camera.cpp" />
+    <ClCompile Include="opengl-physics\glUtil\src\shadow_map.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\main.cpp" />
   </ItemGroup>
@@ -206,6 +212,8 @@
     <None Include="shaders\shader.frag" />
     <None Include="shaders\shader.geom" />
     <None Include="shaders\shader.vert" />
+    <None Include="shaders\shadow_pass.frag" />
+    <None Include="shaders\shadow_pass.vert" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

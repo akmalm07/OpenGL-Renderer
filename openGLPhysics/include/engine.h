@@ -4,6 +4,7 @@
 
 #include "tools/include/stride.h"
 #include "tools/include/camera.h"
+#include "tools/include/quaternion_camera.h"
 #include "tools/include/timer.h"
 #include "tools/include/window.h"
 #include "tools/include/directional_light.h"
@@ -18,11 +19,19 @@ namespace Program
 {
 	tools::Camera create_camera_ortho(tools::Window& window);
 
+	tools::QuaternionCamera create_quanternion_camera_persp(tools::Window& window);
+
 	tools::Camera create_camera_persp(tools::Window& window);
 
 	glInit::GLProgram create_program();
 
-	physics::World create_world(glInit::GLProgram& program, bool debug = false); 
+	physics::World create_world(glInit::GLProgram& program, tools::Window& window, bool debug = false);
+
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_volocity_moveible_mesh();
+	
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::KINEMATIC>> create_demo_acceleration_moveible_mesh();
+
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_floor_mesh();
 
 	glUtil::Mesh create_demo_mesh();
 

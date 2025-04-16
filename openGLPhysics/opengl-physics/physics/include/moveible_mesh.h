@@ -13,9 +13,16 @@ namespace physics
 {
 
 	template<glType::MovementType T>
-	class MoveibleMesh : public glUtil::Mesh 
+	class MoveibleMesh : public glUtil::Mesh {};
+
+	template<>
+	class MoveibleMesh<glType::MovementType::STATIC> : public glUtil::Mesh
 	{
-	
+	public:
+		MoveibleMesh();
+		MoveibleMesh(bool debugMode);
+		MoveibleMesh(const glUtil::MeshBundle& bundle, bool debugMode);
+		virtual ~MoveibleMesh();
 	};
 
 	template<>

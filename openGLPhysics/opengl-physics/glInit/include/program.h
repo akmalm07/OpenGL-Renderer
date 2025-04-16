@@ -54,7 +54,9 @@ namespace glInit
 		void link_projection_matrix(const glm::mat4& projectionMatrix);
 		void link_view_matrix(const glm::mat4& viewMatrix);
 
-		void use_shaders();
+		void bind();
+		void unbind();
+
 		void clear_shaders();
 
 		~GLProgram();

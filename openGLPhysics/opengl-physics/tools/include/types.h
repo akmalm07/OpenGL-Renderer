@@ -3,8 +3,6 @@
 
 #include "config.h"
 
-#include <glm/glm.hpp>
-
 
 #define INT(x) static_cast<int>(x)
 #define SIZET(x) static_cast<size_t>(x)

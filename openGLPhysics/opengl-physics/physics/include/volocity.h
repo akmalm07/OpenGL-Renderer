@@ -31,6 +31,13 @@ namespace physics
 
 		double get_distance_z() const;  
 
+
+		double get_volocity_x() const;
+
+		double get_volocity_y() const;
+		
+		double get_volocity_z() const;
+
 		void start_time();  
 
 		void reset_time();  

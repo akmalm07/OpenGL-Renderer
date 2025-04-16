@@ -200,16 +200,19 @@ namespace glUtil
 
 	}
 
+}
 
+namespace tools
+{
 
-	std::vector<float> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color)
+	std::vector<glType::Vertex> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color)
 	{
 		if (segments < 3)
 		{
 			std::cerr << "Error: Circle must have at least 3 segments." << std::endl;
 			return {};
 		}
-		std::vector<float> vertices;
+		std::vector<glType::Vertex> vertices;
 		vertices.push_back(center.x);
 		vertices.push_back(center.y);
 		vertices.push_back(center.z);
@@ -236,18 +239,15 @@ namespace glUtil
 		return vertices;
 	}
 
-}
 
-namespace tools
-{
-	std::vector<unsigned int> create_circle_indices(int segments)
+	std::vector<glType::Index> create_circle_indices(int segments)
 	{
 		if (segments < 3)
 		{
 			std::cerr << "Error: Circle must have at least 3 segments." << std::endl;
 			return {};
 		}
-		std::vector<unsigned int> indices;
+		std::vector<glType::Index> indices;
 		for (int i = 1; i <= segments; i++)
 		{
 			indices.push_back(0);
@@ -261,12 +261,13 @@ namespace tools
 		return indices;
 	}
 
-	std::vector<float> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size) {
-		std::vector<float> vertices;
+	std::vector<float> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size) 
+	{
+		std::vector<glType::Vertex> vertices;
 		float halfSize = size / 2.0f;
 
 
-		float cubeVertices[] = {
+		glType::Vertex cubeVertices[] = {
 			-halfSize, -halfSize, halfSize, color.r, color.g, color.b,
 			halfSize, -halfSize, halfSize, color.r, color.g, color.b, 
 			halfSize, halfSize, halfSize, color.r, color.g, color.b, 
@@ -293,7 +294,8 @@ namespace tools
 		return vertices;
 	}
 
-	std::vector<unsigned int> create_cube_indices()
+
+	std::vector<glType::Index> create_cube_indices()
 	{
 		return
 		{
@@ -316,7 +318,29 @@ namespace tools
 			6, 7, 3
 		};
 	}
+	std::vector<glType::Vertex> create_floor_vertices(const glm::vec3& color, const glm::vec3& position, float size)
+	{
+		std::vector<float> vertices = 
+		{
+			-size / 2.0f, position.y, size / 2.0f + position.z, color.r, color.g, color.b,
+			size / 2.0f + position.x, position.y, size / 2.0f + position.z, color.r, color.g, color.b,
+			size / 2.0f + position.x, position.y, -size / 2.0f + position.z, color.r, color.g, color.b,
+			-size / 2.0f + position.x, position.y, -size / 2.0f + position.z, color.r, color.g, color.b,
+		};
 
+
+		return vertices;
+	}
+
+
+	std::vector<glType::Index> create_floor_indices()
+	{
+		std::vector<unsigned int> indices = {
+		0, 1, 2, 
+		2, 3, 0 
+		};
+		return indices;
+	}
 
 }
 /*
