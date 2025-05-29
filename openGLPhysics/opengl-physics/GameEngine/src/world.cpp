@@ -1,0 +1,318 @@
+#include "headers.h"
+
+#include "GameEngine/include/world.h"
+
+namespace GameEngine
+{
+	World::World() = default;
+
+
+	World::World(std::shared_ptr<glInit::GLProgram>& program, tools::Window& window, bool debug)
+	{
+
+		tools::DirectionalLightBundle dirLightBundle;
+		dirLightBundle.direction = glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f));
+		dirLightBundle.color = glm::vec3(1.0f);
+
+		_directionalLight.init(dirLightBundle, program->get_id(), debug);
+
+		_directionalLight.set_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
+
+		_directionalLight.set_normal_mat_loc(program->add_uniform("uNormalMatrix"));
+
+		_directionalLight.set_cam_pos_loc(program->add_uniform("uCameraPos"));
+		 
+		init_quaternion_camera(window);
+		
+		_program = program;
+
+		_debug = debug;
+
+		if (_debug)
+		{
+			std::cout << "World initialized with directional light with program ID: " << program->get_id() << std::endl;
+		}
+	}
+
+	World::World(std::shared_ptr<glInit::GLProgram>& program, tools::Window& window, const glm::vec3& gravity, bool debug)
+		: World(program, window, debug)
+	{
+		_gravity = gravity;
+	}
+
+	void World::add_scene(std::shared_ptr<tools::Scene> scene)
+	{
+		_scene = scene;
+		
+		if (_debug)
+		{
+			std::cout << "Scene added to World." << std::endl;
+		}
+	}
+
+	glm::mat4 World::get_model_matrix()
+	{
+		return _matrix.model;
+	}
+
+	glm::mat4 World::get_view_matrix() const
+	{
+		return _matrix.view;
+	}
+
+	glm::mat4 World::get_projection_matrix() const
+	{
+		return _matrix.projection;
+	}
+
+	//void World::bind_shadow_tex()
+	//{
+	//	_shadowMap.bind_shadow_tex();
+
+	//}
+
+	//void World::unbind_shadow_tex()
+	//{
+	//	_shadowMap.unbind_shadow_tex();
+	//}
+
+	void World::update()
+	{
+		update_mv_matrices_and_link(*_program);
+
+	}
+
+	void World::set_model_matrix(const glm::mat4& mat)
+	{
+		_matrix.model = mat;
+	}
+
+	void World::set_view_matrix(const glm::mat4& mat)
+	{
+		_matrix.view = mat;
+	}
+
+	void World::set_projection_matrix(const glm::mat4& mat)
+	{
+		_matrix.projection = mat;
+	}
+
+	void World::update_model_matrix(const glm::mat4& mat)
+	{
+		_matrix.model = mat;
+		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
+	}
+
+	void World::set_directional_light(tools::DirectionalLight& light)
+	{
+		_directionalLight = std::move(light);
+		if (_debug)
+		{
+			std::cout << "Directional light set in World." << std::endl;
+		}
+	}
+
+	void World::bind_light()
+	{
+		_directionalLight.bind();
+	}
+
+	void World::update_mv_matrices(const glm::mat4& model)
+	{
+		_matrix.model = model;
+		_matrix.view = _camera.get_view();
+		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
+		_directionalLight.link_camera_pos(_camera.get_position());
+	}
+
+	void World::update_mv_matrices_and_link(glInit::GLProgram& program)
+	{
+		update_mv_matrices();
+
+		program.link_projection_matrix(_matrix.projection);
+		program.link_model_matrix(_matrix.model);
+		program.link_view_matrix(_matrix.view);
+	}
+
+	//void World::run_shadow_pass()
+	//{
+	//	_shadowMap.run_shadow_map_pass(_objects);
+	//}
+
+	//Update: ADD A SELF MANAGE OPTION <bool>, WHERE THE USER CHOOSES IF THEY MAMAGE OBJ RENDERIGN WITH TAG NAME OR NOT
+
+	void World::render_objects(float deltaTime)
+	{
+		for (auto& [tagName, objList] : _objects)
+		{
+			for(const auto& obj : objList)
+			{
+				obj->render_no_collision(deltaTime); // to change with SPATIAL PATIONING FEATURE
+			}
+		}
+	}
+
+
+	void World::render_objects(float deltaTime, std::string_view tag)
+	{
+		if (_debug)
+		{
+			std::cout << "Rendering objects with tag: " << tag << std::endl;
+		}
+
+		if (_objects.find(tag) == _objects.end())
+		{
+			std::cerr << "Tag not found: " << tag << std::endl;
+			return;
+		}
+
+		for (const auto& obj : _objects[tag])
+		{
+			obj->render_no_collision(deltaTime); // to change with SPATIAL PATIONING FEATURE
+		}
+	}
+
+
+	void World::unbind_light()
+	{
+		_directionalLight.unbind();
+	}
+
+	void World::update_camera_pos(const glm::vec3& camPos)
+	{
+		_directionalLight.link_camera_pos(camPos);
+	}
+
+	void World::set_gravity(const glm::vec3& gravity)
+	{
+		_gravity = gravity;
+
+		if (_gravity != glm::vec3(0.0f, 0.0f, 0.0f))
+		{
+			for (const auto& [tagName, objList] : _objects)
+			{
+				for (auto& obj : objList)
+				{
+					obj->add_gravity(_gravity);	
+				}
+			}
+		}
+
+		if (_debug)
+		{
+			std::cout << "Gravity set to: " << gravity.x << ", " << gravity.y << ", " << gravity.z << std::endl;
+		}
+	}
+
+
+	void World::init_quaternion_camera(tools::Window& window)
+	{
+		tools::CameraBundlePerspective cameraBundlePersp = {};
+		cameraBundlePersp.nearZ = 0.1f;
+		cameraBundlePersp.farZ = 1000.0f;
+		cameraBundlePersp.speed = 20.0f;
+		cameraBundlePersp.turnSpeed = 20.0f;
+		cameraBundlePersp.position = glm::vec3(0.0f, 0.0f, 1.0f);
+		cameraBundlePersp.front = glm::vec3(0.0f, 0.0f, -1.0f);
+		cameraBundlePersp.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+		cameraBundlePersp.fov = 45.0f;
+		cameraBundlePersp.aspectRatio = window.get_aspect_ratio();
+
+		_camera.init(cameraBundlePersp);
+
+		_camera.set_commands_to_window(window);
+
+		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
+
+		for (const auto& [key, mod] : keys)
+		{
+			std::function<bool()> func = [val = window.FindKeyComb(key), &dt = window.get_delta_time_ref()]() -> bool
+				{
+					val->change_parameters(dt);
+					return true;
+				};
+
+			window.SetFuncParamUpdaterKeys(key, std::move(func), mod);
+		}
+
+		window.SetMouseChangeUpdater([mouseMove = window.GetMouseMove(), &window, &dt = window.get_delta_time_ref()]() -> bool
+			{
+				//DEBUG: std::cout << "Updating camera with  dt: " << dt << "\n";
+				//DEBUG: std::cout << "Mouse Xf: " << window.GetMouseChangeXf() << " Mouse Yf: " << window.GetMouseChangeYf() << "\n";
+				mouseMove->change_parameters(dt, -window.GetMouseChangeXf(), window.GetMouseChangeYf()); 
+				return true;
+			}
+		);
+
+		_matrix.projection = _camera.get_projection();
+		_matrix.view = _camera.get_view();
+		_matrix.model = glm::mat4(1.0f);
+	}
+
+
+	void World::add_object(std::shared_ptr<GameObject> obj, std::string_view tag)
+	{
+		obj->add_gravity(_gravity);
+
+		_objects[tag].push_back(obj);	
+
+		if (_debug)
+		{
+			std::cout << "Mesh with tag " << tag << " added to World." << std::endl;
+		}
+	}
+
+	void World::add_objects(std::vector<std::shared_ptr<GameObject>>& mesh, std::string_view tag)
+	{
+		for (auto& m : mesh)
+		{
+			m->add_gravity(_gravity);
+		}
+
+		_objects[tag].insert(_objects[tag].end(), mesh.begin(), mesh.end());
+		if (_debug)
+		{
+			std::cout << "Meshes added to World." << std::endl;
+		}
+	}
+
+	void World::init()
+	{
+
+	}
+
+	glm::vec3 World::get_acc_due_to_gravity() const
+	{
+		return _gravity;
+	}
+
+
+	World::~World() = default;
+
+}
+
+
+
+
+//Untested Code that belongs in the ctor of the World(glInit::GLProgram& program, tools::Window& window, bool debug)
+
+		//glUtil::ShadowMapBundle shadowMapBundle;
+		//
+		//shadowMapBundle.lightDir = dirLightBundle.direction;
+		//shadowMapBundle.textureNumber = glUtil::TextureUnit::TEX0;
+		//shadowMapBundle.shadowWidth =  1024;
+		//shadowMapBundle.shadowHeight = 1024;
+		//shadowMapBundle.pOriginalHeight = (const unsigned int *)window.get_buffer_height_p();
+		//shadowMapBundle.pOriginalWidth = (const unsigned int *)window.get_buffer_width_p();
+		//shadowMapBundle.sceneDepthSize = 10.0f;
+		//shadowMapBundle.sceneSize = 10.0f;
+		//shadowMapBundle.worldUp;
+		//
+		//Config& config = Config::instance();
+		//
+		//shadowMapBundle.vertShadowShaderPath = config.get_vert_shadow_shader_path();
+		//shadowMapBundle.fragShadowShaderPath = config.get_frag_shadow_shader_path();
+		//
+		//_shadowMap.init(shadowMapBundle, true);
+		//
+		//_shadowMap.set_shadow_map_loc(program.add_uniform("tShadowMap"));
