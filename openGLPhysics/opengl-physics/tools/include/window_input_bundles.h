@@ -7,54 +7,70 @@
 
 namespace tools
 {
-    struct AABButtonB;
-    struct KeyCombB;
-    struct MouseButtonB;
+    struct CallbackInput { virtual ~CallbackInput() = default; };
 
-    struct KeyCombInputOne
+    struct KeyCombInputOne : CallbackInput
     {
+        Keys number;
+        Action action;
+        Mods mod = Mods::None;
+
         KeyCombInputOne(Keys key, Action action)
-            : number(key), action(action), mod(Mods::None) {
+            : number(key), action(action) {
         }
 
         KeyCombInputOne(Keys key, Action action, Mods mod)
             : number(key), action(action), mod(mod) {
         }
-
-        Keys number;
-        Action action;
-        Mods mod = Mods::None;
     };
 
-    struct KeyCombInputPoly
+    struct KeyCombInputPoly : CallbackInput
     {
-        KeyCombInputPoly(std::array<Keys, KEY_MAX> key, Action action)
-            : number(key), action(action), mod(Mods::None) {
-        }
         std::array<Keys, KEY_MAX> number;
         Action action;
         Mods mod = Mods::None;
+
+        KeyCombInputPoly(std::array<Keys, KEY_MAX> key, Action action)
+            : number(key), action(action) {
+        }
     };
 
-    struct MouseButtonInput
+    struct MouseButtonInput : CallbackInput
     {
-        Mouse name;
+        Mouse button;
         Action action;
+		MouseButtonInput(Mouse button, Action action)
+			: button(button), action(action) {
+		}
     };
 
-    struct AABButtonInput
+    struct AABButtonInput : CallbackInput
     {
         float cordX, cordY, width, height;
         Action action;
         Mouse button;
         std::string_view name;
+
+		AABButtonInput(float x, float y, float w, float h, Action action, Mouse button, std::string_view name)
+			: cordX(x), cordY(y), width(w), height(h), action(action), button(button), name(name) {
+		}
     };
 
-    struct MouseMoveInput
+    struct MouseMoveInput : CallbackInput
     {
         MouseChange change;
         Mouse button = Mouse::None;
+
+		MouseMoveInput(MouseChange change, Mouse button = Mouse::None)
+			: change(change), button(button) {
+		}
     };
+
+
+	template<typename T>
+    concept CallbackInputConcept = std::is_base_of_v<CallbackInput, T>;
+
+
 }
     //struct ThreadControlInfo
     //{

@@ -14,7 +14,7 @@
 namespace tools {
 
 
-	class Window : public KeyControl, public AABButtonControl, public MouseControl
+	class Window /*public KeyControl, public AABButtonControl, public MouseControl*/
 	{
 	public:
 		Window();
@@ -93,6 +93,17 @@ namespace tools {
 
 		bool is_updated();
 
+		void update(); // FIX: add functionality so that it can automate the updating process of the window, like updating the input manager, etc.
+
+		void update_debug(); // FIX: add functionality so that it can automate the updating process FOR DEBUG of the window, like updating the input manager, etc.
+
+
+		template<CallbackInputConcept InputStruct, typename... Args>
+		void register_callback(const InputStruct& input, std::function<void(Args...)>& cb);
+
+		template<typename InputStruct, typename... Args>
+		void emit(const InputStruct& input, Args... args);
+
 		void reset_delta_time();
 
 		double get_delta_time() const;
@@ -102,6 +113,8 @@ namespace tools {
 		~Window();
 
 	private:
+
+		InputManager _inputManager;
 
 		//Window Vars
 		static bool _calledBufferSize;

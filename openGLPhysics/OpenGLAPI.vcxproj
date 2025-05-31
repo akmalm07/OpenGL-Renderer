@@ -64,7 +64,7 @@
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
       <Optimization>Disabled</Optimization>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
-      <LanguageStandard>stdcpplatest</LanguageStandard>
+      <LanguageStandard>stdcpp23</LanguageStandard>
       <ExternalWarningLevel>Level3</ExternalWarningLevel>
     </ClCompile>
     <Link>
@@ -202,11 +202,11 @@
     <ClCompile Include="opengl-physics\tools\src\thread.cpp" />
     <ClCompile Include="opengl-physics\tools\src\timer.cpp" />
     <ClCompile Include="opengl-physics\tools\src\window.cpp" />
-    <ClCompile Include="opengl-physics\tools\src\window_input.cpp" />
     <ClCompile Include="opengl-physics\tools\src\quaternion_camera.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\shadow_map.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="TESTER.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="shaders\shader.frag" />

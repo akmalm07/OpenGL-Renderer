@@ -146,6 +146,20 @@ namespace tools {
 	}
 
 
+	template<CallbackInputConcept InputStruct, typename ...Args>
+	void Window::register_callback(const InputStruct& input, std::function<void(Args...)>& cb)
+	{
+		_inputManager.register_callback<InputStruct, Args...>(input, std::move(cb));
+	}
+
+
+	template<typename InputStruct, typename ...Args>
+	void Window::emit(const InputStruct& input, Args ...args)
+	{
+		_inputManager.emit<InputStruct, Args...>(input, std::forward<Args>(args)...);
+	}
+
+
 	void Window::set_escape_button(Keys key, std::optional<Mods> mod)
 	{
 		AddKeyComb(
@@ -167,6 +181,11 @@ namespace tools {
 			return true;
 		}
 		return false;
+	}
+
+	void Window::update_debug()
+	{
+
 	}
 
 	void Window::reset_delta_time()

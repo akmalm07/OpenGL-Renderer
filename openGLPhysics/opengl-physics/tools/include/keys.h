@@ -108,6 +108,16 @@ namespace tools {
 		Count = 3
 	};
 
+	enum class InputType
+	{
+		None = 0,
+		MouseButton = 1 << 0,
+		AABButton = 1 << 1,
+		Key = 1 << 2,
+		MouseMovement = 1 << 3,
+		Count = 4
+	};
+
 	enum class Direction
 	{
 		None = 0,

@@ -1,5 +1,7 @@
-#pragma once
 
+#if 0
+
+#pragma once
 
 #include "config.h"
 
@@ -59,3 +61,5 @@ namespace tools
 }
 
 #include "aabb_button_control.inl"
+
+#endif

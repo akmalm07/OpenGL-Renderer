@@ -45,7 +45,7 @@ namespace Program
 	template<class T>
 	inline glUtil::UniformBuffer create_camera_uniform_buffer(const glInit::GLProgram& program, const T& matrix);
 
-
+	/*
 
 	class Engine
 	{
@@ -89,3 +89,4 @@ glUtil::UniformBuffer Program::create_camera_uniform_buffer(const glInit::GLProg
 
 	return uniformBuffer;
 }
+*/

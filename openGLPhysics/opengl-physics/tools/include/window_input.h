@@ -6,367 +6,88 @@
 #include "tools\include\window_input_bundles.h"
 #include "tools\include\thread.h"
 
-#include <memory>
-#include <condition_variable>
+
+namespace tools {
 
 
-namespace tools 
-{
+	template<typename T> struct InputTypeResolver;
 
-	template<class ... Args> struct MouseButton;
-	template<class ... Args> struct AABButton;
-	template<class ... Args> struct KeyComb;
-	template<class ... Args> struct MouseMovement;
-
-	struct MouseButtonB
-	{
-	public:
-		MouseButtonB();
-		MouseButtonB(const MouseButtonInput& in);
-
-		virtual bool requires_change() const = 0;
-
-		virtual bool execute() const = 0;
-
-		template <class ... Args>
-		void change_parameters(Args... args)
-		{
-			auto* derived = dynamic_cast<MouseButton<Args...>*>(this);
-			if (!derived)
-			{
-				throw std::runtime_error("Invalid dynamic cast in change_parameters");
-			}
-			derived->change_parameter(std::forward<Args>(args)...);
-		}
-
-
-		void set_updater(std::function<bool()> updater);
-
-		bool getPressed() const;
-		void setPressed(bool value);
-
-		bool get_result() const;
-
-		virtual ~MouseButtonB();
-
-	protected:
-		bool _pressed = false;
-		Mouse _button;
-		Action _action;
-		std::function<bool()> _updater;
-		mutable bool _result = false;
+	template<> struct InputTypeResolver<KeyCombInputOne> {
+		static constexpr InputType value = InputType::Key;
+	};
+	template<> struct InputTypeResolver<KeyCombInputPoly> {
+		static constexpr InputType value = InputType::Key;
+	};
+	template<> struct InputTypeResolver<MouseButtonInput> {
+		static constexpr InputType value = InputType::MouseButton;
+	};
+	template<> struct InputTypeResolver<AABButtonInput> {
+		static constexpr InputType value = InputType::AABButton;
+	};
+	template<> struct InputTypeResolver<MouseMoveInput> {
+		static constexpr InputType value = InputType::MouseMovement;
 	};
 
 
-	struct MouseMovementB
+
+	template<typename... Args>
+	class CallbackDispatcher
 	{
 	public:
-		MouseMovementB();
-		MouseMovementB(const MouseMoveInput& mouse);
+		using Callback = std::function<void(Args...)>;
 
-		void set_updater(std::function<bool()> updater);
+		void add_callback(Callback cb);
 
-		virtual bool execute() const = 0;
-
-		inline bool is_changed(float prevX, float prevY, float newX, float newY) const
-		{
-			if (_change == MouseChange::None)
-				return false;
-			return (prevX != newX || prevY != newY);
-		}
-
-		template <class ... Args>
-		void change_parameters(Args... args)// TO KNOW: This function throws an exception if the dynamic cast fails, which usually happens when the args list isn't matching the parameter of the specific function.
-		{
-			auto* derived = dynamic_cast<MouseMovement<Args...>*>(this);
-			if (!derived)
-			{
-				throw std::runtime_error("Invalid dynamic cast in change_parameters");
-			}
-			derived->change_parameter(std::forward<Args>(args)...);
-		}
-
-		bool get_result() const;
-
-		virtual ~MouseMovementB();
-
-	protected: 
-
-		Mouse _button = Mouse::None;
-		MouseChange _change = MouseChange::None;
-		std::function<bool()> _updater;
-		mutable bool _result = false;
-
-	};
-
-	struct AABButtonB
-	{
-	public:
-		AABButtonB();
-		AABButtonB(const AABButtonInput& in);
-
-		virtual bool requires_change() const = 0;
-
-		virtual bool execute() const = 0;
-
-		bool is_clicked(float x, float y, Action action, Mouse button) const;
-
-		void set_updater(std::function<bool()> updater);
-
-		template <class ... Args>
-		void change_parameters(Args... args)// TO KNOW: This function throws an exception if the dynamic cast fails, which usually happens when the args list isn't matching the parameter of the specific function.
-		{
-			auto* derived = dynamic_cast<AABButton<Args...>*>(this);
-			if (!derived)
-			{
-				throw std::runtime_error("Invalid dynamic cast in change_parameters");
-			}
-			derived->change_parameter(std::forward<Args>(args)...);
-		}
-
-		bool get_result() const;
-
-		virtual ~AABButtonB();
-
-	protected:
-		float _x, _y, _width, _height;
-		Action _action;
-		Mouse _button;
-		std::string_view _name;
-		std::function<bool()> _updater;
-		mutable bool _result = false;
-	};
-
-	struct KeyCombB
-	{
-	public:
-		KeyCombB();
-			
-		KeyCombB(const KeyCombInputOne& in);
-		KeyCombB(const KeyCombInputPoly& in);
-
-		virtual bool requires_change() const = 0;
-
-		bool is_pressed(Keys number, Action action, Mods mod) const;
-		
-		bool is_pressed(int number, int mod) const;
-		
-		bool is_pressed(GLFWwindow* window, int mods) const;
-
-		Keys get_key();
-
-		std::array<Keys, KEY_MAX> get_keys();
-
-		void set_updater(std::function<bool()> updater);
-
-		virtual bool execute() const = 0;
-
-		template <class ... Args>
-		void change_parameters(Args... args) // TO KNOW: This function throws an exception if the dynamic cast fails, which usually happens when the args list isn't matching the parameter of the specific function.
-		{
-			auto* derived = dynamic_cast<KeyComb<Args...>*>(this);
-			if (!derived)
-			{
-				throw std::runtime_error("Invalid dynamic cast in change_parameters");
-			}
-			derived->change_parameter(std::forward<Args>(args)...);
-		}
-
-		bool get_result() const;
-
-		virtual ~KeyCombB();
-
-	protected:
-		std::array<Keys, KEY_MAX> _charater;
-		std::optional<Mods> _mode;
-		Action _trigger;
-		std::function<bool()> _updater;
-		mutable bool _result = false;
-
-	};
-
-	//----------------------------------------------
-	// Templated Derived Classes for User Input
-
-	template<class ... Args>
-	struct AABButton : AABButtonB
-	{
-	public:
-		AABButton(const AABButtonInput& in, std::function<bool(Args...)> func, Args&&... args)
-			: AABButtonB(in), _func(std::move(func)), _args(std::forward<Args>(args)...) {
-		}
-		
-
-		AABButton(const AABButtonInput& in, std::function<bool(Args...)> func, std::tuple<Args...>&& args)
-			: AABButtonB(in), _func(std::move(func)), _args(std::forward<std::tuple<Args...>>(args)) {
-		}
-
-		bool execute() const override
-		{
-			if (_updater)
-			{
-				_updater();
-			}
-			_result = std::apply(_func, _args);
-			return _result;
-		}
-
-		void change_parameter(Args&&... args)
-		{
-			_args = std::tuple<Args...>(std::forward<Args>(args)...);
-		}
-
-		~AABButton() override = default;
+		void invoke_all(Args... args);
 
 	private:
-		std::function<bool(Args...)> _func;
-		std::tuple<Args...> _args;
+		std::vector<Callback> _callbacks;
 	};
 
-	template<class ... Args>
-	struct KeyComb : KeyCombB
+
+
+	struct InputEntryBase
+	{
+		virtual ~InputEntryBase() = default;
+		virtual bool matches(const CallbackInput& input) const = 0;
+	};
+
+
+	template<CallbackInputConcept InputStruct, typename... Args>
+	struct InputEntry : InputEntryBase
+	{
+		InputStruct input;
+		using Callback = std::function<void(Args...)>;
+		Callback callback;
+
+		InputEntry(InputStruct i, Callback cb);
+
+		bool matches(const CallbackInput& incoming) const override;
+	};
+
+
+
+	class InputManager
 	{
 	public:
-		KeyComb(const KeyCombInputOne& in, std::function<bool(Args...)> func, Args&&... args)
-			: KeyCombB(in), _func(std::move(func)), _args(std::forward<Args>(args)...)
-		{
-		}
 
-		KeyComb(const KeyCombInputOne& in, std::function<bool(Args...)> func, std::tuple<Args...>&& args)
-			: KeyCombB(in), _func(std::move(func)), _args(std::forward<std::tuple<Args...>>(args))
-		{
-		}
-
-		KeyComb(const KeyCombInputPoly& in, std::function<bool(Args...)> func, Args&&... args)
-			: KeyCombB(in), _func(std::move(func)), _args(std::forward<Args>(args)...)
-		{
-		}
-
-		KeyComb(const KeyCombInputPoly& in, std::function<bool(Args...)> func, std::tuple<Args...>&& args)
-			: KeyCombB(in), _func(std::move(func)), _args(std::forward<std::tuple<Args...>>(args))
-		{
-		}
+		template<CallbackInputConcept InputStruct, typename... Args>
+		void register_callback(const InputStruct& input, std::function<void(Args...)> cb);
 
 
-		std::function<bool(Args...)> get_func() const
-		{
-			return _func;
-		}
+		template<CallbackInputConcept InputStruct, typename... Args>
+		void emit(const InputStruct& input, Args... args);
 
-		bool execute() const override
-		{
-			if (_updater)
-			{
-				_updater();
-			}
-			_result = std::apply(_func, _args);
-			return _result;
-		}
 
-		bool requires_change() const override
-		{
-			if constexpr (std::tuple_size<std::tuple<Args...>>::value == 0)
-			{
-				return false;
-			}
-			return true;
-		}
-
-		void change_parameter(Args&&... args)
-		{
-			_args = std::tuple<Args...>(std::forward<Args>(args)...);
-		}
-
-		~KeyComb() override = default;
+		const std::vector<std::unique_ptr<InputEntryBase>>& list_entries(InputType type) const;
 
 	private:
-		std::function<bool(Args...)> _func;
-		std::tuple<Args...> _args;
-	};
-
-	template<class ... Args>
-	struct MouseButton : MouseButtonB
-	{
-	public:
-		MouseButton(const MouseMoveInput& in, std::function<bool(Args...)> func, Args&&... args)
-			: MouseButtonB(in), _func(std::move(func)), _args(std::forward<Args>(args)...) {
-		}
-
-		MouseButton(const MouseMoveInput& in, std::function<bool(Args...)> func, std::tuple<Args...>&& args)
-			: MouseButtonB(in), _func(std::move(func)), _args(std::forward<std::tuple<Args...>>(args)) { //recent add
-		}
-
-		bool execute() const override
-		{
-			if (_updater)
-			{
-				_updater();
-			}
-			_result = std::apply(_func, _args);
-			return _result;
-		}
-
-		bool requires_change() const override
-		{
-			if constexpr (std::tuple_size<std::tuple<Args...>>::value == 0)
-			{
-				return false;
-			}
-			return true;
-		}
-
-		void change_parameter(Args&&... args)
-		{
-			_args = std::tuple<Args...>(std::forward<Args>(args)...);
-		}
-
-		~MouseButton() override = default;
-
-	private:
-		std::function<bool(Args...)> _func;
-		std::tuple<Args...> _args;
+		std::unordered_map<InputType, std::vector<std::unique_ptr<InputEntryBase>>> _registry;
 	};
 
 
-	template<class ... Args>
-	struct MouseMovement : MouseMovementB
-	{
-	public:
-		MouseMovement(const MouseMoveInput& in, std::function<bool(Args...)> func, Args&&... args)
-			: MouseMovementB(in), _func(std::move(func)), _args(std::forward<Args>(args)...) {
-		}
-		MouseMovement(const MouseMoveInput& in, std::function<bool(Args...)> func, std::tuple<Args...>&& args)
-			: MouseMovementB(in), _func(std::move(func)), _args(std::forward<std::tuple<Args...>>(args)) { //recent add
-		}
-		bool execute() const override
-		{
-			if (_updater)
-			{
-				_updater();
-			}
-			_result = std::apply(_func, _args);
-			return _result;
-		}
 
-		void change_parameter(Args&&... args)
-		{
-			_args = std::tuple<Args...>(std::forward<Args>(args)...);
-		}
-		~MouseMovement() override = default;
-	private:
-		std::function<bool(Args...)> _func;
-		std::tuple<Args...> _args;
-	};
-}
+} // namespace tools
 
 
-//template <class ... Args>
-//std::function<bool(Args...)> get_funcs()
-//{
-//	auto* derived = dynamic_cast<KeyComb<Args...>*>(this);
-//	if (!derived)
-//	{
-//		throw std::runtime_error("Invalid dynamic cast in change_parameters");
-//	}
-//	return derived->get_func();
-//}
+#include "tools\include\window_input.inl"

@@ -1,3 +1,5 @@
+#if 0
+
 #pragma once
 
 
@@ -46,3 +48,4 @@ namespace tools
 	}
 
 }
+#endif
