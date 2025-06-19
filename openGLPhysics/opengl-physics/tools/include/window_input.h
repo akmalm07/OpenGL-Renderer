@@ -67,7 +67,7 @@ namespace tools {
 
 
 
-	class InputManager
+	class InputManager // FIX: ADD AN AUTOMATIC UPDATER INTO THIS SYSTEM SO THAT THE CALLBASCKS CAN BE EASILY MANAGED : SELF DUE TASK (No AI) FOR InputManager Class 
 	{
 	public:
 
