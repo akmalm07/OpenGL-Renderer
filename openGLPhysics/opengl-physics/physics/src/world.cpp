@@ -1,6 +1,7 @@
 #include "headers.h"
 
 #include "physics\include\world.h"
+#include "tools\include\key_usage_registry.h"
 
 namespace physics
 {

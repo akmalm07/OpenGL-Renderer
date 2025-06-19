@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <array>
 #include <string_view>
+#include <optional>
 #include <stdint.h>
 #include <functional>
 #include <filesystem>
@@ -12,3 +13,16 @@
 #include <glm/glm.hpp>
 
 #include "tools/include/types.h"
+
+#include <GLFW/glfw3.h>
+
+
+
+namespace tools
+{
+	template<typename T>
+	using view_ptr = const T* const;
+
+	template<typename T>
+	using view_ptr_non_const = T const*;
+}

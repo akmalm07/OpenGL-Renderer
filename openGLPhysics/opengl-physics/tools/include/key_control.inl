@@ -1,6 +1,6 @@
 #pragma once
 
-
+#if 0
 namespace tools
 {
 	template<class F, class ... Args>
@@ -136,3 +136,5 @@ namespace tools
 	}
 
 }
+
+#endif

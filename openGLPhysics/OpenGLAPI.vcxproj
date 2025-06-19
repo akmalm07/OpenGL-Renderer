@@ -101,6 +101,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="opengl-physics\tools\include\input_manager.h" />
+    <ClInclude Include="opengl-physics\physics\include\moveible.h" />
     <ClInclude Include="opengl-physics\tools\include\directional_light_bundle.h" />
     <ClInclude Include="global\config.h" />
     <ClInclude Include="global\headers.h" />
@@ -120,10 +122,6 @@
     <ClInclude Include="opengl-physics\physics\include\cube_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\meshes.h" />
     <ClInclude Include="opengl-physics\physics\include\moveible_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\moveible_rigid_cube_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\moveible_rigid_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\moveible_soft_cube_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\moveible_soft_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\rigid_cube_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\rigid_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\soft_cube_mesh.h" />
@@ -175,10 +173,6 @@
     <ClCompile Include="opengl-physics\physics\src\acceleration.cpp" />
     <ClCompile Include="opengl-physics\physics\src\cube_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\moveible_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\moveible_rigid_cube_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\moveible_rigid_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\moveible_soft_cube_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\moveible_soft_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\rigid_cube_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\rigid_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\soft_cube_mesh.cpp" />
@@ -209,6 +203,7 @@
     <ClCompile Include="TESTER.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="opengl-physics\tools\include\input_manager.inl" />
     <None Include="shaders\shader.frag" />
     <None Include="shaders\shader.geom" />
     <None Include="shaders\shader.vert" />

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "headers.h"
+#include "config.h"
 
 #include "tools\include\keys.h"
 #include "tools\include\window_input_bundles.h"
@@ -9,7 +9,9 @@
 
 namespace tools {
 
-
+	template<CallbackInputConcept InputStruct>
+	view_ptr<InputStruct> cast_to_type(view_ptr<CallbackInput> incoming);
+	
 	template<typename T> struct InputTypeResolver;
 
 	template<> struct InputTypeResolver<KeyCombInputOne> {
@@ -27,64 +29,55 @@ namespace tools {
 	template<> struct InputTypeResolver<MouseMoveInput> {
 		static constexpr InputType value = InputType::MouseMovement;
 	};
-
-
+	
 
 	template<typename... Args>
 	class CallbackDispatcher
 	{
 	public:
-		using Callback = std::function<void(Args...)>;
 
-		void add_callback(Callback cb);
+		void add_callback(std::function<void(Args...)> cb);
 
 		void invoke_all(Args... args);
 
 	private:
-		std::vector<Callback> _callbacks;
+		std::vector<std::function<void(Args...)>> _callbacks;
 	};
 
 
+	struct InputBase
+	{
+		virtual bool matches(const CallbackInput& incoming) = 0;
+		virtual ~InputBase() = default;
+	};
 
-	struct InputEntryBase
+	template<typename Child>
+	struct InputEntryBase : InputBase
+		// This is a CRTP base class for input entries, allowing for static polymorphism.
+		// It ensures that the derived class implements the matches_impl method.
 	{
 		virtual ~InputEntryBase() = default;
-		virtual bool matches(const CallbackInput& input) const = 0;
+		virtual bool matches_impl(const CallbackInput& input) const = 0;
+
+		bool matches(const CallbackInput& incoming) const final
+		{
+			return static_cast<const Child*>(this)->matches_impl(incoming);
+		}
 	};
 
 
 	template<CallbackInputConcept InputStruct, typename... Args>
-	struct InputEntry : InputEntryBase
-	{
-		InputStruct input;
-		using Callback = std::function<void(Args...)>;
-		Callback callback;
-
-		InputEntry(InputStruct i, Callback cb);
-
-		bool matches(const CallbackInput& incoming) const override;
-	};
-
-
-
-	class InputManager // FIX: ADD AN AUTOMATIC UPDATER INTO THIS SYSTEM SO THAT THE CALLBASCKS CAN BE EASILY MANAGED : SELF DUE TASK (No AI) FOR InputManager Class 
+	struct InputEntry : InputEntryBase<InputEntry<InputStruct, Args...>>
 	{
 	public:
+		InputStruct input;
+		std::function<void(Args...)> callback;
+		std::optional<std::function<void()>> updater;
 
-		template<CallbackInputConcept InputStruct, typename... Args>
-		void register_callback(const InputStruct& input, std::function<void(Args...)> cb);
+		InputEntry(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater = std::nullopt);
 
-
-		template<CallbackInputConcept InputStruct, typename... Args>
-		void emit(const InputStruct& input, Args... args);
-
-
-		const std::vector<std::unique_ptr<InputEntryBase>>& list_entries(InputType type) const;
-
-	private:
-		std::unordered_map<InputType, std::vector<std::unique_ptr<InputEntryBase>>> _registry;
+		bool matches_impl(const CallbackInput& incoming) const override;
 	};
-
 
 
 } // namespace tools

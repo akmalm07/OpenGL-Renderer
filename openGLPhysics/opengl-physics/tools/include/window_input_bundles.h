@@ -2,12 +2,13 @@
 
 #include "tools\include\keys.h"
 
-#include <mutex>
-
 
 namespace tools
 {
-    struct CallbackInput { virtual ~CallbackInput() = default; };
+    struct CallbackInput {
+		virtual InputType get_type() const = 0;
+        virtual ~CallbackInput() = default; 
+    };
 
     struct KeyCombInputOne : CallbackInput
     {
@@ -22,16 +23,26 @@ namespace tools
         KeyCombInputOne(Keys key, Action action, Mods mod)
             : number(key), action(action), mod(mod) {
         }
+
+		InputType get_type() const override 
+        {
+			return InputType::Key;
+		}
     };
 
     struct KeyCombInputPoly : CallbackInput
     {
-        std::array<Keys, KEY_MAX> number;
+        std::array<Keys, KEY_MAX> numbers;
         Action action;
         Mods mod = Mods::None;
 
         KeyCombInputPoly(std::array<Keys, KEY_MAX> key, Action action)
-            : number(key), action(action) {
+            : numbers(key), action(action) {
+        }
+
+        InputType get_type() const override
+        {
+            return InputType::KeyPoly;
         }
     };
 
@@ -42,6 +53,11 @@ namespace tools
 		MouseButtonInput(Mouse button, Action action)
 			: button(button), action(action) {
 		}
+
+        InputType get_type() const override
+        {
+            return InputType::MouseButton;
+        }
     };
 
     struct AABButtonInput : CallbackInput
@@ -54,6 +70,11 @@ namespace tools
 		AABButtonInput(float x, float y, float w, float h, Action action, Mouse button, std::string_view name)
 			: cordX(x), cordY(y), width(w), height(h), action(action), button(button), name(name) {
 		}
+
+        InputType get_type() const override
+        {
+            return InputType::AABButton;
+        }
     };
 
     struct MouseMoveInput : CallbackInput
@@ -63,6 +84,11 @@ namespace tools
 
 		MouseMoveInput(MouseChange change, Mouse button = Mouse::None)
 			: change(change), button(button) {
+		}
+
+		InputType get_type() const override
+		{
+			return InputType::MouseMovement;
 		}
     };
 

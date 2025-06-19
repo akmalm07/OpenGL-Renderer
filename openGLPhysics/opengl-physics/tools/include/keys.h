@@ -114,8 +114,9 @@ namespace tools {
 		MouseButton = 1 << 0,
 		AABButton = 1 << 1,
 		Key = 1 << 2,
-		MouseMovement = 1 << 3,
-		Count = 4
+		KeyPoly = 1 << 3,
+		MouseMovement = 1 << 4,
+		Count = 5
 	};
 
 	enum class Direction

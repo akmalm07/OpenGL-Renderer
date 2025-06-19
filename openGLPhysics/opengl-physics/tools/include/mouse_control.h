@@ -1,5 +1,7 @@
 #pragma once
 
+#if 0
+
 #include "config.h"
 #include "tools\include\keys.h"
 #include "tools\include\window_input.h"
@@ -73,3 +75,6 @@ namespace tools
 	}
 
 }
+
+
+#endif

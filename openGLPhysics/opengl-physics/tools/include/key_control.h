@@ -1,5 +1,5 @@
 #pragma once
-
+#if 0
 
 #include "config.h"
 
@@ -95,3 +95,5 @@ namespace tools
 
 #include "key_control.inl"
 
+
+#endif

@@ -45,6 +45,7 @@ namespace tools
 		void remove_key_poly(const std::array<Keys, KEY_MAX>& key, std::optional<Mods> mod = std::nullopt);
 
 	private:
+
 		KeyUsageRegistry();
 
 		std::vector<std::pair<Keys, Mods>> _keys;

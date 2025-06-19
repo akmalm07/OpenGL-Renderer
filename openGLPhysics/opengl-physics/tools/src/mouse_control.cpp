@@ -1,4 +1,7 @@
 #include "headers.h"
+
+#if 0
+
 #include "tools\include\mouse_control.h"
 
 
@@ -73,3 +76,5 @@ namespace tools
 		return _mouseMove;
 	}
 }
+
+#endif
