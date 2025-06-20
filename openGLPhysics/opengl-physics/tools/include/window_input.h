@@ -18,7 +18,7 @@ namespace tools {
 		static constexpr InputType value = InputType::Key;
 	};
 	template<> struct InputTypeResolver<KeyCombInputPoly> {
-		static constexpr InputType value = InputType::Key;
+		static constexpr InputType value = InputType::KeyPoly;
 	};
 	template<> struct InputTypeResolver<MouseButtonInput> {
 		static constexpr InputType value = InputType::MouseButton;
@@ -75,9 +75,12 @@ namespace tools {
 		std::optional<std::function<void()>> updater;
 
 		InputEntry(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater = std::nullopt);
+		
+		void emit_and_update() const;
 
 		bool matches_impl(const CallbackInput& incoming) const override;
 	};
+
 
 
 } // namespace tools

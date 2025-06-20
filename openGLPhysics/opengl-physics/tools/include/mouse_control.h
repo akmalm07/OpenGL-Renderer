@@ -54,11 +54,7 @@ namespace tools
 
 		bool _isFirstClick = false;
 
-		double _mouseChangeX = 0.0;
-		double _mouseChangeY = 0.0;
 
-		double _mouseCurrentX = 0.0;
-		double _mouseCurrentY = 0.0;
 
 		bool _mouseFirstMoved = true;
 

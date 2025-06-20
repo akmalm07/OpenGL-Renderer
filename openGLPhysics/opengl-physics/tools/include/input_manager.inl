@@ -52,22 +52,45 @@ namespace tools
 	}
 
 	template<CallbackInputConcept InputStruct>
-	inline void InputManager::auto_update(const InputStruct& input)
+	inline void InputManager::update_and_emit(const InputStruct& input)
 	{
 		constexpr InputType type = InputTypeResolver<InputStruct>::value;
 		auto it = _registry.find(type);
 		if (it == _registry.end()) return;
 		for (auto& entry : it->second)
 		{
-			auto* typed = dynamic_cast<InputEntry<InputStruct>*>(entry.get());
+			view_ptr<InputEntry<InputStruct>> typed = static_cast<view_ptr<InputEntry<InputStruct>>>(entry.get());
 			if (typed && typed->matches(input))
 			{
-				if (typed->updater)
+				if (typed->updater.has_value())
 				{
 					typed->updater.value()();
 				}
+				typed->callback();
+
 			}
 		}
+	}
+
+	template<CallbackInputConcept InputStruct>
+	inline std::vector<view_ptr<InputEntry<InputStruct>>> InputManager::list_entries_values() const
+	{
+		auto type = InputTypeResolver<InputStruct>::value;
+		auto it = _registry.find(type);
+		if (it != _registry.end())
+		{
+			std::vector<view_ptr<InputEntry<InputStruct>>> result;
+			for (const auto& entry : it->second)
+			{
+				view_ptr<InputEntry<InputStruct>> typed = static_cast<view_ptr<InputEntry<InputStruct>>>(entry.get());
+				if (typed)
+				{
+					result.push_back(typed);
+				}
+			}
+			return result;
+		}
+		return {};
 	}
 
 

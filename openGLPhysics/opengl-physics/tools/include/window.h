@@ -99,11 +99,11 @@ namespace tools {
 		void update_debug(); // FIX: add functionality so that it can automate the updating process FOR DEBUG of the window, like updating the input manager, etc.
 
 
-		template<CallbackInputConcept InputStruct, typename... Args>
-		void register_callback(const InputStruct& input, std::function<void(Args...)>& cb);
+		template<CallbackInputConcept InputStruct>
+		void register_callback(const InputStruct& input, const std::function<void()>& cb);
 
-		template<typename InputStruct, typename... Args>
-		void emit(const InputStruct& input, Args... args);
+		template<CallbackInputConcept InputStruct>
+		void emit(const InputStruct& input);
 
 		void reset_delta_time();
 
@@ -141,6 +141,13 @@ namespace tools {
 
 		bool _updated = false; // develop this to know if the window has been updated or not, used in the main loop to check for updates.
 
+		std::array<bool, 1024> _keys{}; 
+
+		double _mouseChangeX = 0.0;
+		double _mouseChangeY = 0.0;
+
+		double _mouseCurrentX = 0.0;
+		double _mouseCurrentY = 0.0;
 
 	private:
 		void HandleKeys(int key, int code, int action, int mode);
@@ -161,6 +168,24 @@ namespace vkType
 	using Window = tools::Window;
 }
 
+
+
+
+namespace tools
+{
+	template<CallbackInputConcept InputStruct>
+	inline void Window::register_callback(const InputStruct& input, const std::function<void()>& cb)
+	{
+		_inputManager.register_callback<InputStruct>(input, std::move(cb));
+	}
+
+
+	template<CallbackInputConcept InputStruct>
+	inline void Window::emit(const InputStruct& input)
+	{
+		_inputManager.update_and_emit<InputStruct>(input);
+	}
+}
 
 
 

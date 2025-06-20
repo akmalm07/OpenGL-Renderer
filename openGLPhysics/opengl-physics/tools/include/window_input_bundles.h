@@ -32,11 +32,11 @@ namespace tools
 
     struct KeyCombInputPoly : CallbackInput
     {
-        std::array<Keys, KEY_MAX> numbers;
+        std::array<Keys, 2> numbers;
         Action action;
         Mods mod = Mods::None;
 
-        KeyCombInputPoly(std::array<Keys, KEY_MAX> key, Action action)
+        KeyCombInputPoly(std::array<Keys, 2> key, Action action)
             : numbers(key), action(action) {
         }
 
@@ -75,6 +75,11 @@ namespace tools
         {
             return InputType::AABButton;
         }
+
+		bool is_touching(float x, float y, Action action, Mouse button) const
+		{
+			return (x >= cordX && x <= cordX + width && y >= cordY && y <= cordY + height) && (action == this->action) && (button == this->button);
+		}
     };
 
     struct MouseMoveInput : CallbackInput
@@ -95,6 +100,7 @@ namespace tools
 
 	template<typename T>
     concept CallbackInputConcept = std::is_base_of_v<CallbackInput, T>;
+    
 
 
 }

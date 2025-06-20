@@ -48,8 +48,7 @@ namespace tools {
 
 	Window::Window(Window&& other) noexcept
 	{
-		_AABButtons = std::move(other._AABButtons); 
-		_keyCombs = std::move(other._keyCombs);
+		_inputManager = std::move(other._inputManager);
 		_mainWindow = other._mainWindow; 
 		_width = other._width;
 		_height = other._height;
@@ -65,9 +64,6 @@ namespace tools {
 		_name = std::move(other._name);
 		_updated = other._updated; 
 
-		_mouseMove = other._mouseMove;  
-
-		other._mouseMove = nullptr;
 		other._mainWindow = nullptr; 
 		other._width = 0.0f; 
 		other._height = 0.0f;
@@ -86,8 +82,7 @@ namespace tools {
 	{
 		if (this != nullptr)
 		{
-			_AABButtons = std::move(other._AABButtons);
-			_keyCombs = std::move(other._keyCombs);
+			_inputManager = std::move(other._inputManager);
 			_mainWindow = other._mainWindow;
 			_width = other._width;
 			_height = other._height;
@@ -103,9 +98,7 @@ namespace tools {
 			_name = std::move(other._name);
 			_updated = other._updated;
 
-			_mouseMove = other._mouseMove;
 
-			other._mouseMove = nullptr;
 			other._mainWindow = nullptr;
 			other._width = 0.0f;
 			other._height = 0.0f;
@@ -146,30 +139,16 @@ namespace tools {
 	}
 
 
-	template<CallbackInputConcept InputStruct, typename ...Args>
-	void Window::register_callback(const InputStruct& input, std::function<void(Args...)>& cb)
-	{
-		_inputManager.register_callback<InputStruct, Args...>(input, std::move(cb));
-	}
-
-
-	template<typename InputStruct, typename ...Args>
-	void Window::emit(const InputStruct& input, Args ...args)
-	{
-		_inputManager.emit<InputStruct, Args...>(input, std::forward<Args>(args)...);
-	}
-
 
 	void Window::set_escape_button(Keys key, std::optional<Mods> mod)
 	{
-		AddKeyComb(
-			false,
-			{ key, Action::Press, mod.value_or(Mods::None) },
-			[this]() -> bool
+		std::function<void()> f = [this]()
 			{
 				glfwSetWindowShouldClose(_mainWindow, GLFW_TRUE);
-				return true;
-			}
+			};
+		register_callback<KeyCombInputOne>(
+			KeyCombInputOne(key, Action::Press, mod.value_or(Mods::None)),
+			std::move(f)
 		);
 	}
 
@@ -643,22 +622,26 @@ namespace tools {
 
 	void Window::HandleKeys(int key, int code, int action, int mode)
 	{
+		Mods mod = Mods::None;
+		if (mode == 0)
+		{
+			mod = MODS(mode);
+		}
+
+		auto& keys = _inputManager.list_entries(InputType::Key);
 
 		switch (action)
 		{
 		case GLFW_PRESS:
 		{
-
-			auto& act = _keyCombs[SIZET(Action::Press)];
-
-			for (const auto& [ky, val] : act)
+			for (const auto& ky : keys)
 			{
-				if (val->is_pressed(INT(key), INT(mode)))
+				if (ky->matches(KeyCombInputOne(KEYS(key), Action::Press, mod)))
 				{
 					_updated = true;
 					_keys[key] = true;
 
-					val->execute();
+					_inputManager.update_and_emit(KeyCombInputOne(KEYS(key), Action::Press, mod));
 				}
 			}
 			
@@ -666,20 +649,14 @@ namespace tools {
 		break;
 		case GLFW_RELEASE:
 		{
-			auto& act = _keyCombs[SIZET(Action::Release)];
-
-			if (_keyCombs.empty())
+			for (const auto& ky : keys)
 			{
-				return;
-			}
-			
-			_keys[key] = false;
-			
-			for (const auto& [ky, val] : act)
-			{
-				if (val->is_pressed(INT(key), INT(mode)))
+				if (ky->matches(KeyCombInputOne(KEYS(key), Action::Release, mod)))
 				{
-					val->execute();
+					_updated = false;
+					_keys[key] = false;
+
+					_inputManager.update_and_emit(KeyCombInputOne(KEYS(key), Action::Release, mod));
 				}
 			}
 			
@@ -687,15 +664,14 @@ namespace tools {
 		break;
 		case GLFW_REPEAT:
 		{
-			auto& act = _keyCombs[SIZET(Action::Repeat)];
-
-			for (const auto& [ky, val] : act)
+			for (const auto& ky : keys)
 			{
-				if (val->is_pressed(INT(key), INT(mode)))
+				if (ky->matches(KeyCombInputOne(KEYS(key), Action::Repeat, mod)))
 				{
-					_keys[key] = true;
+					_updated = false;
+					_keys[key] = false;
 
-					val->execute();
+					_inputManager.update_and_emit(KeyCombInputOne(KEYS(key), Action::Repeat, mod));
 				}
 			}
 		
@@ -703,18 +679,26 @@ namespace tools {
 		break;
 		}//switch statement
 
+		auto keyPoly = _inputManager.list_entries_values<KeyCombInputPoly>();
 
-		//Polykeys
-		if (_keyCombsPoly.empty())
+		if (keyPoly.empty())
 		{
 			return;
 		}
 
-		for (const auto& [ky, val] : _keyCombsPoly)
+		for (const auto& ky : keyPoly)
 		{
-			if (val->is_pressed(_mainWindow, mode))
+			bool success = true;
+			for (const auto& number : ky->input.numbers)
 			{
-				val->execute();
+				if (!_keys[static_cast<int>(number)])
+				{
+					success = false;
+				}
+				if (success)
+				{
+					ky->emit_and_update();
+				}
 			}
 		}
 		
@@ -731,27 +715,40 @@ namespace tools {
 		_mouseCurrentX = posX;
 		_mouseCurrentY = posY;
 		
-		if (_mouseMove)
+		auto mice = _inputManager.list_entries_values<MouseMoveInput>();
+		if (!mice.empty())
 		{
-			_mouseMove->execute();
+			for (const auto& mouse : mice)
+			{
+				mouse->emit_and_update();
+			}
 		}
-
 	}
 
 	void Window::HandleMouseButtons(int mouseButton, int action, int mods)
 	{
+
+		auto& keys = _inputManager.list_entries(InputType::MouseButton);
+		auto buttons = _inputManager.list_entries_values<AABButtonInput>();
+
 		switch (action)
 		{
 		case GLFW_PRESS: {
-			auto& act = _AABButtons[SIZET(Action::Press)];
 			Mouse mouse = (mouseButton == GLFW_MOUSE_BUTTON_LEFT ? Mouse::Left : Mouse::Right);
 
-
-			for (const auto& [key, val] : act)
+			for (const auto& ky : keys)
 			{
-				if (val->is_clicked(_mouseCurrentX, _mouseCurrentY, Action::Press, mouse))
+				if (ky->matches(MouseButtonInput(mouse, Action::Press)))
 				{
-					val->execute();
+					_inputManager.update_and_emit(MouseButtonInput(mouse, Action::Press));
+				}
+			}
+
+			for (const auto& ky : buttons)
+			{
+				if (ky->input.is_touching(_mouseCurrentX, _mouseCurrentY, Action::Press, mouse))
+				{
+					ky->emit_and_update();
 				}
 			}
 
@@ -761,36 +758,48 @@ namespace tools {
 		case GLFW_RELEASE:
 		{
 
-			auto& act = _AABButtons[SIZET(Action::Release)];
 			Mouse mouse = (mouseButton == GLFW_MOUSE_BUTTON_LEFT ? Mouse::Left : Mouse::Right);
 
-
-			for (const auto& [key, val] : act)
+			for (const auto& ky : keys)
 			{
-				if (val->is_clicked(_mouseCurrentX, _mouseCurrentY, Action::Release, mouse))
+				if (ky->matches(MouseButtonInput(mouse, Action::Release)))
 				{
-					val->execute();
+					_inputManager.update_and_emit(MouseButtonInput(mouse, Action::Release));
 				}
 			}
-			//_mouseButtons[SIZET(mouse)]->setPressed(false); 
+
+			for (const auto& ky : buttons)
+			{
+				if (ky->input.is_touching(_mouseCurrentX, _mouseCurrentY, Action::Release, mouse))
+				{
+					ky->emit_and_update();
+				}
+			}
+
 			break;
 		}
 
 		case GLFW_REPEAT:
 		{
 
-			auto& act = _AABButtons[SIZET(Action::Repeat)];
 			Mouse mouse = (mouseButton == GLFW_MOUSE_BUTTON_LEFT ? Mouse::Left : Mouse::Right);
 
-
-			for (const auto& [key, val] : act)
+			for (const auto& ky : keys)
 			{
-				if (val->is_clicked(_mouseCurrentX, _mouseCurrentY, Action::Repeat, mouse))
+				if (ky->matches(MouseButtonInput(mouse, Action::Repeat)))
 				{
-					val->execute();
+					_inputManager.update_and_emit(MouseButtonInput(mouse, Action::Repeat));
 				}
 			}
-			//_mouseButtons[SIZET(mouse)]->setPressed(false); 
+
+			for (const auto& ky : buttons)
+			{
+				if (ky->input.is_touching(_mouseCurrentX, _mouseCurrentY, Action::Repeat, mouse))
+				{
+					ky->emit_and_update();
+				}
+			}
+
 			break;
 		}
 		}//switch statement

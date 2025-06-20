@@ -13,7 +13,7 @@ namespace tools
 	{
 	public:
 
-		template<CallbackInputConcept InputStruct, typename... Args>
+		template<CallbackInputConcept InputStruct, typename... Args> // must provide the updater if intended to use callbacks for window, otherwise, optional
 		void register_callback(const InputStruct& input, std::function<void(Args...)> cb);
 
 
@@ -24,13 +24,16 @@ namespace tools
 		void emit(const InputStruct& input, Args... args);
 
 		template<CallbackInputConcept InputStruct>
-		void auto_update(const InputStruct& input);
-
+		void update_and_emit(const InputStruct& input);
 
 		const std::vector<std::unique_ptr<InputBase>>& list_entries(InputType type) const;
+		
+		template<CallbackInputConcept InputStruct>
+		std::vector<view_ptr<InputEntry<InputStruct>>> list_entries_values() const; // this returns only to the callbacks that have no parameters
 
 	private:
 		std::unordered_map<InputType, std::vector<std::unique_ptr<InputBase>>> _registry;
+		// TEST: wether having sub sections is faster then not
 	};
 
 }

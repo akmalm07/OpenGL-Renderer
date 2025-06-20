@@ -54,6 +54,16 @@ namespace tools
 	}
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
+	inline void InputEntry<InputStruct, Args...>::emit_and_update() const
+	{
+		if (updater) 
+		{
+			updater.value()();
+		}
+		callback();
+	}
+
+	template<CallbackInputConcept InputStruct, typename ...Args>
 	bool InputEntry<InputStruct, Args...>::matches_impl(const CallbackInput& incoming) const
 	{
 		view_ptr<InputStruct> casted = cast_to_type<InputStruct>(incoming);

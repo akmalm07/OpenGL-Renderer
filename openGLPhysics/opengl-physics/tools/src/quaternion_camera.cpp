@@ -288,7 +288,7 @@ namespace tools
 			};
 
 
-		window.AddMouseChange(
+		window.register_callback(
 			{ MouseChange::MoveX | MouseChange::MoveY, Mouse::None },
 			mouseFuncs,
 			0.0, 0.0f, 0.0f

@@ -164,7 +164,7 @@ namespace physics
 
 		_camera.set_commands_to_window(window);
 
-		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
+		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use(); //Go on from here~
 
 		for (const auto& [key, mod] : keys)
 		{
