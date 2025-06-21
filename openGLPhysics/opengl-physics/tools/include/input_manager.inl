@@ -5,7 +5,7 @@
 namespace tools
 {
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	void InputManager::register_callback(const InputStruct& input, std::function<void(Args...)> cb, const std::string& name, std::optional<std::function<void()>> updater)
+	void InputManager::register_callback(const InputStruct& input, std::function<void(Args...)> cb, const std::string& name, std::optional<std::function<void(std::function<void(Args...)>)>> updater)
 	{
 		auto& properList = get_proper_list_ref<InputStruct>();
 	
@@ -16,8 +16,21 @@ namespace tools
 
 		properList.emplace(
 			name,
-			std::make_unique<InputEntryConcrete<InputStruct, Args...>>(input, std::move(cb), std::move(updater))
+			std::make_unique<InputEntryConcrete<InputStruct, Args...>>(input, std::move(cb), name, std::move(updater))
 		);
+
+
+		if constexpr (sizeof...(Args) == 0)
+		{
+			get_proper_window_list_ref<InputStruct>().emplace_back(properList[name].get());
+		}
+		else
+		{
+			if (updater.has_value())
+			{
+				get_proper_window_list_ref<InputStruct>().emplace_back(properList[name].get());
+			}
+		}
 	}
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
@@ -99,8 +112,21 @@ namespace tools
 		auto it = properList.find(name);
 		if (it != properList.end())
 		{
+			const auto& ptr = get_proper_window_list_ref<InputStruct>();
+			ptr.erase(
+				std::remove_if(ptr.begin(), ptr.end(),
+					[&name](const view_ptr<InputEntry<InputStruct>>& entry) 
+					{
+
+						return entry->get_name() == name; 
+					}),
+				ptr.end()
+			);
 			properList.erase(it);
 		}
+
+
+
 	}
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
@@ -113,6 +139,17 @@ namespace tools
 			view_ptr<InputEntryConcrete<InputStruct, Args...>> typed = static_cast<view_ptr<InputEntryConcrete<InputStruct, Args...>>>(it->second.get());
 			if (typed && typed->matches(input))
 			{
+				const auto& ptr = get_proper_window_list_ref<InputStruct>();
+				ptr.erase(
+					std::remove_if(ptr.begin(), ptr.end(),
+						[](const view_ptr<InputEntry<InputStruct>>& entry)
+						{
+
+							return entry->get_name() == it->first;
+						}),
+					ptr.end()
+				);
+
 				properList.erase(it);
 			}
 		}
@@ -143,6 +180,13 @@ namespace tools
 				typed->emit_and_update();
 			}
 		}
+	}
+
+	template<CallbackInputConcept InputStruct>
+	inline const std::vector<view_ptr_non_const<InputEntry<InputStruct>>> InputManager::list_entires_for_window_const()
+	{
+		const auto& properList = get_proper_window_list_ref<InputStruct>();
+		return properList;
 	}
 
 	template<CallbackInputConcept InputStruct>
@@ -186,6 +230,42 @@ namespace tools
 			return _mouseMoveInputs;
 		else
 			throw std::runtime_error("Unknown input type");
+	}
+
+
+	template<CallbackInputConcept InputStruct>
+	inline std::vector<view_ptr_non_const<InputEntry<InputStruct>>>& InputManager::get_proper_window_list_ref()
+	{
+		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
+			return _keyInputsWindow;
+		else if constexpr (std::same_as<KeyCombInputPoly, InputStruct>)
+			return _keyInputsPolyWindow;
+		else if constexpr (std::same_as<MouseButtonInput, InputStruct>)
+			return _mouseButtonInputsWindow;
+		else if constexpr (std::same_as<AABButtonInput, InputStruct>)
+			return _AABBInputsWindow;
+		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
+			return _mouseMoveInputsWindow;
+		else
+			throw std::runtime_error("Unknown input type");
+	}
+
+	template<CallbackInputConcept InputStruct>
+	inline const std::vector<view_ptr_non_const<InputEntry<InputStruct>>>& InputManager::get_proper_window_list_ref() const
+	{
+		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
+			return _keyInputsWindow;
+		else if constexpr (std::same_as<KeyCombInputPoly, InputStruct>)
+			return _keyInputsPolyWindow;
+		else if constexpr (std::same_as<MouseButtonInput, InputStruct>)
+			return _mouseButtonInputsWindow;
+		else if constexpr (std::same_as<AABButtonInput, InputStruct>)
+			return _AABBInputsWindow;
+		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
+			return _mouseMoveInputsWindow;
+		else
+			throw std::runtime_error("Unknown input type");
+
 	}
 	
 

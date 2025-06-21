@@ -14,7 +14,7 @@ namespace tools
 	public:
 
 		template<CallbackInputConcept InputStruct, typename... Args> // must provide the updater if intended to use callbacks for window, otherwise, optional
-		void register_callback(const InputStruct& input, std::function<void(Args...)> cb, const std::string& name, std::optional<std::function<void()>> updater = std::nullopt);
+		void register_callback(const InputStruct& input, std::function<void(Args...)> cb, const std::string& name, std::optional<std::function<void(std::function<void(Args...)>)>> updater = std::nullopt);
 
 		template<CallbackInputConcept InputStruct, typename... Args>
 		InputStruct& get_input(const InputStruct& input, Args... args);
@@ -45,7 +45,9 @@ namespace tools
 		void update_and_emit(const InputStruct& input);
 
 		//const std::vector<std::unique_ptr<InputBase>>& list_entries_const_ref(InputType type) const;
-		
+		template<CallbackInputConcept InputStruct>
+		const std::vector<view_ptr_non_const<InputEntry<InputStruct>>> list_entires_for_window_const(); 
+
 		template<CallbackInputConcept InputStruct>
 		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& list_entries_const_ref() const; // this returns only to the callbacks that have no parameters
 
@@ -57,15 +59,29 @@ namespace tools
 		template<CallbackInputConcept InputStruct>
 		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& get_proper_list_ref() const;
 
+		template<CallbackInputConcept InputStruct>
+		std::vector<view_ptr_non_const<InputEntry<InputStruct>>>& get_proper_window_list_ref();
+
+		template<CallbackInputConcept InputStruct>
+		const std::vector < view_ptr_non_const<InputEntry<InputStruct>>>& get_proper_window_list_ref() const;
+
 	private:
 		//std::unordered_map<InputType, std::vector<std::unique_ptr<InputBase>>> _registry;// ADD Naming system as well here
 		
 		std::unordered_map<std::string, std::unique_ptr<InputEntry<KeyCombInputOne>>> _keyInputs;
-		std::unordered_map<std::string, std::unique_ptr<InputEntry<KeyCombInputPoly>>> _keyInputsPoly;
-		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseButtonInput>>> _mouseButtonInputs;
-		std::unordered_map<std::string, std::unique_ptr<InputEntry<AABButtonInput>>> _AABBInputs;
-		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseMoveInput>>> _mouseMoveInputs;
+		std::vector<view_ptr_non_const<InputEntry<KeyCombInputOne>>> _keyInputsWindow; // This is to maintian cach friendliness
 
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<KeyCombInputPoly>>> _keyInputsPoly;
+		std::vector <view_ptr_non_const<InputEntry<KeyCombInputPoly>>> _keyInputsPolyWindow;
+
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseButtonInput>>> _mouseButtonInputs;
+		std::vector<view_ptr_non_const<InputEntry<MouseButtonInput>>> _mouseButtonInputsWindow;
+
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<AABButtonInput>>> _AABBInputs;
+		std::vector<view_ptr_non_const<InputEntry<AABButtonInput>>> _AABBInputsWindow;
+
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseMoveInput>>> _mouseMoveInputs;
+		std::vector<view_ptr_non_const<InputEntry<MouseMoveInput>>> _mouseMoveInputsWindow;
 
 
 		// Better Yet, make different constainers for all the different inputs

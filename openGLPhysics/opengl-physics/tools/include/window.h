@@ -100,7 +100,7 @@ namespace tools {
 
 
 		template<CallbackInputConcept InputStruct, typename... Args>
-		void register_callback(const InputStruct& input, std::function<void(Args...)>& cb, std::function<void()>& updater, const std::string& name);
+		void register_callback(const InputStruct& input, std::function<void(Args...)>& cb, std::function<void(std::function<void(Args...)>)>& updater, const std::string& name);
 
 		template<CallbackInputConcept InputStruct>
 		void register_callback(const InputStruct& input, std::function<void()>& cb, const std::string& name);
@@ -180,7 +180,7 @@ namespace vkType
 namespace tools
 {
 	template<CallbackInputConcept InputStruct, typename... Args>
-	inline void Window::register_callback(const InputStruct& input, std::function<void(Args...)>& cb, std::function<void()>& updater, const std::string& name)
+	inline void Window::register_callback(const InputStruct& input, std::function<void(Args...)>& cb, std::function<void(std::function<void(Args...)>)>& updater, const std::string& name)
 	{
 		_inputManager.register_callback<InputStruct, Args...>(input, std::move(cb), name, std::move(updater)); // ERR: Check
 	}

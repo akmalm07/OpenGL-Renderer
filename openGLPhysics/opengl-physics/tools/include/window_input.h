@@ -48,6 +48,9 @@ namespace tools {
 	{
 	public:
 		virtual bool matches(const CallbackInput& incoming) const = 0;
+
+		virtual std::string_view get_name() const = 0;
+
 		virtual ~InputBase() = default;
 	};
 
@@ -90,9 +93,9 @@ namespace tools {
 	{
 	public:
 		InputStruct input;
-		std::optional<std::function<void()>> updater;
+		std::string name;
 
-		InputEntry(InputStruct i, std::optional<std::function<void()>> updater = std::nullopt);
+		InputEntry(InputStruct i, std::string_view name);
 
 		virtual void emit_and_update() const = 0;
 
@@ -133,13 +136,16 @@ namespace tools {
 	public:
 
 		using InputEntry<InputStruct>::input;
-		using InputEntry<InputStruct>::updater;
+		using InputEntry<InputStruct>::name;
 
 		std::function<void(Args...)> callback;
+		std::optional<std::function<void(std::function<void(Args...)>)>> updater;
 
-		InputEntryConcrete(InputStruct i, std::function<void(Args...)> cb, std::optional<std::function<void()>> updater = std::nullopt);
+		InputEntryConcrete(InputStruct i, std::function<void(Args...)> cb, std::string_view name, std::optional<std::function<void(std::function<void(Args...)>)>> updater = std::nullopt);
 		
 		void emit_and_update() const override;
+
+		std::string_view get_name() const override;
 
 		void emit(Args... args) const
 		{

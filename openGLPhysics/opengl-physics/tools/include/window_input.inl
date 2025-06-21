@@ -42,8 +42,8 @@ namespace tools
 
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	inline InputEntryConcrete<InputStruct, Args...>::InputEntryConcrete(InputStruct i, std::function<void(Args...)> cb, std::optional<std::function<void()>> updater)
-		: InputEntry<InputStruct>(std::move(i), std::move(updater)), callback(std::move(cb))
+	inline InputEntryConcrete<InputStruct, Args...>::InputEntryConcrete(InputStruct i, std::function<void(Args...)> cb, std::string_view name, std::optional<std::function<void(std::function<void(Args...)>)>> updater)
+		: InputEntry<InputStruct>(std::move(i), name), updater(std::move(updater)), callback(std::move(cb))
 	{
 	}
 
@@ -52,15 +52,20 @@ namespace tools
 	{
 		if (updater)
 		{
-			updater.value()();
+			updater.value()(callback);
 		}
-		callback();
+	}
+
+	template<CallbackInputConcept InputStruct, typename ...Args>
+	inline std::string_view InputEntryConcrete<InputStruct, Args...>::get_name() const
+	{
+		return name;
 	}
 
 
 	template<CallbackInputConcept InputStruct>
-	inline InputEntry<InputStruct>::InputEntry(InputStruct i, std::optional<std::function<void()>> updater)
-		: input(std::move(i)), updater(std::move(updater))
+	inline InputEntry<InputStruct>::InputEntry(InputStruct i, std::string_view name)
+		: input(std::move(i)), name(name)
 	{
 	}
 

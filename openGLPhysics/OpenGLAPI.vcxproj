@@ -144,7 +144,6 @@
     <ClInclude Include="opengl-physics\tools\include\memory_pool_container.h" />
     <ClInclude Include="opengl-physics\tools\include\mouse_control.h" />
     <ClInclude Include="opengl-physics\tools\include\scene.h" />
-    <ClInclude Include="opengl-physics\tools\include\scope_exiter.h" />
     <ClInclude Include="opengl-physics\tools\include\stride.h" />
     <ClInclude Include="opengl-physics\tools\include\thread.h" />
     <ClInclude Include="opengl-physics\tools\include\timer.h" />
@@ -191,7 +190,6 @@
     <ClCompile Include="opengl-physics\tools\src\memory_pool_container.cpp" />
     <ClCompile Include="opengl-physics\tools\src\mouse_control.cpp" />
     <ClCompile Include="opengl-physics\tools\src\scene.cpp" />
-    <ClCompile Include="opengl-physics\tools\src\scope_exiter.cpp" />
     <ClCompile Include="opengl-physics\tools\src\stride.cpp" />
     <ClCompile Include="opengl-physics\tools\src\thread.cpp" />
     <ClCompile Include="opengl-physics\tools\src\timer.cpp" />
