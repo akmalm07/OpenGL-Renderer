@@ -33,10 +33,10 @@ namespace tools
 		template<CallbackInputConcept InputStruct>
 		void update_and_emit(const InputStruct& input);
 
-		//const std::vector<std::unique_ptr<InputBase>>& list_entries(InputType type) const;
+		//const std::vector<std::unique_ptr<InputBase>>& list_entries_const_ref(InputType type) const;
 		
 		template<CallbackInputConcept InputStruct>
-		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& list_entries() const; // this returns only to the callbacks that have no parameters
+		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& list_entries_const_ref() const; // this returns only to the callbacks that have no parameters
 
 	private:
 
@@ -44,8 +44,7 @@ namespace tools
 		std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& get_proper_list_ref();
 
 		template<CallbackInputConcept InputStruct>
-		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& get_proper_list_ref();
-
+		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& get_proper_list_ref() const;
 
 	private:
 		//std::unordered_map<InputType, std::vector<std::unique_ptr<InputBase>>> _registry;// ADD Naming system as well here

@@ -629,7 +629,7 @@ namespace tools {
 			mod = MODS(mode);
 		}
 
-		const auto& keys = _inputManager.list_entries<KeyCombInputOne>();
+		const auto& keys = _inputManager.list_entries_const_ref<KeyCombInputOne>();
 
 		switch (action)
 		{
@@ -680,7 +680,7 @@ namespace tools {
 		break;
 		}//switch statement
 
-		auto keyPoly = _inputManager.list_entries<KeyCombInputPoly>();
+		const auto& keyPoly = _inputManager.list_entries_const_ref<KeyCombInputPoly>();
 
 		if (keyPoly.empty())
 		{
@@ -716,7 +716,7 @@ namespace tools {
 		_mouseCurrentX = posX;
 		_mouseCurrentY = posY;
 		
-		auto mice = _inputManager.list_entries<MouseMoveInput>();
+		const auto& mice = _inputManager.list_entries_const_ref<MouseMoveInput>();
 		if (!mice.empty())
 		{
 			for (const auto& [name, mouse] : mice)
@@ -729,8 +729,8 @@ namespace tools {
 	void Window::HandleMouseButtons(int mouseButton, int action, int mods)
 	{
 
-		auto& keys = _inputManager.list_entries<MouseButtonInput>();
-		auto buttons = _inputManager.list_entries<AABButtonInput>();
+		const auto& keys = _inputManager.list_entries_const_ref<MouseButtonInput>();
+		const auto& buttons = _inputManager.list_entries_const_ref<AABButtonInput>();
 
 		switch (action)
 		{

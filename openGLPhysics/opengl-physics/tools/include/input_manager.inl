@@ -103,7 +103,7 @@ namespace tools
 	}
 
 	template<CallbackInputConcept InputStruct>
-	inline const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::list_entries() const
+	inline const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::list_entries_const_ref() const
 	{
 		const auto& properList = get_proper_list_ref<InputStruct>();
 
@@ -114,59 +114,36 @@ namespace tools
 	inline std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::get_proper_list_ref()
 	{
 		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
-		{
 			return _keyInputs;
-		}
 		else if constexpr (std::same_as<KeyCombInputPoly, InputStruct>)
-		{
 			return _keyInputsPoly;
-		}
 		else if constexpr (std::same_as<MouseButtonInput, InputStruct>)
-		{
 			return _mouseButtonInputs;
-		}
 		else if constexpr (std::same_as<AABButtonInput, InputStruct>)
-		{
 			return _AABBInputs;
-		}
 		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
-		{
 			return _mouseMoveInputs;
-		}
 		else
-		{
 			throw std::runtime_error("Unknown input type");
-		}
 	}
-	
 
+	// Const version
 	template<CallbackInputConcept InputStruct>
-	inline const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::get_proper_list_ref()
+	inline const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::get_proper_list_ref() const
 	{
 		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
-		{
 			return _keyInputs;
-		}
 		else if constexpr (std::same_as<KeyCombInputPoly, InputStruct>)
-		{
 			return _keyInputsPoly;
-		}
 		else if constexpr (std::same_as<MouseButtonInput, InputStruct>)
-		{
 			return _mouseButtonInputs;
-		}
 		else if constexpr (std::same_as<AABButtonInput, InputStruct>)
-		{
 			return _AABBInputs;
-		}
 		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
-		{
 			return _mouseMoveInputs;
-		}
 		else
-		{
 			throw std::runtime_error("Unknown input type");
-		}
 	}
+	
 
 }

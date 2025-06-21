@@ -9,22 +9,18 @@ namespace tools
 	template<CallbackInputConcept InputStruct>
 	view_ptr<InputStruct> cast_to_type(view_ptr<CallbackInput> incoming)
 	{
-		switch(incoming->get_type())
-		{
-		case InputType::AABButton:
+		if constexpr (std::same_as<InputStruct, AABButtonInput>)
 			return static_cast<view_ptr<AABButtonInput>>(incoming);
-		case InputType::Key:
+		else if constexpr (std::same_as<InputStruct, KeyCombInputOne>)
 			return static_cast<view_ptr<KeyCombInputOne>>(incoming);
-		case InputType::KeyPoly:
+		else if constexpr (std::same_as<InputStruct, KeyCombInputPoly>)
 			return static_cast<view_ptr<KeyCombInputPoly>>(incoming);
-		case InputType::MouseButton:
+		else if constexpr (std::same_as<InputStruct, MouseButtonInput>)
 			return static_cast<view_ptr<MouseButtonInput>>(incoming);
-		case InputType::MouseMovement:
+		else if constexpr (std::same_as<InputStruct, MouseMoveInput>)
 			return static_cast<view_ptr<MouseMoveInput>>(incoming);
-		default:
+		else
 			throw std::runtime_error("Unknown input type");
-
-		}
 
 	}
 	
@@ -46,10 +42,11 @@ namespace tools
 
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	inline InputEntryConcrete<InputStruct, Args...>::InputEntryConcrete(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater)
-		: InputEntry<InputEntry<InputStruct>>(std::move(i), std::move(updater)), callback(std::move(cb))
+	inline InputEntryConcrete<InputStruct, Args...>::InputEntryConcrete(InputStruct i, std::function<void(Args...)> cb, std::optional<std::function<void()>> updater)
+		: InputEntry<InputStruct>(std::move(i), std::move(updater)), callback(std::move(cb))
 	{
 	}
+
 	template<CallbackInputConcept InputStruct, typename ...Args>
 	inline void InputEntryConcrete<InputStruct, Args...>::emit_and_update() const
 	{
@@ -71,21 +68,22 @@ namespace tools
 	template<CallbackInputConcept InputStruct, typename ...Args>
 	bool InputEntryConcrete<InputStruct, Args...>::matches_impl(const CallbackInput& incoming) const
 	{
-		view_ptr<InputStruct> casted = cast_to_type<InputStruct>(incoming);
+		view_ptr<CallbackInput> ptr = &incoming;
+		view_ptr<InputStruct> casted = cast_to_type<InputStruct>(ptr);
 
-		if constexpr (std::is_same_v<InputStruct, KeyCombInputOne>) {
+		if constexpr (std::same_as<InputStruct, KeyCombInputOne>) {
 			return input.number == casted->number && input.action == casted->action && input.mod == casted->mod;
 		}
-		else if constexpr (std::is_same_v<InputStruct, KeyCombInputPoly>) {
+		else if constexpr (std::same_as<InputStruct, KeyCombInputPoly>) {
 			return input.numbers == casted->number && input.action == casted->action && input.mod == casted->mod;
 		}
-		else if constexpr (std::is_same_v<InputStruct, MouseButtonInput>) {
+		else if constexpr (std::same_as<InputStruct, MouseButtonInput>) {
 			return input.button == casted->button && input.action == casted->action;
 		}
-		else if constexpr (std::is_same_v<InputStruct, AABButtonInput>) {
+		else if constexpr (std::same_as<InputStruct, AABButtonInput>) {
 			return input.name == casted->name && input.button == casted->button && input.action == casted->action;
 		}
-		else if constexpr (std::is_same_v<InputStruct, MouseMoveInput>) {
+		else if constexpr (std::same_as<InputStruct, MouseMoveInput>) {
 			return input.change == casted->change && input.button == casted->button;
 		}
 

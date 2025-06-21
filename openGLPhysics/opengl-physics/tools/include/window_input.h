@@ -137,7 +137,7 @@ namespace tools {
 
 		std::function<void(Args...)> callback;
 
-		InputEntryConcrete(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater = std::nullopt);
+		InputEntryConcrete(InputStruct i, std::function<void(Args...)> cb, std::optional<std::function<void()>> updater = std::nullopt);
 		
 		void emit_and_update() const override;
 
