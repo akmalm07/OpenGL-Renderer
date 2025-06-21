@@ -148,7 +148,8 @@ namespace tools {
 			};
 		register_callback<KeyCombInputOne>(
 			KeyCombInputOne(key, Action::Press, mod.value_or(Mods::None)),
-			std::move(f)
+			f,
+			"Exit"
 		);
 	}
 
@@ -628,13 +629,13 @@ namespace tools {
 			mod = MODS(mode);
 		}
 
-		auto& keys = _inputManager.list_entries(InputType::Key);
+		const auto& keys = _inputManager.list_entries<KeyCombInputOne>();
 
 		switch (action)
 		{
 		case GLFW_PRESS:
 		{
-			for (const auto& ky : keys)
+			for (const auto& [name, ky] : keys)
 			{
 				if (ky->matches(KeyCombInputOne(KEYS(key), Action::Press, mod)))
 				{
@@ -649,7 +650,7 @@ namespace tools {
 		break;
 		case GLFW_RELEASE:
 		{
-			for (const auto& ky : keys)
+			for (const auto& [name, ky] : keys)
 			{
 				if (ky->matches(KeyCombInputOne(KEYS(key), Action::Release, mod)))
 				{
@@ -664,7 +665,7 @@ namespace tools {
 		break;
 		case GLFW_REPEAT:
 		{
-			for (const auto& ky : keys)
+			for (const auto& [name, ky] : keys)
 			{
 				if (ky->matches(KeyCombInputOne(KEYS(key), Action::Repeat, mod)))
 				{
@@ -679,17 +680,17 @@ namespace tools {
 		break;
 		}//switch statement
 
-		auto keyPoly = _inputManager.list_entries_values<KeyCombInputPoly>();
+		auto keyPoly = _inputManager.list_entries<KeyCombInputPoly>();
 
 		if (keyPoly.empty())
 		{
 			return;
 		}
 
-		for (const auto& ky : keyPoly)
+		for (const auto& [name, ky] : keyPoly)
 		{
 			bool success = true;
-			for (const auto& number : ky->input.numbers)
+			for (const auto& number : ky->input.numbers)// Spacialize function to further the ease of use
 			{
 				if (!_keys[static_cast<int>(number)])
 				{
@@ -715,10 +716,10 @@ namespace tools {
 		_mouseCurrentX = posX;
 		_mouseCurrentY = posY;
 		
-		auto mice = _inputManager.list_entries_values<MouseMoveInput>();
+		auto mice = _inputManager.list_entries<MouseMoveInput>();
 		if (!mice.empty())
 		{
-			for (const auto& mouse : mice)
+			for (const auto& [name, mouse] : mice)
 			{
 				mouse->emit_and_update();
 			}
@@ -728,15 +729,15 @@ namespace tools {
 	void Window::HandleMouseButtons(int mouseButton, int action, int mods)
 	{
 
-		auto& keys = _inputManager.list_entries(InputType::MouseButton);
-		auto buttons = _inputManager.list_entries_values<AABButtonInput>();
+		auto& keys = _inputManager.list_entries<MouseButtonInput>();
+		auto buttons = _inputManager.list_entries<AABButtonInput>();
 
 		switch (action)
 		{
 		case GLFW_PRESS: {
 			Mouse mouse = (mouseButton == GLFW_MOUSE_BUTTON_LEFT ? Mouse::Left : Mouse::Right);
 
-			for (const auto& ky : keys)
+			for (const auto& [name, ky] : keys)
 			{
 				if (ky->matches(MouseButtonInput(mouse, Action::Press)))
 				{
@@ -744,9 +745,9 @@ namespace tools {
 				}
 			}
 
-			for (const auto& ky : buttons)
+			for (const auto& [name, ky] : buttons)
 			{
-				if (ky->input.is_touching(_mouseCurrentX, _mouseCurrentY, Action::Press, mouse))
+				if (ky->is_hovering(_mouseCurrentX, _mouseCurrentY, Action::Press, mouse))
 				{
 					ky->emit_and_update();
 				}
@@ -760,7 +761,7 @@ namespace tools {
 
 			Mouse mouse = (mouseButton == GLFW_MOUSE_BUTTON_LEFT ? Mouse::Left : Mouse::Right);
 
-			for (const auto& ky : keys)
+			for (const auto& [name, ky] : keys)
 			{
 				if (ky->matches(MouseButtonInput(mouse, Action::Release)))
 				{
@@ -768,7 +769,7 @@ namespace tools {
 				}
 			}
 
-			for (const auto& ky : buttons)
+			for (const auto& [name, ky] : buttons)
 			{
 				if (ky->input.is_touching(_mouseCurrentX, _mouseCurrentY, Action::Release, mouse))
 				{
@@ -784,7 +785,7 @@ namespace tools {
 
 			Mouse mouse = (mouseButton == GLFW_MOUSE_BUTTON_LEFT ? Mouse::Left : Mouse::Right);
 
-			for (const auto& ky : keys)
+			for (const auto& [name, ky] : keys)
 			{
 				if (ky->matches(MouseButtonInput(mouse, Action::Repeat)))
 				{
@@ -792,7 +793,7 @@ namespace tools {
 				}
 			}
 
-			for (const auto& ky : buttons)
+			for (const auto& [name, ky] : buttons)
 			{
 				if (ky->input.is_touching(_mouseCurrentX, _mouseCurrentY, Action::Repeat, mouse))
 				{

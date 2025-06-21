@@ -88,5 +88,5 @@ glUtil::UniformBuffer Program::create_camera_uniform_buffer(const glInit::GLProg
 	uniformBuffer.update_data(matrix.projection, "projection");
 
 	return uniformBuffer;
-}
 */
+}

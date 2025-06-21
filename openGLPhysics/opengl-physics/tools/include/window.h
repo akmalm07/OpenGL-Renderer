@@ -99,11 +99,17 @@ namespace tools {
 		void update_debug(); // FIX: add functionality so that it can automate the updating process FOR DEBUG of the window, like updating the input manager, etc.
 
 
+		template<CallbackInputConcept InputStruct, typename... Args>
+		void register_callback(const InputStruct& input, std::function<void(Args...)>& cb, std::function<void()>& updater, std::string_view name);
+
 		template<CallbackInputConcept InputStruct>
-		void register_callback(const InputStruct& input, const std::function<void()>& cb);
+		void register_callback(const InputStruct& input, std::function<void()>& cb, std::string_view name);
 
 		template<CallbackInputConcept InputStruct>
 		void emit(const InputStruct& input);
+
+		template<CallbackInputConcept InputStruct>
+		void emit(const InputStruct& input, std::string_view name);
 
 		void reset_delta_time();
 
@@ -173,17 +179,28 @@ namespace vkType
 
 namespace tools
 {
-	template<CallbackInputConcept InputStruct>
-	inline void Window::register_callback(const InputStruct& input, const std::function<void()>& cb)
+	template<CallbackInputConcept InputStruct, typename... Args>
+	inline void Window::register_callback(const InputStruct& input, std::function<void(Args...)>& cb, std::function<void()>& updater, std::string_view name)
 	{
-		_inputManager.register_callback<InputStruct>(input, std::move(cb));
+		_inputManager.register_callback<InputStruct, Args...>(input, std::move(cb), name, std::move(updater)); // ERR: Check
 	}
 
+
+	template<CallbackInputConcept InputStruct>
+	inline void Window::register_callback(const InputStruct& input, std::function<void()>& cb, std::string_view name)
+	{
+		_inputManager.register_callback<InputStruct>(input, std::move(cb), name);
+	}
 
 	template<CallbackInputConcept InputStruct>
 	inline void Window::emit(const InputStruct& input)
 	{
 		_inputManager.update_and_emit<InputStruct>(input);
+	}
+	template<CallbackInputConcept InputStruct>
+	inline void Window::emit(const InputStruct& input, std::string_view name)
+	{
+		_inputManager.emit_and_update<InputStruct>(name);
 	}
 }
 

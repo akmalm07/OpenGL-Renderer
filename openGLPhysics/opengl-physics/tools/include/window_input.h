@@ -29,7 +29,6 @@ namespace tools {
 	template<> struct InputTypeResolver<MouseMoveInput> {
 		static constexpr InputType value = InputType::MouseMovement;
 	};
-	
 
 	template<typename... Args>
 	class CallbackDispatcher
@@ -47,15 +46,17 @@ namespace tools {
 
 	struct InputBase
 	{
-		virtual bool matches(const CallbackInput& incoming) = 0;
+	public:
+		virtual bool matches(const CallbackInput& incoming) const = 0;
 		virtual ~InputBase() = default;
 	};
 
 	template<typename Child>
-	struct InputEntryBase : InputBase
+	struct InputEntryBase : public InputBase
 		// This is a CRTP base class for input entries, allowing for static polymorphism.
 		// It ensures that the derived class implements the matches_impl method.
 	{
+	public:
 		virtual ~InputEntryBase() = default;
 		virtual bool matches_impl(const CallbackInput& input) const = 0;
 
@@ -63,23 +64,92 @@ namespace tools {
 		{
 			return static_cast<const Child*>(this)->matches_impl(incoming);
 		}
+
+		template<typename InputEntry>
+		bool is() const
+		{
+			if constexpr (std::same_as<Child, InputEntry>)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		}
 	};
+
 
 
 	template<CallbackInputConcept InputStruct, typename... Args>
-	struct InputEntry : InputEntryBase<InputEntry<InputStruct, Args...>>
+	struct InputEntryConcrete; // Forward declaration
+
+
+	template<CallbackInputConcept InputStruct>
+	struct InputEntry : public InputEntryBase<InputEntry<InputStruct>>
 	{
 	public:
 		InputStruct input;
-		std::function<void(Args...)> callback;
 		std::optional<std::function<void()>> updater;
 
-		InputEntry(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater = std::nullopt);
+		InputEntry(InputStruct i, std::optional<std::function<void()>> updater = std::nullopt);
+
+		virtual void emit_and_update() const = 0;
+
+		template<typename... Args>
+		void emit(Args&&... args)
+		{
+			static_cast<const InputEntryConcrete<InputStruct>*>(this)->emit(std::forward<Args>(args)...);
+		}
+
+		bool matches_impl(const CallbackInput& incoming) const = 0;
+	};
+
+
+	template<>
+	struct InputEntryBase<InputEntry<AABButtonInput>> : public InputBase
+	{
+	public:
+		virtual ~InputEntryBase() = default;
+		virtual bool matches_impl(const CallbackInput& input) const = 0;
+
+		bool matches(const CallbackInput& incoming) const override final
+		{
+			return static_cast<const InputEntry<AABButtonInput>*>(this)->matches_impl(incoming);
+		}
+
+		bool is_hovering(float x, float y, Action action, Mouse button) const
+		{
+			return static_cast<const InputEntry<AABButtonInput>*>(this)->input.is_touching(x, y, action, button);
+		}
+
+	};
+
+
+
+	template<CallbackInputConcept InputStruct, typename... Args>
+	struct InputEntryConcrete : public InputEntry<InputStruct>
+	{
+	public:
+
+		using InputEntry<InputStruct>::input;
+		using InputEntry<InputStruct>::updater;
+
+		std::function<void(Args...)> callback;
+
+		InputEntryConcrete(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater = std::nullopt);
 		
-		void emit_and_update() const;
+		void emit_and_update() const override;
+
+		void emit(Args... args) const
+		{
+			callback(args...);
+		}
 
 		bool matches_impl(const CallbackInput& incoming) const override;
 	};
+
+
 
 
 

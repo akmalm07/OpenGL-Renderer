@@ -336,6 +336,7 @@ namespace tools
 		{
 			return this->event_key(deltaTime, xChange, yChange);
 		};
+		/*
 
 		window.AddMouseChange
 		(
@@ -356,6 +357,7 @@ namespace tools
 			);
 		}
 
+		*/
 	}
 
 	void Camera::move_and_turn_dir(Direction dir, double deltaTime)

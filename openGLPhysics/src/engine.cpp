@@ -22,7 +22,7 @@ namespace Program
 		tools::Camera camera(cameraBundleOrtho);
 
 		camera.set_commands_to_window(window);
-
+		/*
 		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
 
 		for (const auto& [key, mod] : keys)
@@ -42,7 +42,7 @@ namespace Program
 				return true;
 			}
 		);
-
+		*/
 		return camera;
 	}
 
@@ -63,7 +63,7 @@ namespace Program
 		tools::QuaternionCamera camera(cameraBundlePersp);
 
 		camera.set_commands_to_window(window);
-
+		/*
 		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
 
 		for (const auto& [key, mod] : keys)
@@ -86,7 +86,7 @@ namespace Program
 				return true;
 			}
 		);
-
+		*/
 		return camera;
 	}
 	
@@ -107,7 +107,7 @@ namespace Program
 		tools::Camera camera(cameraBundlePersp);
 
 		camera.set_commands_to_window(window);
-
+		/*
 		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
 
 		for (const auto& [key, mod] : keys)
@@ -130,7 +130,7 @@ namespace Program
 				return true;
 			}
 		);
-
+		*/
 
 		return camera;
 	}
@@ -312,6 +312,8 @@ namespace Program
 		return dirLight;
 	}
 
+	/*
+
 	Engine::Engine()
 	{
 		_window.create_window(1000, 1000, "OpenGL", true, true);
@@ -376,4 +378,5 @@ namespace Program
 		}
 	}
 
+	*/
 }

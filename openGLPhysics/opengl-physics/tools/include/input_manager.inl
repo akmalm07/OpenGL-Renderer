@@ -5,28 +5,27 @@
 namespace tools
 {
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	void InputManager::register_callback(const InputStruct& input, std::function<void(Args...)> cb)
+	void InputManager::register_callback(const InputStruct& input, std::function<void(Args...)> cb, std::string_view name, std::optional<std::function<void()>> updater)
 	{
-		constexpr InputType type = InputTypeResolver<InputStruct>::value;
-		_registry[type].emplace_back(std::make_unique<InputEntry<InputStruct, Args...>>(input, std::move(cb)));
+		auto& properList = get_proper_list_ref<InputStruct>();
+			
+		properList.emplace(
+			std::string(name),
+			std::make_unique<InputEntryConcrete<InputStruct, Args...>>(input, std::move(cb), std::move(updater))
+		);
 	}
-
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
 	inline InputStruct& InputManager::get_input(const InputStruct& input, Args ...args)
 	{
 		constexpr InputType type = InputTypeResolver<InputStruct>::value;
-		auto it = _registry.find(type);
-		if (it == _registry.end()) return;
-		for (auto& entry : it->second)
+		auto& properList = get_proper_list_ref<InputStruct>();
+
+		for (const auto& entry : properList->second)
 		{
 			if (entry->matches(input))
 			{
-				auto* typed = dynamic_cast<view_ptr<InputEntry<InputStruct, Args...>>>(entry.get());
-				if (typed)
-				{
-					return typed->input;
-				}
+				return entry->input;
 			}
 		}
 		throw std::runtime_error("Input not found");
@@ -38,69 +37,136 @@ namespace tools
 	{
 		constexpr InputType type = InputTypeResolver<InputStruct>::value;
 
-		auto it = _registry.find(type);
-		if (it == _registry.end()) return;
+		auto& properList = get_proper_list_ref<InputStruct>();
 
-		for (auto& entry : it->second)
+		for (auto& [name, entry] : properList)
 		{
-			auto* typed = dynamic_cast<InputEntry<InputStruct, Args...>*>(entry.get());
+			view_ptr<InputEntryConcrete<InputStruct, Args...>> typed = static_cast<view_ptr<InputEntryConcrete<InputStruct, Args...>>>(entry.get());
 			if (typed && typed->matches(input))
 			{
 				typed->callback(args...);
 			}
 		}
+
+		/*
+		auto it = _registry.find(type);
+		if (it == _registry.end()) return;
+
+		for (auto& entry : it->second)
+		{
+			view_ptr<InputEntry<InputStruct>> typed = static_cast<view_ptr<InputEntry<InputStruct, Args...>>>(entry.get());
+			if (typed && typed->matches(input))
+			{
+				typed->callback(args...);
+			}
+		}
+		*/
 	}
+
+	template<CallbackInputConcept InputStruct>
+	inline void InputManager::emit_and_update(std::string_view name)
+	{
+		auto& properList = get_proper_list_ref<InputStruct>();
+
+		auto it = properList.find(name);
+		if (it == properList.end()) 
+			return;
+		else
+			*it->emit_and_update();
+	}
+
+	
+	template<CallbackInputConcept InputStruct, typename ...Args>
+	inline void InputManager::emit(std::string_view name, Args ...args)
+	{
+		auto& properList = get_proper_list_ref<InputStruct>();
+		auto it = properList.find(name);
+		if (it == properList.end())
+			return;
+		else
+			it->second->emit(args...);
+	}
+
 
 	template<CallbackInputConcept InputStruct>
 	inline void InputManager::update_and_emit(const InputStruct& input)
 	{
-		constexpr InputType type = InputTypeResolver<InputStruct>::value;
-		auto it = _registry.find(type);
-		if (it == _registry.end()) return;
-		for (auto& entry : it->second)
+		auto& properList = get_proper_list_ref<InputStruct>();
+		for (auto& [name, entry] : properList)
 		{
 			view_ptr<InputEntry<InputStruct>> typed = static_cast<view_ptr<InputEntry<InputStruct>>>(entry.get());
 			if (typed && typed->matches(input))
 			{
-				if (typed->updater.has_value())
-				{
-					typed->updater.value()();
-				}
-				typed->callback();
-
+				typed->emit_and_update();
 			}
 		}
 	}
 
 	template<CallbackInputConcept InputStruct>
-	inline std::vector<view_ptr<InputEntry<InputStruct>>> InputManager::list_entries_values() const
+	inline const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::list_entries() const
 	{
-		auto type = InputTypeResolver<InputStruct>::value;
-		auto it = _registry.find(type);
-		if (it != _registry.end())
-		{
-			std::vector<view_ptr<InputEntry<InputStruct>>> result;
-			for (const auto& entry : it->second)
-			{
-				view_ptr<InputEntry<InputStruct>> typed = static_cast<view_ptr<InputEntry<InputStruct>>>(entry.get());
-				if (typed)
-				{
-					result.push_back(typed);
-				}
-			}
-			return result;
-		}
-		return {};
+		const auto& properList = get_proper_list_ref<InputStruct>();
+
+		return properList; 
 	}
 
-
-	const std::vector<std::unique_ptr<InputBase>>& tools::InputManager::list_entries(InputType type) const
+	template<CallbackInputConcept InputStruct>
+	inline std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::get_proper_list_ref()
 	{
-		auto it = _registry.find(type);
-		if (it != _registry.end())
+		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
 		{
-			return it->second;
+			return _keyInputs;
 		}
-		return {};
+		else if constexpr (std::same_as<KeyCombInputPoly, InputStruct>)
+		{
+			return _keyInputsPoly;
+		}
+		else if constexpr (std::same_as<MouseButtonInput, InputStruct>)
+		{
+			return _mouseButtonInputs;
+		}
+		else if constexpr (std::same_as<AABButtonInput, InputStruct>)
+		{
+			return _AABBInputs;
+		}
+		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
+		{
+			return _mouseMoveInputs;
+		}
+		else
+		{
+			throw std::runtime_error("Unknown input type");
+		}
 	}
+	
+
+	template<CallbackInputConcept InputStruct>
+	inline const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::get_proper_list_ref()
+	{
+		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
+		{
+			return _keyInputs;
+		}
+		else if constexpr (std::same_as<KeyCombInputPoly, InputStruct>)
+		{
+			return _keyInputsPoly;
+		}
+		else if constexpr (std::same_as<MouseButtonInput, InputStruct>)
+		{
+			return _mouseButtonInputs;
+		}
+		else if constexpr (std::same_as<AABButtonInput, InputStruct>)
+		{
+			return _AABBInputs;
+		}
+		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
+		{
+			return _mouseMoveInputs;
+		}
+		else
+		{
+			throw std::runtime_error("Unknown input type");
+		}
+	}
+
 }

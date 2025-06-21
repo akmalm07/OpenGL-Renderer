@@ -163,7 +163,7 @@ namespace physics
 		_camera.init(cameraBundlePersp);
 
 		_camera.set_commands_to_window(window);
-
+		/*
 		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use(); //Go on from here~
 
 		for (const auto& [key, mod] : keys)
@@ -186,7 +186,7 @@ namespace physics
 				return true;
 			}
 		);
-
+		*/
 		_matrix.projection = _camera.get_projection();
 		_matrix.view = _camera.get_view();
 		_matrix.model = glm::mat4(1.0f);

@@ -14,8 +14,7 @@ namespace tools
 	public:
 
 		template<CallbackInputConcept InputStruct, typename... Args> // must provide the updater if intended to use callbacks for window, otherwise, optional
-		void register_callback(const InputStruct& input, std::function<void(Args...)> cb);
-
+		void register_callback(const InputStruct& input, std::function<void(Args...)> cb, std::string_view name, std::optional<std::function<void()>> updater = std::nullopt);
 
 		template<CallbackInputConcept InputStruct, typename... Args>
 		InputStruct& get_input(const InputStruct& input, Args... args);
@@ -24,15 +23,43 @@ namespace tools
 		void emit(const InputStruct& input, Args... args);
 
 		template<CallbackInputConcept InputStruct>
+		void emit_and_update(std::string_view name);
+
+
+		template<CallbackInputConcept InputStruct, typename... Args>
+		void emit(std::string_view name, Args... args);
+
+
+		template<CallbackInputConcept InputStruct>
 		void update_and_emit(const InputStruct& input);
 
-		const std::vector<std::unique_ptr<InputBase>>& list_entries(InputType type) const;
+		//const std::vector<std::unique_ptr<InputBase>>& list_entries(InputType type) const;
 		
 		template<CallbackInputConcept InputStruct>
-		std::vector<view_ptr<InputEntry<InputStruct>>> list_entries_values() const; // this returns only to the callbacks that have no parameters
+		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& list_entries() const; // this returns only to the callbacks that have no parameters
 
 	private:
-		std::unordered_map<InputType, std::vector<std::unique_ptr<InputBase>>> _registry;
+
+		template<CallbackInputConcept InputStruct>
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& get_proper_list_ref();
+
+		template<CallbackInputConcept InputStruct>
+		const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& get_proper_list_ref();
+
+
+	private:
+		//std::unordered_map<InputType, std::vector<std::unique_ptr<InputBase>>> _registry;// ADD Naming system as well here
+		
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<KeyCombInputOne>>> _keyInputs;
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<KeyCombInputPoly>>> _keyInputsPoly;
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseButtonInput>>> _mouseButtonInputs;
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<AABButtonInput>>> _AABBInputs;
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseMoveInput>>> _mouseMoveInputs;
+
+
+
+		// Better Yet, make different constainers for all the different inputs
+
 		// TEST: wether having sub sections is faster then not
 	};
 

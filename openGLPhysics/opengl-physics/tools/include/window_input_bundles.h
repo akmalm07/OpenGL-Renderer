@@ -5,7 +5,9 @@
 
 namespace tools
 {
-    struct CallbackInput {
+    struct CallbackInput 
+    {
+
 		virtual InputType get_type() const = 0;
         virtual ~CallbackInput() = default; 
     };
@@ -62,6 +64,7 @@ namespace tools
 
     struct AABButtonInput : CallbackInput
     {
+    public:
         float cordX, cordY, width, height;
         Action action;
         Mouse button;

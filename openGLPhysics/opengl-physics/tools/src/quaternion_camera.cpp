@@ -268,7 +268,7 @@ namespace tools
 		Direction::Forward,
 		Direction::Backward
 		};
-
+		/*
 
 		std::array<std::function<bool(double)>, 6> funcs;
 
@@ -282,16 +282,15 @@ namespace tools
 		}
 
 
-		std::function<bool(double, float, float)> mouseFuncs = [this](double deltaTime, float xChange, float yChange) -> bool
+		std::function<bool()> mouseFuncs = [this]() -> bool
 			{
 				return this->event_key(deltaTime, xChange, yChange);
 			};
 
 
 		window.register_callback(
-			{ MouseChange::MoveX | MouseChange::MoveY, Mouse::None },
-			mouseFuncs,
-			0.0, 0.0f, 0.0f
+			MouseMoveInput{ MouseChange::MoveX | MouseChange::MoveY, Mouse::None },
+			mouseFuncs
 		);
 
 
@@ -304,6 +303,7 @@ namespace tools
 				0.0
 			);
 		}
+		*/
 	}
 
 

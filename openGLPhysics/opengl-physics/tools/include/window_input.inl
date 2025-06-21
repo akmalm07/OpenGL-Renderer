@@ -45,26 +45,31 @@ namespace tools
 	}
 
 
-
-
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	inline InputEntry<InputStruct, Args...>::InputEntry(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater)
-		: input(std::move(i)), callback(std::move(cb)), updater(std::move(updater))
+	inline InputEntryConcrete<InputStruct, Args...>::InputEntryConcrete(InputStruct i, std::function<void(Args...)>& cb, std::optional<std::function<void()>> updater)
+		: InputEntry<InputEntry<InputStruct>>(std::move(i), std::move(updater)), callback(std::move(cb))
 	{
 	}
-
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	inline void InputEntry<InputStruct, Args...>::emit_and_update() const
+	inline void InputEntryConcrete<InputStruct, Args...>::emit_and_update() const
 	{
-		if (updater) 
+		if (updater)
 		{
 			updater.value()();
 		}
 		callback();
 	}
 
+
+	template<CallbackInputConcept InputStruct>
+	inline InputEntry<InputStruct>::InputEntry(InputStruct i, std::optional<std::function<void()>> updater)
+		: input(std::move(i)), updater(std::move(updater))
+	{
+	}
+
+
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	bool InputEntry<InputStruct, Args...>::matches_impl(const CallbackInput& incoming) const
+	bool InputEntryConcrete<InputStruct, Args...>::matches_impl(const CallbackInput& incoming) const
 	{
 		view_ptr<InputStruct> casted = cast_to_type<InputStruct>(incoming);
 
