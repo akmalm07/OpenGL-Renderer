@@ -5,12 +5,17 @@
 namespace tools
 {
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	void InputManager::register_callback(const InputStruct& input, std::function<void(Args...)> cb, std::string_view name, std::optional<std::function<void()>> updater)
+	void InputManager::register_callback(const InputStruct& input, std::function<void(Args...)> cb, const std::string& name, std::optional<std::function<void()>> updater)
 	{
 		auto& properList = get_proper_list_ref<InputStruct>();
-			
+	
+		if (properList.find(name) != properList.end())
+		{
+			throw std::runtime_error("Callback with the same name already exists");
+		}
+
 		properList.emplace(
-			std::string(name),
+			name,
 			std::make_unique<InputEntryConcrete<InputStruct, Args...>>(input, std::move(cb), std::move(updater))
 		);
 	}
@@ -30,6 +35,17 @@ namespace tools
 		}
 		throw std::runtime_error("Input not found");
 		return const_cast<InputStruct&>(input);
+	}
+
+	template<CallbackInputConcept InputStruct>
+	inline InputStruct& InputManager::get_input(const std::string& name)
+	{
+		auto& properList = get_proper_list_ref<InputStruct>();
+		auto it = properList.find(name);
+		if (it == properList.end())
+			throw std::runtime_error("Input not found");
+		else
+			return static_cast<InputEntry<InputStruct>*>(it->second.get())->input;
 	}
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
@@ -64,7 +80,7 @@ namespace tools
 	}
 
 	template<CallbackInputConcept InputStruct>
-	inline void InputManager::emit_and_update(std::string_view name)
+	inline void InputManager::emit_and_update(const std::string& name)
 	{
 		auto& properList = get_proper_list_ref<InputStruct>();
 
@@ -76,8 +92,35 @@ namespace tools
 	}
 
 	
+	template<CallbackInputConcept InputStruct>
+	inline void InputManager::delete_callback(const std::string& name)
+	{
+		auto& properList = get_proper_list_ref<InputStruct>();
+		auto it = properList.find(name);
+		if (it != properList.end())
+		{
+			properList.erase(it);
+		}
+	}
+
 	template<CallbackInputConcept InputStruct, typename ...Args>
-	inline void InputManager::emit(std::string_view name, Args ...args)
+	inline void InputManager::delete_callback(const InputStruct& input, Args ...args)
+	{
+		constexpr InputType type = InputTypeResolver<InputStruct>::value;
+		auto& properList = get_proper_list_ref<InputStruct>();
+		for (auto it = properList.begin(); it != properList.end(); ++it)
+		{
+			view_ptr<InputEntryConcrete<InputStruct, Args...>> typed = static_cast<view_ptr<InputEntryConcrete<InputStruct, Args...>>>(it->second.get());
+			if (typed && typed->matches(input))
+			{
+				properList.erase(it);
+			}
+		}
+	}
+
+
+	template<CallbackInputConcept InputStruct, typename ...Args>
+	inline void InputManager::emit(const std::string& name, Args ...args)
 	{
 		auto& properList = get_proper_list_ref<InputStruct>();
 		auto it = properList.find(name);

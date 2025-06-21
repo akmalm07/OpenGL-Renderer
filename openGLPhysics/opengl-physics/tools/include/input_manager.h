@@ -14,20 +14,31 @@ namespace tools
 	public:
 
 		template<CallbackInputConcept InputStruct, typename... Args> // must provide the updater if intended to use callbacks for window, otherwise, optional
-		void register_callback(const InputStruct& input, std::function<void(Args...)> cb, std::string_view name, std::optional<std::function<void()>> updater = std::nullopt);
+		void register_callback(const InputStruct& input, std::function<void(Args...)> cb, const std::string& name, std::optional<std::function<void()>> updater = std::nullopt);
 
 		template<CallbackInputConcept InputStruct, typename... Args>
 		InputStruct& get_input(const InputStruct& input, Args... args);
+
+
+		template<CallbackInputConcept InputStruct>
+		InputStruct& get_input(const std::string& name);
+
 
 		template<CallbackInputConcept InputStruct, typename... Args>
 		void emit(const InputStruct& input, Args... args);
 
 		template<CallbackInputConcept InputStruct>
-		void emit_and_update(std::string_view name);
+		void emit_and_update(const std::string& name);
 
+
+		template<CallbackInputConcept InputStruct>
+		void delete_callback(const std::string& name);
 
 		template<CallbackInputConcept InputStruct, typename... Args>
-		void emit(std::string_view name, Args... args);
+		void delete_callback(const InputStruct& input, Args... args);
+
+		template<CallbackInputConcept InputStruct, typename... Args>
+		void emit(const std::string& name, Args... args);
 
 
 		template<CallbackInputConcept InputStruct>
