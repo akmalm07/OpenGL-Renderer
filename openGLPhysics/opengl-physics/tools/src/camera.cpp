@@ -280,23 +280,6 @@ namespace tools
 	}
 
 
-	glm::mat4 Camera::get_view() 
-	{
-		return _view;
-	}
-
-
-	glm::mat4 Camera::get_projection() const
-	{
-		return _projection;
-	}
-
-	glm::vec3 Camera::get_position() const
-	{
-		return _position;
-	}
-
-
 	void Camera::move_and_turn_dir(Direction dir, double deltaTime)
 	{
 		bool move = false;

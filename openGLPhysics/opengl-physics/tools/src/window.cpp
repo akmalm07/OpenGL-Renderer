@@ -310,6 +310,16 @@ namespace tools {
 
 		};
 
+		std::array<std::string, dirs.size()> dirNames =
+		{
+			"MoveUp",
+			"MoveDown",
+			"MoveLeft",
+			"MoveRight",
+			"MoveForward",
+			"MoveBackward"
+		};
+
 		std::array<KeyCombInputOne, dirs.size()> input =
 		{
 			KeyCombInputOne(Keys::W, Action::Press),
@@ -330,22 +340,29 @@ namespace tools {
 				{
 					_camera->event_key(dir, _deltaTime);
 				};
+
+			register_callback<KeyCombInputOne>(
+				input[i],
+				keyMoveFuncs[i],
+				dirNames[i]
+			);
 		}
 
 		std::function<void()> mouseFuncs = [this]() -> bool
 			{
 				return _camera->event_key(_deltaTime, _mouseChangeX, _mouseChangeY);
 			};
+		register_callback<MouseMoveInput>(
+			MouseMoveInput(MouseChange::MoveXY),
+			mouseFuncs,
+			"MouseMove"
+		);
 	}
 
 
 	bool Window::is_key_active(Keys key, Action action) const
 	{
-		if (glfwGetKey(_mainWindow, INT(key)) == INT(action))
-		{
-			return true;
-		}
-		return false;
+		return glfwGetKey(_mainWindow, INT(key)) == INT(action);
 	}
 
 	std::string Window::get_name() const
@@ -363,12 +380,6 @@ namespace tools {
 	{
 		return glfwWindowShouldClose(_mainWindow);
 	}
-
-	void Window::set_cursor_locked()
-	{
-		glfwSetInputMode(_mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-	}
-
 
 
 	int Window::get_buffer_width()

@@ -228,23 +228,6 @@ namespace tools
 	}
 
 
-	glm::mat4 QuaternionCamera::get_view() 
-	{
-		return _view;
-	}
-
-
-	glm::mat4 QuaternionCamera::get_projection() const 
-	{
-		return _projection;
-	}
-
-
-	glm::vec3 QuaternionCamera::get_position() const
-	{
-		return _position;
-	}
-
 	void QuaternionCamera::move_and_turn_dir(Direction dir, double deltaTime) 
 	{
 		bool move = false;

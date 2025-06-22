@@ -25,6 +25,10 @@ namespace physics
 		
 		window.world_visitor(*this); // Camera is set here
 
+		_matrix.projection = _camera->get_projection();
+		_matrix.view = _camera->get_projection();
+		_matrix.model = glm::mat4(1.0f);
+
 		_debug = debug;
 
 		if (_debug)
@@ -149,7 +153,7 @@ namespace physics
 
 	void World::add_mesh(std::shared_ptr<glUtil::Mesh> mesh)
 	{
-		mesh->add_gravity(_gravity.get_acceleration());
+		mesh->add_gravity(_gravity);
 		_meshes.push_back(mesh);
 		if (_debug)
 		{
@@ -161,7 +165,7 @@ namespace physics
 	{
 		for (auto& m : mesh)
 		{
-			m->add_gravity(_gravity.get_acceleration());
+			m->add_gravity(_gravity);
 		}
 
 		_meshes.insert(_meshes.end(), mesh.begin(), mesh.end());
@@ -178,7 +182,7 @@ namespace physics
 
 	glm::vec3 World::get_acc_due_to_gravity() const
 	{
-		return _gravity.get_acceleration();
+		return _gravity;
 	}
 
 

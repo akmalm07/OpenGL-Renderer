@@ -31,10 +31,6 @@ namespace tools
 		
 		void set_position(const glm::vec3& position);
 		
-		glm::mat4 get_view();
-		glm::mat4 get_projection() const;
-		glm::vec3 get_position() const;
-		
 		bool is_moving();
 	
 		bool event_key(Direction dir, double deltaTime) override;

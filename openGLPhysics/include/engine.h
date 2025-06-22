@@ -34,9 +34,6 @@ namespace Program
 
 	tools::Window create_window(int width = 800, int height = 600, const std::string& title = "OpenGL", const std::optional<tools::CameraBundlePerspective>& camBundle = std::nullopt);
 
-	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program,
-		const glm::vec3& direction = glm::vec3(1.0f, -1.0f, 0.0f), const glm::vec3& color = glm::vec3(0.1f, 1.0f, 1.0f));
-
 	template<class T>
 	inline glUtil::UniformBuffer create_camera_uniform_buffer(const glInit::GLProgram& program, const T& matrix);
 

@@ -96,7 +96,8 @@ namespace tools {
 		None = 0,
 		MoveX = 1 << 0,
 		MoveY = 1 << 1,
-		Count = 2
+		MoveXY = MoveX | MoveY,
+		Count = 3
 	};
 
 	enum class Action

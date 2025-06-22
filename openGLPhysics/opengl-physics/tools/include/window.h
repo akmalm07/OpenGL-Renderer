@@ -63,8 +63,6 @@ namespace tools
 
 		void make_window_context_current();
 
-		void set_cursor_locked();
-
 		int get_buffer_width();
 
 		int get_buffer_height();

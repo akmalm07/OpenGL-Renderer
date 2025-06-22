@@ -132,7 +132,6 @@
     <ClInclude Include="opengl-physics\physics\include\world.h" />
     <ClInclude Include="opengl-physics\tools\include\aabb_button_control.h" />
     <ClInclude Include="opengl-physics\tools\include\aabb_button_control.inl" />
-    <ClInclude Include="opengl-physics\tools\include\base_engine.h" />
     <ClInclude Include="opengl-physics\tools\include\camera.h" />
     <ClInclude Include="opengl-physics\tools\include\camera_bundle.h" />
     <ClInclude Include="opengl-physics\tools\include\directional_light.h" />
@@ -182,7 +181,6 @@
     <ClCompile Include="opengl-physics\physics\src\volocity.cpp" />
     <ClCompile Include="opengl-physics\physics\src\world.cpp" />
     <ClCompile Include="opengl-physics\tools\src\aabb_button_control.cpp" />
-    <ClCompile Include="opengl-physics\tools\src\base_engine.cpp" />
     <ClCompile Include="opengl-physics\tools\src\camera.cpp" />
     <ClCompile Include="opengl-physics\tools\src\directional_light.cpp" />
     <ClCompile Include="opengl-physics\tools\src\json_reader.cpp" />
@@ -204,12 +202,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="opengl-physics\tools\include\input_manager.inl" />
+    <None Include="opengl-physics\tools\include\window_input.inl" />
     <None Include="shaders\shader.frag" />
     <None Include="shaders\shader.geom" />
     <None Include="shaders\shader.vert" />
     <None Include="shaders\shadow_pass.frag" />
     <None Include="shaders\shadow_pass.vert" />
-    <None Include="opengl-physics\tools\include\window.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

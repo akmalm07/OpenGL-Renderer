@@ -204,6 +204,9 @@ namespace Program
 		return tools::Window(width, height, title, true, camBundle.value(), tools::CameraType::Quaternion);
 	}
 
+
+	/*
+
 	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program, const glm::vec3& direction, const glm::vec3& color)
 	{
 		tools::DirectionalLightBundle dirLightBundle;
@@ -220,7 +223,6 @@ namespace Program
 		return dirLight;
 	}
 
-	/*
 
 	Engine::Engine()
 	{

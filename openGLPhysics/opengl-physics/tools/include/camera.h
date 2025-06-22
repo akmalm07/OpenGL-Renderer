@@ -36,12 +36,6 @@ namespace tools
 
 		void set_position(const glm::vec3& position);
 
-		glm::mat4 get_view();
-
-		glm::mat4 get_projection() const;
-
-		glm::vec3 get_position() const;
-
 		void move_and_turn_dir(Direction dir, double deltaTime);
 
 		bool is_moving();

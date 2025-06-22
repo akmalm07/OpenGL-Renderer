@@ -24,9 +24,9 @@ private:
 	Config();
 	~Config();
 
-	std::filesystem::path vert_shader_path = "shaders/shader.vert";
-	std::filesystem::path frag_shader_path = "shaders/shader.frag";
-	std::filesystem::path geom_shader_path = "shaders/shader.geom";
+	std::filesystem::path vert_shader_path = "shaders/main_shaders/shader.vert";
+	std::filesystem::path frag_shader_path = "shaders/main_shaders/shader.frag";
+	std::filesystem::path geom_shader_path = "shaders/main_shaders/shader.geom";
 
 	std::filesystem::path vert_shadow_shader_path = "shaders/shadow_pass.vert";
 	std::filesystem::path frag_shadow_shader_path = "shaders/shadow_pass.frag";

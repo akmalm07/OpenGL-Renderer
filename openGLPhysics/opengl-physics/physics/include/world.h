@@ -73,7 +73,7 @@ namespace physics
 
 		tools::DirectionalLight _directionalLight;
 
-		Acceleration _gravity = { glm::vec3(0.0f, -0.0f, 0.0f), false };
+		glm::vec3 _gravity = { 0.0f, -0.1f, 0.0f };
 		
 		std::shared_ptr<tools::BaseCamera> _camera;
 		

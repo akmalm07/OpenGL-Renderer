@@ -16,6 +16,10 @@ namespace Renderer
 
 		Window window = Program::create_window(1000, 1000);
 
+		window.set_disable_cursor(true);
+		window.set_escape_button(Keys::Esc, Action::Press);
+		window.set_movement_callbacks();
+
 		GLProgram program = Program::create_program();
 
 		World world = Program::create_world(program, window, true);
