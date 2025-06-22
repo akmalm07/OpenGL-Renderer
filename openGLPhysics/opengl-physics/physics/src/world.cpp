@@ -22,9 +22,9 @@ namespace physics
 		_directionalLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
 
 		_directionalLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
-		 
-		init_quaternion_camera(window);
 		
+		window.world_visitor(*this); // Camera is set here
+
 		_debug = debug;
 
 		if (_debug)
@@ -107,9 +107,9 @@ namespace physics
 	void World::update_mv_matrices(const glm::mat4& model)
 	{
 		_matrix.model = model;
-		_matrix.view = _camera.get_view();
+		_matrix.view = _camera->get_view();
 		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
-		_directionalLight.link_camera_pos(_camera.get_position());
+		_directionalLight.link_camera_pos(_camera->get_position());
 	}
 
 	void World::update_mv_matrices_and_link(glInit::GLProgram& program)
@@ -147,52 +147,6 @@ namespace physics
 	}
 
 
-	void World::init_quaternion_camera(tools::Window& window)
-	{
-		tools::CameraBundlePerspective cameraBundlePersp = {};
-		cameraBundlePersp.nearZ = 0.1f;
-		cameraBundlePersp.farZ = 1000.0f;
-		cameraBundlePersp.speed = 0.05f;
-		cameraBundlePersp.turnSpeed = 0.05f;
-		cameraBundlePersp.position = glm::vec3(0.0f, 0.0f, 1.0f);
-		cameraBundlePersp.front = glm::vec3(0.0f, 0.0f, -1.0f);
-		cameraBundlePersp.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		cameraBundlePersp.fov = 45.0f;
-		cameraBundlePersp.aspectRatio = window.get_aspect_ratio();
-
-		_camera.init(cameraBundlePersp);
-
-		_camera.set_commands_to_window(window);
-		/*
-		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use(); //Go on from here~
-
-		for (const auto& [key, mod] : keys)
-		{
-			std::function<bool()> func = [val = window.FindKeyComb(key), &dt = window.get_delta_time_ref()]() -> bool
-				{
-					val->change_parameters(dt);
-					std::cout << "Updating camera with  dt: " << dt << "\n";
-					return true;
-				};
-
-			window.SetFuncParamUpdaterKeys(key, std::move(func), mod);
-		}
-
-		window.SetMouseChangeUpdater([mouseMove = window.GetMouseMove(), &window, &dt = window.get_delta_time_ref()]() -> bool
-			{
-				std::cout << "Updating camera with  dt: " << dt << "\n";
-				std::cout << "Mouse Xf: " << window.GetMouseChangeXf() << " Mouse Yf: " << window.GetMouseChangeYf() << "\n";
-				mouseMove->change_parameters(dt, -window.GetMouseChangeXf(), window.GetMouseChangeYf());
-				return true;
-			}
-		);
-		*/
-		_matrix.projection = _camera.get_projection();
-		_matrix.view = _camera.get_view();
-		_matrix.model = glm::mat4(1.0f);
-	}
-
-
 	void World::add_mesh(std::shared_ptr<glUtil::Mesh> mesh)
 	{
 		mesh->add_gravity(_gravity.get_acceleration());
@@ -217,9 +171,9 @@ namespace physics
 		}
 	}
 
-	void World::init()
+	void World::set_camera(std::shared_ptr<tools::BaseCamera> camera)
 	{
-
+		_camera = std::move(camera);
 	}
 
 	glm::vec3 World::get_acc_due_to_gravity() const

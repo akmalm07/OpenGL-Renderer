@@ -101,6 +101,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="opengl-physics\tools\include\base_camera.h" />
     <ClInclude Include="opengl-physics\tools\include\input_manager.h" />
     <ClInclude Include="opengl-physics\physics\include\moveible.h" />
     <ClInclude Include="opengl-physics\tools\include\directional_light_bundle.h" />
@@ -156,6 +157,7 @@
     <ClInclude Include="opengl-physics\glUtil\include\shadow_map_bundle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="opengl-physics\tools\src\base_camera.cpp" />
     <ClCompile Include="global\headers.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
       <AdditionalOptions>/Ycheaders.h %(AdditionalOptions)</AdditionalOptions>
@@ -207,6 +209,7 @@
     <None Include="shaders\shader.vert" />
     <None Include="shaders\shadow_pass.frag" />
     <None Include="shaders\shadow_pass.vert" />
+    <None Include="opengl-physics\tools\include\window.inl" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

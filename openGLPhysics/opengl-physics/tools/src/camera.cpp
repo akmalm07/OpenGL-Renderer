@@ -295,70 +295,7 @@ namespace tools
 	{
 		return _position;
 	}
-	
 
-	void Camera::set_commands_to_window(tools::Window& window)
-	{
-
-		std::array<KeyCombInputOne, 6> input = 
-		{
-		KeyCombInputOne(Keys::W, Action::Press),
-		KeyCombInputOne(Keys::S, Action::Press),
-		KeyCombInputOne(Keys::A, Action::Press),
-		KeyCombInputOne(Keys::D, Action::Press),
-		KeyCombInputOne(Keys::Q, Action::Press),
-		KeyCombInputOne(Keys::E, Action::Press)
-		};
-
-		std::array<Direction, 6> dirs = 
-		{
-		Direction::Up,
-		Direction::Down,
-		Direction::Left,
-		Direction::Right,
-		Direction::Forward,
-		Direction::Backward
-
-		};
-
-
-		std::array<std::function<bool(double)>, 6> funcs;
-
-		for (size_t i = 0; i < funcs.size(); i++)
-		{
-			funcs[i] = [this, dir = dirs[i] ](double deltaTime) -> bool
-			{
-				return this->event_key(dir, deltaTime);
-			};
-		}
-
-		std::function<bool(double, float, float)> mouseFuncs = [this] (double deltaTime, float xChange, float yChange) -> bool
-		{
-			return this->event_key(deltaTime, xChange, yChange);
-		};
-		/*
-
-		window.AddMouseChange
-		(
-			{MouseChange::MoveX | MouseChange::MoveY, Mouse::None},
-			mouseFuncs,
-			0.0, 0.0f, 0.0f
-		);
-
-			
-		for (size_t i = 0; i < funcs.size(); i++)
-		{
-			window.AddKeyComb
-			(
-				true,
-				input[i],
-				funcs[i],
-				0.0
-			);
-		}
-
-		*/
-	}
 
 	void Camera::move_and_turn_dir(Direction dir, double deltaTime)
 	{

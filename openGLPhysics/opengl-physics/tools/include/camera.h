@@ -4,13 +4,13 @@
 
 #include "tools\include\camera_bundle.h"
 #include "tools\include\keys.h"
-#include "tools\include\window.h"
+#include "tools\include\base_camera.h"
 
 
 
 namespace tools
 {
-	class Camera
+	class Camera : public BaseCamera
 	{
 	public:
 		Camera();
@@ -42,20 +42,19 @@ namespace tools
 
 		glm::vec3 get_position() const;
 
-		void set_commands_to_window(tools::Window& win);
-
 		void move_and_turn_dir(Direction dir, double deltaTime);
 
 		bool is_moving();
 
+		bool event_key(Direction dir, double deltaTime) override;
+		bool event_key(double deltaTime, float xMove, float yMove) override;
+
 		~Camera();
+
+
 
 	private:
 
-		glm::mat4 _projection;
-		glm::mat4 _view;
-
-		glm::vec3 _position;
 		glm::vec3 _prevPosition;
 		glm::vec3 _rotation;
 		glm::vec3 _prevRotation;
@@ -85,9 +84,6 @@ namespace tools
 		void pitch(double deltaTime, float xMove);
 		void yaw(double deltaTime, float yMove);
 		void roll(double deltaTime, float zMove);
-
-		bool event_key(Direction dir, double deltaTime);
-		bool event_key(double deltaTime, float xMove, float yMove);
 
 		//void debug_position();
 	};

@@ -50,9 +50,16 @@ namespace tools
 	template<CallbackInputConcept InputStruct, typename ...Args>
 	inline void InputEntryConcrete<InputStruct, Args...>::emit_and_update() const
 	{
-		if (updater)
+		if constexpr (sizeof...(Args) == 0)
 		{
-			updater.value()(callback);
+			callback();
+			return;
+		}
+		
+		if (updater.has_value())
+		{
+			updater.value()(callback); 
+			// ERR: does not handle when the item has no Args.. and also no updater, as an updater is unnessesary for such a step. Also, Noticed that the match function was called twice, and checked twice, which is unessesary, so must improve and prevent such double checks
 		}
 	}
 
@@ -80,7 +87,7 @@ namespace tools
 			return input.number == casted->number && input.action == casted->action && input.mod == casted->mod;
 		}
 		else if constexpr (std::same_as<InputStruct, KeyCombInputPoly>) {
-			return input.numbers == casted->number && input.action == casted->action && input.mod == casted->mod;
+			return input.numbers == casted->numbers && input.action == casted->action && input.mod == casted->mod;
 		}
 		else if constexpr (std::same_as<InputStruct, MouseButtonInput>) {
 			return input.button == casted->button && input.action == casted->action;

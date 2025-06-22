@@ -18,19 +18,6 @@ namespace tools
 			name,
 			std::make_unique<InputEntryConcrete<InputStruct, Args...>>(input, std::move(cb), name, std::move(updater))
 		);
-
-
-		if constexpr (sizeof...(Args) == 0)
-		{
-			get_proper_window_list_ref<InputStruct>().emplace_back(properList[name].get());
-		}
-		else
-		{
-			if (updater.has_value())
-			{
-				get_proper_window_list_ref<InputStruct>().emplace_back(properList[name].get());
-			}
-		}
 	}
 
 	template<CallbackInputConcept InputStruct, typename ...Args>
@@ -101,12 +88,12 @@ namespace tools
 		if (it == properList.end()) 
 			return;
 		else
-			*it->emit_and_update();
+			it->second->emit_and_update();
 	}
 
 	
 	template<CallbackInputConcept InputStruct>
-	inline void InputManager::delete_callback(const std::string& name)
+	inline void InputManager::delete_callback(const std::string& name) //TEST TEMPLATE...
 	{
 		auto& properList = get_proper_list_ref<InputStruct>();
 		auto it = properList.find(name);
@@ -169,7 +156,7 @@ namespace tools
 
 
 	template<CallbackInputConcept InputStruct>
-	inline void InputManager::update_and_emit(const InputStruct& input)
+	inline void InputManager::emit_and_update(const InputStruct& input)
 	{
 		auto& properList = get_proper_list_ref<InputStruct>();
 		for (auto& [name, entry] : properList)
@@ -182,12 +169,6 @@ namespace tools
 		}
 	}
 
-	template<CallbackInputConcept InputStruct>
-	inline const std::vector<view_ptr_non_const<InputEntry<InputStruct>>> InputManager::list_entires_for_window_const()
-	{
-		const auto& properList = get_proper_window_list_ref<InputStruct>();
-		return properList;
-	}
 
 	template<CallbackInputConcept InputStruct>
 	inline const std::unordered_map<std::string, std::unique_ptr<InputEntry<InputStruct>>>& InputManager::list_entries_const_ref() const
@@ -233,8 +214,32 @@ namespace tools
 	}
 
 
+
+
+
 	template<CallbackInputConcept InputStruct>
-	inline std::vector<view_ptr_non_const<InputEntry<InputStruct>>>& InputManager::get_proper_window_list_ref()
+	inline const std::vector<view_ptr_non_const<InputEntry<InputStruct>>> WindowInputManager::list_entires_const() const
+	{
+		const auto& properList = get_proper_window_list_ref<InputStruct>();
+
+		return properList;
+	}
+
+	template<CallbackInputConcept InputStruct>
+	inline void WindowInputManager::emit(const InputStruct& input)
+	{
+		InputManager::emit_and_update<InputStruct>(input); // This will call the InputManager's emit function, which will handle the input properly
+	}
+
+	template<CallbackInputConcept InputStruct>
+	inline void WindowInputManager::emit(const std::string& name)
+	{
+		InputManager::emit_and_update<InputStruct>(name);
+	}
+
+
+	template<CallbackInputConcept InputStruct>
+	inline std::vector<view_ptr_non_const<InputEntry<InputStruct>>>& WindowInputManager::get_proper_window_list_ref()
 	{
 		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
 			return _keyInputsWindow;
@@ -251,7 +256,7 @@ namespace tools
 	}
 
 	template<CallbackInputConcept InputStruct>
-	inline const std::vector<view_ptr_non_const<InputEntry<InputStruct>>>& InputManager::get_proper_window_list_ref() const
+	inline const std::vector<view_ptr_non_const<InputEntry<InputStruct>>>& WindowInputManager::get_proper_window_list_ref() const
 	{
 		if constexpr (std::same_as<KeyCombInputOne, InputStruct>)
 			return _keyInputsWindow;
@@ -266,6 +271,25 @@ namespace tools
 		else
 			throw std::runtime_error("Unknown input type");
 
+	}
+
+
+	template<CallbackInputConcept InputStruct, typename ...Args>
+	inline void WindowInputManager::register_callback(const InputStruct& input, std::function<void(Args...)> cb, const std::string& name, std::optional<std::function<void(std::function<void(Args...)>)>> updater)
+	{
+		InputManager::register_callback<InputStruct, Args...>(input, std::move(cb), name, std::move(updater));
+
+		if constexpr (sizeof...(Args) == 0)
+		{
+			get_proper_window_list_ref<InputStruct>().emplace_back(InputManager::get_proper_list_ref<InputStruct>()[name].get());
+		}
+		else
+		{
+			if (updater.has_value())
+			{
+				get_proper_window_list_ref<InputStruct>().emplace_back(InputManager::get_proper_list_ref<InputStruct>()[name].get());
+			}
+		}
 	}
 	
 

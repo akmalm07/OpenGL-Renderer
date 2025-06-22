@@ -10,37 +10,56 @@
 #include "tools\include\mouse_control.h"
 #include "tools\include\timer.h"
 #include "tools\include\input_manager.h"
+#include "tools\include\camera.h"
+#include "tools\include\quaternion_camera.h"
 
 
-namespace tools {
+namespace physics
+{
+	class World;
+}
 
 
-	class Window /*public KeyControl, public AABButtonControl, public MouseControl*/
+namespace tools 
+{
+	struct OrthoBundle
+	{
+		float left;
+		float right;
+		float top;
+		float bottom;
+	};
+
+	//enum class ProjectionType
+	//{
+	//	Ortho = 0,
+	//	Persp = 1,
+	//};
+
+	enum class CameraType
+	{
+		Classic = 0,
+		Quaternion = 1,
+	};
+
+	class Window
 	{
 	public:
 		Window();
 
-		Window(float windowWidth, float windowHeight, const std::string& name);
+		Window(float windowWidth, float windowHeight, const std::string& name, bool createWindowT, CameraBundleOrthographic camBundle, CameraType type);
+		
+		Window(float windowWidth, float windowHeight, const std::string& name, bool createWindowT, CameraBundlePerspective camBundle, CameraType type);
 
 		Window(Window&& other) noexcept;
 
 		Window& operator=(Window&& other) noexcept;
 
-
-		void set_ortho();
-
-
-		bool create_window(bool disableCursor, bool isOrtho);
-		
-		
-		bool create_window(float windowWidth, float windowHeight, const std::string& name, bool disableCursor, bool isOrtho);
-
+		bool create_window(const std::string& name, bool disableCursor);
 
 		void set_disable_cursor(bool disableCursor);
 
 		float get_aspect_ratio() const;
-
-		void set_ortho(float left, float right, float top, float bottom);
 
 		void make_window_context_current();
 
@@ -54,29 +73,25 @@ namespace tools {
 
 		const int* get_buffer_height_p();
 
-		bool is_ortho() const;
-
 		GLFWwindow* get_window() const;
 
-		bool set_window(GLFWwindow* window, bool isOrtho);
+		bool set_window(GLFWwindow* window);
+
+		void world_visitor(physics::World& visitor);
 
 		float get_width() const;
 
 		float get_height() const;
 
-		float get_left_ortho() const;
+		//OrthoBundle get_ortho() const;
 
-		float get_bottom_ortho() const;
-
-		float get_top_ortho() const;
-
-		float get_right_ortho() const;
+		void set_movement_callbacks();
 
 		bool is_key_active(Keys key, Action act) const;
 
 		std::string get_name() const;
 
-		void set_name(const char* name);
+		void set_name(const std::string& name);
 
 		bool get_should_close() const;
 
@@ -90,13 +105,11 @@ namespace tools {
 
 		void wait_events() const;
 
-		void set_escape_button(Keys key, std::optional<Mods> mod = std::nullopt);
+		void set_escape_button(Keys key, Action action, std::optional<Mods> mod = std::nullopt);
 
 		bool is_updated();
 
-		void update(); // FIX: add functionality so that it can automate the updating process of the window, like updating the input manager, etc.
-
-		void update_debug(); // FIX: add functionality so that it can automate the updating process FOR DEBUG of the window, like updating the input manager, etc.
+		void update();
 
 
 		template<CallbackInputConcept InputStruct, typename... Args>
@@ -119,16 +132,16 @@ namespace tools {
 
 		~Window();
 
-	private:
+	protected:
 
-		InputManager _inputManager;
+		WindowInputManager _inputManager;
 
-		//Window Vars
+		std::shared_ptr<BaseCamera> _camera; 
+
+		//WindowT Vars
 		static bool _calledBufferSize;
 
 		static uint32_t g_numOfWindows;
-
-		bool _isOrtho = false;
 
 		float _aspectRatio;
 
@@ -136,8 +149,6 @@ namespace tools {
 
 		float _width = 0.0f, _height = 0.0f;
 		int _bufferWidth = 0, _bufferHeight = 0;
-
-		std::optional<float> _leftOrtho, _rightOrtho, _topOrtho, _bottomOrtho;
 
 		tools::Timer _timer; 
 
@@ -149,13 +160,18 @@ namespace tools {
 
 		std::array<bool, 1024> _keys{}; 
 
+
+
 		double _mouseChangeX = 0.0;
 		double _mouseChangeY = 0.0;
 
 		double _mouseCurrentX = 0.0;
 		double _mouseCurrentY = 0.0;
 
-	private:
+	protected:
+
+		void init(float windowWidth, float windowHeight, const std::string& name, bool createWindow);
+
 		void HandleKeys(int key, int code, int action, int mode);
 		void HandleMouseCursor(double posX, double posY);
 		void HandleMouseButtons(int mouseButton, int action, int mods);
@@ -168,13 +184,6 @@ namespace tools {
 	};
 
 }
-
-namespace vkType
-{
-	using Window = tools::Window;
-}
-
-
 
 
 namespace tools
@@ -195,12 +204,12 @@ namespace tools
 	template<CallbackInputConcept InputStruct>
 	inline void Window::emit(const InputStruct& input)
 	{
-		_inputManager.update_and_emit<InputStruct>(input);
+		_inputManager.emit<InputStruct>(input);
 	}
 	template<CallbackInputConcept InputStruct>
 	inline void Window::emit(const InputStruct& input, const std::string& name)
 	{
-		_inputManager.emit_and_update<InputStruct>(name);
+		_inputManager.emit<InputStruct>(name);
 	}
 }
 
@@ -212,7 +221,7 @@ namespace tools
 //PLANNING TO EXTEND
 //void SetAsyncPollEvents(const ThreadControlInfo& cv);
 
-//void AllowWindowoContinueAndWait();
+//void AllowWindowToContinueAndWait();
 //void WaitInitallyForSignal();
 //template<class ... Args>
 //void AddMouseClick(Mouse mouse, std::function<bool(Args...)> function);
@@ -252,4 +261,4 @@ namespace tools
 
 //void setMouseAfterX(double posX);
 //void setMouseAfterY(double posY);
-//WindowButton& FindWindowButtonName(const std::string& name);
+//WindowTButton& FindWindowTButtonName(const std::string& name);

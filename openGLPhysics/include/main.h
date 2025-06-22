@@ -35,10 +35,8 @@ namespace Renderer
 
 		while (!window.get_should_close())
 		{
-			window.reset_delta_time();
-
-			window.poll_events();
-
+			window.update();
+			
 			program.bind();
 
 			world.update_mv_matrices_and_link(program);
@@ -49,7 +47,6 @@ namespace Renderer
 
 			program.unbind();
 
-			window.swap_buffers();
 		}
 
 		world.unbind_light();

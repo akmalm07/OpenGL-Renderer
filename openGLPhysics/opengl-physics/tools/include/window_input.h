@@ -30,6 +30,34 @@ namespace tools {
 		static constexpr InputType value = InputType::MouseMovement;
 	};
 
+	template<InputType>
+	struct InputTypeResolverInv;
+
+	template<>
+	struct InputTypeResolverInv<InputType::AABButton> {
+		using type = AABButtonInput;
+	};
+
+	template<>
+	struct InputTypeResolverInv<InputType::KeyPoly> {
+		using type = KeyCombInputPoly;
+	};
+
+	template<>
+	struct InputTypeResolverInv<InputType::Key> {
+		using type = KeyCombInputOne;
+	};
+
+	template<>
+	struct InputTypeResolverInv<InputType::MouseMovement> {
+		using type = MouseMoveInput;
+	};
+
+	template<>
+	struct InputTypeResolverInv<InputType::MouseButton> {
+		using type = MouseButtonInput;
+	};
+
 	template<typename... Args>
 	class CallbackDispatcher
 	{
@@ -109,6 +137,7 @@ namespace tools {
 	};
 
 
+
 	template<>
 	struct InputEntryBase<InputEntry<AABButtonInput>> : public InputBase
 	{
@@ -127,7 +156,6 @@ namespace tools {
 		}
 
 	};
-
 
 
 	template<CallbackInputConcept InputStruct, typename... Args>

@@ -17,11 +17,6 @@
 
 namespace Program
 {
-	tools::Camera create_camera_ortho(tools::Window& window);
-
-	tools::QuaternionCamera create_quanternion_camera_persp(tools::Window& window);
-
-	tools::Camera create_camera_persp(tools::Window& window);
 
 	glInit::GLProgram create_program();
 
@@ -37,7 +32,7 @@ namespace Program
 
 	void clear_color();
 
-	tools::Window create_window(int width = 800, int height = 600, const std::string& title = "OpenGL");
+	tools::Window create_window(int width = 800, int height = 600, const std::string& title = "OpenGL", const std::optional<tools::CameraBundlePerspective>& camBundle = std::nullopt);
 
 	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program,
 		const glm::vec3& direction = glm::vec3(1.0f, -1.0f, 0.0f), const glm::vec3& color = glm::vec3(0.1f, 1.0f, 1.0f));

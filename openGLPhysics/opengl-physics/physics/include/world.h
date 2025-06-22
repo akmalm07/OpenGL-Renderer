@@ -30,6 +30,8 @@ namespace physics
 		
 		void add_meshes(std::vector<std::shared_ptr<glUtil::Mesh>>& mesh);
 
+		void set_camera(std::shared_ptr<tools::BaseCamera> camera);
+
 		glm::mat4 get_model_matrix();
 		glm::mat4 get_view_matrix() const;
 		glm::mat4 get_projection_matrix() const;
@@ -56,8 +58,6 @@ namespace physics
 
 		void update_camera_pos(const glm::vec3& camPos);
 
-		void init();
-
 		glm::vec3 get_acc_due_to_gravity() const;
 		
 		void add_scene(std::shared_ptr<tools::Scene> scene);
@@ -75,9 +75,10 @@ namespace physics
 
 		Acceleration _gravity = { glm::vec3(0.0f, -0.0f, 0.0f), false };
 		
+		std::shared_ptr<tools::BaseCamera> _camera;
+		
 		//glUtil::ShadowMap _shadowMap;
 
-		tools::QuaternionCamera _camera;
 
 		struct Matrix
 		{
@@ -87,9 +88,6 @@ namespace physics
 		} _matrix;
 	
 		bool _debug;
-
-	private:
-		void init_quaternion_camera(tools::Window& window);
 	};
 
 }

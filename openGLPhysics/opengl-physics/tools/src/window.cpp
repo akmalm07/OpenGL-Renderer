@@ -6,6 +6,7 @@
 
 #include "tools\include\window.h"
 #include "tools\include\timer.h"
+#include "physics\include\world.h"
 
 
 namespace tools {
@@ -29,7 +30,35 @@ namespace tools {
 		_mouseCurrentY = _height / 2;
 	}
 
-	Window::Window(float windowWidth, float windowHeight, const std::string& name)
+	Window::Window(float windowWidth, float windowHeight, const std::string& name, bool createWindowT, CameraBundleOrthographic camBundle, CameraType type)
+	{
+		init(windowWidth, windowHeight, name, createWindowT);
+
+		if (type == CameraType::Classic)
+		{
+			_camera = std::make_shared<Camera>(camBundle);
+		}
+		else if (type == CameraType::Quaternion)
+		{
+			_camera = std::make_shared<QuaternionCamera>(camBundle);
+		}
+	}
+
+	Window::Window(float windowWidth, float windowHeight, const std::string& name, bool createWindowT, CameraBundlePerspective camBundle, CameraType type)
+	{
+		init(windowWidth, windowHeight, name, createWindowT);
+		
+		if (type == CameraType::Classic)
+		{
+			_camera = std::make_shared<Camera>(camBundle);
+		}
+		else if (type == CameraType::Quaternion)
+		{
+			_camera = std::make_shared<QuaternionCamera>(camBundle);
+		}
+	}
+
+	void Window::init(float windowWidth, float windowHeight, const std::string& name, bool createWindow)
 	{
 
 		_name = name;
@@ -41,9 +70,19 @@ namespace tools {
 
 		_width = windowWidth;
 		_height = windowHeight;
-	
+
 		_mouseCurrentX = _width / 2;
 		_mouseCurrentY = _height / 2;
+
+		_aspectRatio = _width / _height;
+
+		if (createWindow)
+		{
+			if (!create_window(_name, false))
+			{
+				throw std::runtime_error("Failed to create window!");
+			}
+		}
 	}
 
 	Window::Window(Window&& other) noexcept
@@ -55,10 +94,7 @@ namespace tools {
 		_bufferWidth = other._bufferWidth;
 		_bufferHeight = other._bufferHeight;
 		_aspectRatio = other._aspectRatio;
-		_leftOrtho = other._leftOrtho;
-		_rightOrtho = other._rightOrtho;
-		_topOrtho = other._topOrtho;
-		_bottomOrtho = other._bottomOrtho;
+
 		_timer = std::move(other._timer); 
 		_deltaTime = other._deltaTime; 
 		_name = std::move(other._name);
@@ -70,11 +106,6 @@ namespace tools {
 		other._bufferWidth = 0; 
 		other._bufferHeight = 0; 
 		other._aspectRatio = 1.0f; 
-		other._leftOrtho = std::nullopt; 
-
-		other._rightOrtho = std::nullopt;
-		other._topOrtho = std::nullopt;
-		other._bottomOrtho = std::nullopt;
 
 	}
 
@@ -89,10 +120,7 @@ namespace tools {
 			_bufferWidth = other._bufferWidth;
 			_bufferHeight = other._bufferHeight;
 			_aspectRatio = other._aspectRatio;
-			_leftOrtho = other._leftOrtho;
-			_rightOrtho = other._rightOrtho;
-			_topOrtho = other._topOrtho;
-			_bottomOrtho = other._bottomOrtho;
+
 			_timer = std::move(other._timer);
 			_deltaTime = other._deltaTime;
 			_name = std::move(other._name);
@@ -105,49 +133,20 @@ namespace tools {
 			other._bufferWidth = 0;
 			other._bufferHeight = 0;
 			other._aspectRatio = 1.0f;
-			other._leftOrtho = std::nullopt;
 
-			other._rightOrtho = std::nullopt;
-			other._topOrtho = std::nullopt;
-			other._bottomOrtho = std::nullopt;
 		}
 		return *this;
 	}
 
-	void Window::set_ortho()
-	{
-		_isOrtho = true;
 
-		_aspectRatio = _width / _height;
-
-
-		if (_aspectRatio >= 1.0f)
-		{
-			_leftOrtho = -1.0f * _aspectRatio;
-			_rightOrtho = 1.0f * _aspectRatio;
-			_topOrtho = 1.0f;
-			_bottomOrtho = -1.0f;
-		}
-		else
-		{
-			_leftOrtho = -1.0f;
-			_rightOrtho = 1.0f;
-			_topOrtho = 1.0f / _aspectRatio;
-			_bottomOrtho = -1.0f / _aspectRatio;
-		}
-	
-	}
-
-
-
-	void Window::set_escape_button(Keys key, std::optional<Mods> mod)
+	void Window::set_escape_button(Keys key, Action action, std::optional<Mods> mod)
 	{
 		std::function<void()> f = [this]()
 			{
 				glfwSetWindowShouldClose(_mainWindow, GLFW_TRUE);
 			};
 		register_callback<KeyCombInputOne>(
-			KeyCombInputOne(key, Action::Press, mod.value_or(Mods::None)),
+			KeyCombInputOne(key, action, mod.value_or(Mods::None)),
 			f,
 			"Exit"
 		);
@@ -163,9 +162,11 @@ namespace tools {
 		return false;
 	}
 
-	void Window::update_debug()
+	void Window::update()
 	{
-
+		reset_delta_time();
+		swap_buffers();
+		poll_events();
 	}
 
 	void Window::reset_delta_time()
@@ -183,9 +184,11 @@ namespace tools {
 		return _deltaTime;
 	}
 
-	bool Window::create_window(bool disableCursor, bool isOrtho)
+	bool Window::create_window(const std::string& name, bool disableCursor)
 	{
 		std::cout << "Window count: " << g_numOfWindows << "\n";
+
+		_name = name;
 
 		if (g_numOfWindows == 0)
 		{
@@ -225,6 +228,7 @@ namespace tools {
 				std::cerr << "Error initializing GLEW! \n";
 				return false;
 			}
+			/*
 			
 			glEnable(GL_CULL_FACE); //DEBUG
 			glCullFace(GL_BACK);
@@ -232,7 +236,11 @@ namespace tools {
 
 			glEnable(GL_DEPTH_TEST);
 			glDepthFunc(GL_LESS);
-			
+			*/
+
+			glEnable(GL_CULL_FACE);
+			glCullFace(GL_BACK);
+
 			glEnable(GL_BLEND);
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
@@ -256,99 +264,10 @@ namespace tools {
 
 		glfwSetWindowUserPointer(_mainWindow, this);
 
-		if (isOrtho)
-		{
-			set_ortho();
-		}
-
 		return true;
 	}
 
-	bool Window::create_window(float windowWidth, float windowHeight, const std::string& name, bool disableCursor, bool isOrtho)
-	{
-		std::cout << "Window count: " << g_numOfWindows << "\n";
 
-		if (g_numOfWindows == 0)
-		{
-			if (glfwInit() == GLFW_FALSE)
-			{
-				std::cerr << "Error initializing GLFW! \n";
-				return false;
-			}
-
-			glfwSetErrorCallback([](int error, const char* description) {
-				fprintf(stderr, "GLFW Error: %s\n", description);
-				});
-
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-			glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
-			glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		}
-
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_TRUE);
-
-		_mainWindow = glfwCreateWindow(windowWidth, windowHeight, name.c_str(), nullptr, nullptr);
-		if (!_mainWindow)
-		{
-			throw std::runtime_error("GLFW window creation failed!");
-		}
-
-		std::cout << "Successfully created GLFW window \"" << name << "\", "
-			<< "width: " << windowWidth << ", height: " << windowHeight << "\n";
-
-		if (g_numOfWindows == 0)
-		{
-			glfwMakeContextCurrent(_mainWindow);
-			glewExperimental = GL_TRUE;
-
-			if (glewInit() != GLEW_OK)
-			{
-				std::cerr << "Error initializing GLEW! \n";
-				return false;
-			}
-
-			glEnable(GL_CULL_FACE);
-			glCullFace(GL_BACK);
-			glFrontFace(GL_CCW);
-
-			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
-
-			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-		}
-
-		g_numOfWindows++;
-
-		glfwGetFramebufferSize(_mainWindow, &_bufferWidth, &_bufferHeight);
-
-		int theWidth = static_cast<int>(windowWidth);
-		int theHeight = static_cast<int>(windowHeight);
-		glfwGetWindowSize(_mainWindow, &theWidth, &theHeight);
-
-		glfwSetCursorPos(_mainWindow, theWidth / 2, theHeight / 2);
-
-		if (disableCursor)
-		{
-			glfwSetInputMode(_mainWindow, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		}
-
-		CreateCallbacks();
-
-		glfwSetWindowUserPointer(_mainWindow, this);
-
-		if (isOrtho)
-		{
-			set_ortho();
-		}
-
-		_width = windowWidth; 
-		_height = windowHeight;
-		_aspectRatio = _width / _height; 
-		_name = name;
-
-		return true;
-	}
 
 	void Window::set_disable_cursor(bool disableCursor)
 	{
@@ -378,25 +297,47 @@ namespace tools {
 		glfwSwapBuffers(_mainWindow);
 	}
 
-	float Window::get_left_ortho() const
-	{ 
-		return (_leftOrtho.has_value() ? _leftOrtho.value() : throw std::runtime_error("_leftOrtho has not VALUE!")); 
+	void Window::set_movement_callbacks()
+	{
+		std::array<Direction, 6> dirs =
+		{
+			Direction::Up,
+			Direction::Down,
+			Direction::Left,
+			Direction::Right,
+			Direction::Forward,
+			Direction::Backward
+
+		};
+
+		std::array<KeyCombInputOne, dirs.size()> input =
+		{
+			KeyCombInputOne(Keys::W, Action::Press),
+			KeyCombInputOne(Keys::S, Action::Press),
+			KeyCombInputOne(Keys::A, Action::Press),
+			KeyCombInputOne(Keys::D, Action::Press),
+			KeyCombInputOne(Keys::Q, Action::Press),
+			KeyCombInputOne(Keys::E, Action::Press)
+		};
+
+
+
+		std::array<std::function<void()>, dirs.size()> keyMoveFuncs;
+
+		for (size_t i = 0; i < dirs.size(); i++)
+		{
+			keyMoveFuncs[i] = [this, dir = dirs[i]]() -> void
+				{
+					_camera->event_key(dir, _deltaTime);
+				};
+		}
+
+		std::function<void()> mouseFuncs = [this]() -> bool
+			{
+				return _camera->event_key(_deltaTime, _mouseChangeX, _mouseChangeY);
+			};
 	}
 
-	float Window::get_bottom_ortho() const
-	{ 
-		return (_bottomOrtho.has_value() ? _bottomOrtho.value() : throw std::runtime_error("_bottomOrtho has not VALUE!")); 
-	}
-
-	float Window::get_top_ortho() const 
-	{ 
-		return (_topOrtho.has_value() ? _topOrtho.value() : throw std::runtime_error("_topOrtho has not VALUE!")); 
-	}
-
-	float Window::get_right_ortho() const
-	{ 
-		return (_rightOrtho.has_value() ? _rightOrtho.value() : throw std::runtime_error("_rightOrtho has not VALUE!")); 
-	}
 
 	bool Window::is_key_active(Keys key, Action action) const
 	{
@@ -412,9 +353,9 @@ namespace tools {
 		return _name;
 	}
 
-	void Window::set_name(const char* name)
+	void Window::set_name(const std::string& name)
 	{
-		glfwSetWindowTitle(_mainWindow, name);
+		glfwSetWindowTitle(_mainWindow, name.c_str());
 		_name = std::string(name);
 	}
 
@@ -437,10 +378,6 @@ namespace tools {
 		return _bufferWidth; 
 	}
 
-	bool Window::is_ortho() const
-	{
-		return _isOrtho;
-	}
 
 	int Window::get_buffer_height()
 	{ 
@@ -468,7 +405,7 @@ namespace tools {
 		return _mainWindow;
 	}
 
-	bool Window::set_window(GLFWwindow* window, bool isOrtho)
+	bool Window::set_window(GLFWwindow* window)
 	{ 
 		if (!window)
 		{
@@ -502,30 +439,15 @@ namespace tools {
 
 		glfwSetWindowUserPointer(_mainWindow, this); 
 
-
 		_aspectRatio = _width / _height;
-
-		if (isOrtho)
-		{
-			if (_aspectRatio >= 1.0f)
-			{
-				_leftOrtho = -1.0f * _aspectRatio;
-				_rightOrtho = 1.0f * _aspectRatio;
-				_topOrtho = 1.0f;
-				_bottomOrtho = -1.0f;
-			}
-			else
-			{
-				_leftOrtho = -1.0f;
-				_rightOrtho = 1.0f;
-				_topOrtho = 1.0f / _aspectRatio;
-				_bottomOrtho = -1.0f / _aspectRatio;
-			}
-		}
-
 
 		return true;
 
+	}
+
+	void Window::world_visitor(physics::World& visitor)
+	{
+		visitor.set_camera(_camera);
 	}
 
 	float Window::get_width() const
@@ -536,14 +458,6 @@ namespace tools {
 	float Window::get_height() const
 	{ 
 		return _height; 
-	}
-
-	void Window::set_ortho(float left, float right, float top, float bottom)
-	{
-		_leftOrtho = left;
-		_rightOrtho = right;
-		_topOrtho = top;
-		_bottomOrtho = bottom;
 	}
 
 
@@ -566,7 +480,7 @@ namespace tools {
 			g_numOfWindows--;
 		}
 
-		//GraphicsHandlerAPI::DeleteWindow(_mainWindow);
+		//GraphicsHandlerAPI::DeleteWindowBase(_mainWindow);
 	}
 
 	void Window::poll_events() const
@@ -629,7 +543,7 @@ namespace tools {
 			mod = MODS(mode);
 		}
 
-		const auto keys = _inputManager.list_entires_for_window_const<KeyCombInputOne>();
+		const auto keys = _inputManager.list_entires_const<KeyCombInputOne>();
 
 		switch (action)
 		{
@@ -642,7 +556,7 @@ namespace tools {
 					_updated = true;
 					_keys[key] = true;
 
-					_inputManager.update_and_emit(KeyCombInputOne(KEYS(key), Action::Press, mod));
+					_inputManager.emit(KeyCombInputOne(KEYS(key), Action::Press, mod));
 				}
 			}
 			
@@ -657,7 +571,7 @@ namespace tools {
 					_updated = false;
 					_keys[key] = false;
 
-					_inputManager.update_and_emit(KeyCombInputOne(KEYS(key), Action::Release, mod));
+					_inputManager.emit(KeyCombInputOne(KEYS(key), Action::Release, mod));
 				}
 			}
 			
@@ -672,7 +586,7 @@ namespace tools {
 					_updated = false;
 					_keys[key] = false;
 
-					_inputManager.update_and_emit(KeyCombInputOne(KEYS(key), Action::Repeat, mod));
+					_inputManager.emit(KeyCombInputOne(KEYS(key), Action::Repeat, mod));
 				}
 			}
 		
@@ -680,7 +594,7 @@ namespace tools {
 		break;
 		}//switch statement
 
-		const auto keyPoly = _inputManager.list_entires_for_window_const<KeyCombInputPoly>();
+		const auto keyPoly = _inputManager.list_entires_const<KeyCombInputPoly>();
 
 		if (keyPoly.empty())
 		{
@@ -716,7 +630,7 @@ namespace tools {
 		_mouseCurrentX = posX;
 		_mouseCurrentY = posY;
 		
-		const auto mice = _inputManager.list_entires_for_window_const<MouseMoveInput>();
+		const auto mice = _inputManager.list_entires_const<MouseMoveInput>();
 		if (!mice.empty())
 		{
 			for (const auto& mouse : mice)
@@ -729,8 +643,8 @@ namespace tools {
 	void Window::HandleMouseButtons(int mouseButton, int action, int mods)
 	{
 
-		const auto keys = _inputManager.list_entires_for_window_const<MouseButtonInput>();
-		const auto buttons = _inputManager.list_entires_for_window_const<AABButtonInput>();
+		const auto keys = _inputManager.list_entires_const<MouseButtonInput>();
+		const auto buttons = _inputManager.list_entires_const<AABButtonInput>();
 
 		switch (action)
 		{
@@ -741,7 +655,7 @@ namespace tools {
 			{
 				if (ky->matches(MouseButtonInput(mouse, Action::Press)))
 				{
-					_inputManager.update_and_emit(MouseButtonInput(mouse, Action::Press));
+					_inputManager.emit(MouseButtonInput(mouse, Action::Press));
 				}
 			}
 
@@ -765,7 +679,7 @@ namespace tools {
 			{
 				if (ky->matches(MouseButtonInput(mouse, Action::Release)))
 				{
-					_inputManager.update_and_emit(MouseButtonInput(mouse, Action::Release));
+					_inputManager.emit(MouseButtonInput(mouse, Action::Release));
 				}
 			}
 
@@ -789,7 +703,7 @@ namespace tools {
 			{
 				if (ky->matches(MouseButtonInput(mouse, Action::Repeat)))
 				{
-					_inputManager.update_and_emit(MouseButtonInput(mouse, Action::Repeat));
+					_inputManager.emit(MouseButtonInput(mouse, Action::Repeat));
 				}
 			}
 
@@ -866,5 +780,50 @@ namespace tools {
 	//{
 	//	_oneInputCurentlyActive = cv;
 	//}
+	/*
+
+	ClassicWindow::ClassicWindow(float windowWidth, float windowHeight, const std::string& name, bool createWindow)
+		: Window(windowWidth, windowHeight, name, createWindow)
+	{
+	}
+
+	ClassicWindow::ClassicWindow(ClassicWindow&& other) noexcept
+		: Window(std::move(other))
+	{
+		_camera = std::move(other._camera);
+	}
+
+	ClassicWindow& ClassicWindow::operator=(ClassicWindow&& other) noexcept
+	{
+		if (this != &other)
+		{
+			Window::operator=(std::move(other));
+			_camera = std::move(other._camera);
+		}
+		return *this;
+	}
+
+	inline QuatWindow::QuatWindow(float windowWidth, float windowHeight, const std::string& name, bool createWindow)
+		: Window(windowWidth, windowHeight, name, createWindow)
+	{
+	}
+
+	inline QuatWindow::QuatWindow(QuatWindow&& other) noexcept
+		: Window(std::move(other))
+	{
+		_camera = std::move(other._camera);
+	}
+
+	inline QuatWindow& QuatWindow::operator=(QuatWindow&& other) noexcept
+	{
+		if (this == &other)
+		{
+			Window::operator=(std::move(other));
+			_camera = std::move(other._camera);
+		}
+		return *this;
+	}
+	*/
+
 
 } //Namespace tools

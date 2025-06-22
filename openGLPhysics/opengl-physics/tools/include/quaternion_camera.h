@@ -4,12 +4,13 @@
 
 #include "tools/include/window.h"
 #include "tools/include/camera_bundle.h"
+#include "tools/include/base_camera.h"
 
 
 namespace tools
 {
 
-	class QuaternionCamera 
+	class QuaternionCamera : public BaseCamera
 	{
 	public:
 		QuaternionCamera();
@@ -34,18 +35,15 @@ namespace tools
 		glm::mat4 get_projection() const;
 		glm::vec3 get_position() const;
 		
-		void set_commands_to_window(tools::Window& win);
-		
 		bool is_moving();
-		
+	
+		bool event_key(Direction dir, double deltaTime) override;
+		bool event_key(double deltaTime, float xMove, float yMove) override;
+
 		~QuaternionCamera();
 
 
 	private:
-		glm::mat4 _projection;
-		glm::mat4 _view;
-
-		glm::vec3 _position;
 		glm::vec3 _prevPosition;
 		glm::quat _orientation;
 		glm::quat _prevOrientation;
@@ -71,10 +69,6 @@ namespace tools
 		void pitch(double deltaTime, float xMove);
 		void yaw(double deltaTime, float yMove);
 		void roll(double deltaTime, float zMove);
-
-		bool event_key(Direction dir, double deltaTime);
-		bool event_key(double deltaTime, float xMove, float yMove);
-
 
 		void update_view_matrix();
 	};

@@ -3,51 +3,7 @@
 
 namespace Program
 {
-
-	tools::Camera create_camera_ortho(tools::Window& window)
-	{
-		tools::CameraBundleOrthographic cameraBundleOrtho = {};
-		cameraBundleOrtho.position = glm::vec3(0.0f, 0.0f, 1.0f);
-		cameraBundleOrtho.front = glm::vec3(0.0f, 0.0f, -1.0f);
-		cameraBundleOrtho.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		cameraBundleOrtho.left = window.get_left_ortho();
-		cameraBundleOrtho.right = window.get_right_ortho();
-		cameraBundleOrtho.bottom = window.get_bottom_ortho();
-		cameraBundleOrtho.top = window.get_top_ortho();
-		cameraBundleOrtho.nearZ = 0.1f;
-		cameraBundleOrtho.farZ = 1000.0f;
-		cameraBundleOrtho.speed = 0.01f;
-		cameraBundleOrtho.turnSpeed = 0.1f;
-
-		tools::Camera camera(cameraBundleOrtho);
-
-		camera.set_commands_to_window(window);
-		/*
-		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
-
-		for (const auto& [key, mod] : keys)
-		{
-			std::function<bool()> func = [val = window.FindKeyComb(key), dt = window.get_delta_time_ref()]() -> bool
-				{
-					val->change_parameters(dt);
-					return true;
-				};
-
-			window.SetFuncParamUpdaterKeys(key, std::move(func), mod);
-		}
-
-		window.SetMouseChangeUpdater([mouseMove = window.GetMouseMove(), &window, dt = window.get_delta_time_ref()]() -> bool
-			{
-				mouseMove->change_parameters(dt, window.GetMouseChangeXf(), window.GetMouseChangeYf());
-				return true;
-			}
-		);
-		*/
-		return camera;
-	}
-
-	tools::QuaternionCamera create_quanternion_camera_persp(tools::Window& window)
-	{
+/*
 
 		tools::CameraBundlePerspective cameraBundlePersp = {};
 		cameraBundlePersp.nearZ = 0.1f;
@@ -63,35 +19,6 @@ namespace Program
 		tools::QuaternionCamera camera(cameraBundlePersp);
 
 		camera.set_commands_to_window(window);
-		/*
-		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
-
-		for (const auto& [key, mod] : keys)
-		{
-			std::function<bool()> func = [val = window.FindKeyComb(key), &dt = window.get_delta_time_ref()]() -> bool
-				{
-					val->change_parameters(dt);
-					std::cout << "Updating camera with  dt: " << dt << "\n";
-					return true;
-				};
-
-			window.SetFuncParamUpdaterKeys(key, std::move(func), mod);
-		}
-
-		window.SetMouseChangeUpdater([mouseMove = window.GetMouseMove(), &window, &dt = window.get_delta_time_ref()]() -> bool
-			{
-				std::cout << "Updating camera with  dt: " << dt << "\n";
-				std::cout << "Mouse Xf: " << window.GetMouseChangeXf() << " Mouse Yf: " << window.GetMouseChangeYf() << "\n";
-				mouseMove->change_parameters(dt, - window.GetMouseChangeXf(), window.GetMouseChangeYf());
-				return true;
-			}
-		);
-		*/
-		return camera;
-	}
-	
-	tools::Camera create_camera_persp(tools::Window& window)
-	{
 
 		tools::CameraBundlePerspective cameraBundlePersp = {};
 		cameraBundlePersp.nearZ = 0.1f;
@@ -104,36 +31,7 @@ namespace Program
 		cameraBundlePersp.fov = 45.0f;
 		cameraBundlePersp.aspectRatio = window.get_aspect_ratio();
 
-		tools::Camera camera(cameraBundlePersp);
-
-		camera.set_commands_to_window(window);
-		/*
-		auto keys = tools::KeyUsageRegistry::get_instance().a_to_z_keys_in_use();
-
-		for (const auto& [key, mod] : keys)
-		{
-			std::function<bool()> func = [val = window.FindKeyComb(key), &dt = window.get_delta_time_ref()]() -> bool
-				{
-					val->change_parameters(dt);
-					std::cout << "Updating camera with  dt: " << dt << "\n";
-					return true;
-				};
-
-			window.SetFuncParamUpdaterKeys(key, std::move(func), mod);
-		}
-
-		window.SetMouseChangeUpdater([mouseMove = window.GetMouseMove(), &window, &dt = window.get_delta_time_ref()]() -> bool
-			{
-				std::cout << "Updating camera with  dt: " << dt << "\n";
-				std::cout << "Mouse Xf: " << window.GetMouseChangeXf() << " Mouse Yf: " << window.GetMouseChangeYf() << "\n";
-				mouseMove->change_parameters(dt, window.GetMouseChangeXf(), window.GetMouseChangeYf());
-				return true;
-			}
-		);
-		*/
-
-		return camera;
-	}
+*/
 
 	glInit::GLProgram create_program()
 	{
@@ -286,14 +184,24 @@ namespace Program
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
-	tools::Window create_window(int width, int height, const std::string& title)
+	tools::Window create_window(int width, int height, const std::string& title, const std::optional<tools::CameraBundlePerspective>& camBundle)
 	{
-		tools::Window window(width, height, title);
-		window.create_window(true, true);
-
-		window.set_escape_button(tools::Keys::Esc);
-
-		return window;
+		if (!camBundle.has_value())
+		{
+			tools::CameraBundlePerspective defaultCamBundle;
+			defaultCamBundle.nearZ = 0.1f;
+			defaultCamBundle.farZ = 1000.0f;
+			defaultCamBundle.speed = 0.05f;
+			defaultCamBundle.turnSpeed = 0.05f;
+			defaultCamBundle.position = glm::vec3(0.0f, 0.0f, 1.0f);
+			defaultCamBundle.front = glm::vec3(0.0f, 0.0f, -1.0f);
+			defaultCamBundle.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
+			defaultCamBundle.fov = 45.0f;
+			defaultCamBundle.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
+			
+			return tools::Window(width, height, title, true, defaultCamBundle, tools::CameraType::Quaternion);
+		}
+		return tools::Window(width, height, title, true, camBundle.value(), tools::CameraType::Quaternion);
 	}
 
 	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program, const glm::vec3& direction, const glm::vec3& color)
