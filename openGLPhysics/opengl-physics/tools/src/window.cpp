@@ -154,12 +154,30 @@ namespace tools {
 
 	bool Window::is_updated()
 	{
-		if (_updated)
+		return _updated;	
+	}
+
+	void Window::update_fps_tag()
+	{
+		static size_t frameCount = 0;
+
+		static std::chrono::time_point lastTime = std::chrono::steady_clock::now();
+	
+		auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - lastTime);
+
+		if (duration.count() >= 1)
 		{
-			_updated = false;
-			return true;
+			std::string fpsTitle = _name + " | FPS: " + std::to_string(frameCount);
+			glfwSetWindowTitle(_mainWindow, fpsTitle.c_str());
+
+			lastTime = std::chrono::steady_clock::now();
+			frameCount = 0;
 		}
-		return false;
+		else
+		{
+			frameCount++;
+		}
+
 	}
 
 	void Window::update()
@@ -167,6 +185,7 @@ namespace tools {
 		reset_delta_time();
 		swap_buffers();
 		poll_events();
+		update_fps_tag();
 	}
 
 	void Window::reset_delta_time()
@@ -240,8 +259,10 @@ namespace tools {
 
 			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
+			glFrontFace(GL_CCW);
 
-			glEnable(GL_BLEND);
+			glEnable(GL_DEPTH_TEST);
+
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
@@ -322,12 +343,12 @@ namespace tools {
 
 		std::array<KeyCombInputOne, dirs.size()> input =
 		{
-			KeyCombInputOne(Keys::W, Action::Press),
-			KeyCombInputOne(Keys::S, Action::Press),
-			KeyCombInputOne(Keys::A, Action::Press),
-			KeyCombInputOne(Keys::D, Action::Press),
-			KeyCombInputOne(Keys::Q, Action::Press),
-			KeyCombInputOne(Keys::E, Action::Press)
+			KeyCombInputOne(Keys::W, Action::Press | Action::Repeat),
+			KeyCombInputOne(Keys::S, Action::Press | Action::Repeat),
+			KeyCombInputOne(Keys::A, Action::Press | Action::Repeat),
+			KeyCombInputOne(Keys::D, Action::Press | Action::Repeat),
+			KeyCombInputOne(Keys::Q, Action::Press | Action::Repeat),
+			KeyCombInputOne(Keys::E, Action::Press | Action::Repeat)
 		};
 
 
@@ -594,7 +615,7 @@ namespace tools {
 			{
 				if (ky->matches(KeyCombInputOne(KEYS(key), Action::Repeat, mod)))
 				{
-					_updated = false;
+					_updated = true;
 					_keys[key] = false;
 
 					_inputManager.emit(KeyCombInputOne(KEYS(key), Action::Repeat, mod));
@@ -659,7 +680,8 @@ namespace tools {
 
 		switch (action)
 		{
-		case GLFW_PRESS: {
+		case GLFW_PRESS: 
+		{
 			Mouse mouse = (mouseButton == GLFW_MOUSE_BUTTON_LEFT ? Mouse::Left : Mouse::Right);
 
 			for (const auto& ky : keys)

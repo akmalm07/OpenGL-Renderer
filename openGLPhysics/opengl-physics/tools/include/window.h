@@ -107,6 +107,8 @@ namespace tools
 
 		bool is_updated();
 
+		void update_fps_tag();
+
 		void update();
 
 

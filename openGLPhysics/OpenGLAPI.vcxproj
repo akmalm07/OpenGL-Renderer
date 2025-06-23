@@ -101,6 +101,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="opengl-physics\physics\include\aabb.h" />
+    <ClInclude Include="opengl-physics\physics\include\obb.h" />
+    <ClInclude Include="opengl-physics\physics\include\physics_bundles.h" />
+    <ClInclude Include="opengl-physics\physics\include\rigid.h" />
     <ClInclude Include="opengl-physics\tools\include\base_camera.h" />
     <ClInclude Include="opengl-physics\tools\include\input_manager.h" />
     <ClInclude Include="opengl-physics\physics\include\moveible.h" />
@@ -113,19 +117,15 @@
     <ClInclude Include="opengl-physics\glInit\include\program.h" />
     <ClInclude Include="opengl-physics\glUtil\include\mesh.h" />
     <ClInclude Include="opengl-physics\glUtil\include\mesh_bundle.h" />
-    <ClInclude Include="opengl-physics\glUtil\include\stride_composition.h" />
     <ClInclude Include="opengl-physics\glUtil\include\texture.h" />
     <ClInclude Include="opengl-physics\glUtil\include\uniform_buffer.h" />
     <ClInclude Include="opengl-physics\glUtil\include\uniform_buffer.inl" />
     <ClInclude Include="opengl-physics\physics\include\aabb_box.h" />
     <ClInclude Include="opengl-physics\physics\include\aabb_cube.h" />
     <ClInclude Include="opengl-physics\physics\include\acceleration.h" />
-    <ClInclude Include="opengl-physics\physics\include\cube_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\meshes.h" />
     <ClInclude Include="opengl-physics\physics\include\moveible_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\rigid_cube_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\rigid_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\soft_cube_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\soft_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\universal_time.h" />
     <ClInclude Include="opengl-physics\physics\include\volocity.h" />
@@ -154,8 +154,13 @@
     <ClInclude Include="opengl-physics\tools\include\quaternion_camera.h" />
     <ClInclude Include="opengl-physics\glUtil\include\shadow_map.h" />
     <ClInclude Include="opengl-physics\glUtil\include\shadow_map_bundle.h" />
+    <ClInclude Include="opengl-physics\physics\include\sphere_bound.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="opengl-physics\physics\src\aabb.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\moveible.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\obb.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\rigid.cpp" />
     <ClCompile Include="opengl-physics\tools\src\base_camera.cpp" />
     <ClCompile Include="global\headers.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -165,17 +170,13 @@
     <ClCompile Include="opengl-physics\glInit\src\program.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\mesh.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\stb_image.cpp" />
-    <ClCompile Include="opengl-physics\glUtil\src\stride_composition.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\texture.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\uniform_buffer.cpp" />
     <ClCompile Include="opengl-physics\physics\src\aabb_box.cpp" />
     <ClCompile Include="opengl-physics\physics\src\aabb_cube.cpp" />
     <ClCompile Include="opengl-physics\physics\src\acceleration.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\cube_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\moveible_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\rigid_cube_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\rigid_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\soft_cube_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\soft_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\universal_time.cpp" />
     <ClCompile Include="opengl-physics\physics\src\volocity.cpp" />
@@ -196,11 +197,13 @@
     <ClCompile Include="opengl-physics\tools\src\window.cpp" />
     <ClCompile Include="opengl-physics\tools\src\quaternion_camera.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\shadow_map.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\sphere_bound.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="TESTER.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="opengl-physics\physics\include\aabb.inl" />
     <None Include="opengl-physics\tools\include\input_manager.inl" />
     <None Include="opengl-physics\tools\include\window_input.inl" />
     <None Include="shaders\shader.frag" />

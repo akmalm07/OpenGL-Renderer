@@ -19,12 +19,12 @@ namespace physics
 	};
 
 
-	class _OBB_COMMON_ANCESTOR : virtual public _AABB_COMMON_ANCESTOR
+	class OBB : public AABB
 	{
 	public:
-		_OBB_COMMON_ANCESTOR();
+		OBB();
 
-		_OBB_COMMON_ANCESTOR(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree);
+		OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree);
 
 		void init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree);
 
@@ -42,10 +42,10 @@ namespace physics
 
 		glm::vec3 get_aabb_wrap_max() const;
 
-		virtual ~_OBB_COMMON_ANCESTOR();
+		virtual ~OBB();
 
 
-	protected:
+	private:
 		float _rotationDeg = 0.0f;
 		glm::vec3 _xyzRotation = glm::vec3(0.0f);
 		glm::mat4 _rotationMat = glm::mat4(1.0f);
@@ -53,13 +53,13 @@ namespace physics
 		glm::vec3 _localMin = glm::vec3(0.0f);
 		glm::vec3 _localMax = glm::vec3(0.0f);
 
-	protected:
+	private:
 		glm::vec3 get_extent() const;
 	};
 
-
+	/*
 	template<>
-	class _OBB<_PRECALC_COORDS::NO> : public _AABB<_PRECALC_COORDS::NO>, public _OBB_COMMON_ANCESTOR
+	class _OBB<_PRECALC_COORDS::NO> : public _AABB<_PRECALC_COORDS::NO>, public OBB
 	{
 	public:
 		
@@ -71,7 +71,7 @@ namespace physics
 	
 
 	template<> // To be TESTED ...
-	class _OBB<_PRECALC_COORDS::YES> : public _AABB<_PRECALC_COORDS::YES>, public _OBB_COMMON_ANCESTOR
+	class _OBB<_PRECALC_COORDS::YES> : public _AABB<_PRECALC_COORDS::YES>, public OBB
 	{
 	public:
 		_OBB();
@@ -79,6 +79,8 @@ namespace physics
 
 		~_OBB();
 	};
+	*/
+
 
 	glm::vec3 project_onto_axis(const glm::vec3& vec);
 
@@ -86,7 +88,4 @@ namespace physics
 
 	glm::vec3 project_onto_plane(const glm::vec3& vec, const glm::vec3& plane);
 
-
-	using OBB = _OBB<_PRECALC_COORDS::NO>;
-	using OBBCoords = _OBB<_PRECALC_COORDS::YES>;
 }

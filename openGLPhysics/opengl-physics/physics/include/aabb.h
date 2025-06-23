@@ -8,10 +8,11 @@
 
 namespace physics
 {
-	enum class _PRECALC_COORDS
+	enum class BoundType
 	{
-		YES = 0,
-		NO,
+		AABB = 0,
+		OBB,
+		Sphere
 	};
 
 	struct MinMax
@@ -20,54 +21,50 @@ namespace physics
 		glm::vec3 max;
 	};
 
-	template <_PRECALC_COORDS T>
-	class _OBB;
+	
+	class OBB;
 
-	template <_PRECALC_COORDS T>
-	class _AABB;
+	
+	class AABB;
+
+
+	class SphereBound;
+
 
 	class _CHECK_COLLISION
 	{
 	public:
-		template <_PRECALC_COORDS T>
-		bool is_touching(const _AABB<T>& a, const _AABB<T>& b) const;
-		template <_PRECALC_COORDS T>
-		bool is_touching(const _OBB<T>& a, const _OBB<T>& b) const;
-		template <_PRECALC_COORDS T>
-		bool is_touching(const _AABB<T>& a, const _OBB<T>& b) const;
+		
+		bool is_touching(const AABB& a, const AABB& b) const;
+		
+		bool is_touching(const OBB& a, const OBB& b) const;
+		
+		bool is_touching(const AABB& a, const OBB& b) const;
 
 
-		template <_PRECALC_COORDS T>
-		bool sphere_check(const _AABB<T>& a, const _AABB<T>& b) const;
+		
+		bool sphere_check(const AABB& a, const AABB& b) const;
 
-		template <_PRECALC_COORDS T>
-		bool sphere_check(const _OBB<T>& a, const _OBB<T>& b) const;
-
-		template <_PRECALC_COORDS T>
-		bool sphere_check(const _AABB<T>& a, const _OBB<T>& b) const;
+		bool sphere_check(const OBB& a, const OBB& b) const;
+		
+		bool sphere_check(const AABB& a, const OBB& b) const;
 
 
-		template <_PRECALC_COORDS T>
-		bool full_sat_check(const _OBB<T>& a, const _OBB<T>& b) const;
-
-		template <_PRECALC_COORDS T>
-		bool full_sat_check(const _OBB<T>& a, const _AABB<T>& b) const;
-
-
-		template <_PRECALC_COORDS T>
-		bool _AABB_cast_check(const _OBB<T>& a, const _AABB<T>& b) const;
-
-		template <_PRECALC_COORDS T>
-		bool _AABB_cast_check(const _OBB<T>& a, const _OBB<T>& b) const;
+		
+		bool full_sat_check(const OBB& a, const OBB& b) const;
+		
+		bool full_sat_check(const OBB& a, const AABB& b) const;
 
 
-		template <_PRECALC_COORDS T>
-		bool partial_sat_check(const _OBB<T>& a, const _AABB<T>& b) const;
+		
+		bool aabb_cast_check(const OBB& a, const AABB& b) const;
+		
+		bool aabb_cast_check(const OBB& a, const OBB& b) const;
+
+
+		bool partial_sat_check(const OBB& a, const AABB& b) const;
 
 	protected:
-
-		glm::vec3 _min;
-		glm::vec3 _max;
 
 		glm::vec3 _center;
 		glm::vec3 _halfExtent;
@@ -79,82 +76,71 @@ namespace physics
 
 	};
 
-	class _AABB_COMMON_ANCESTOR : public _CHECK_COLLISION
+	class AABB : public _CHECK_COLLISION
 	{
 	public:
-		_AABB_COMMON_ANCESTOR();
+		AABB();
 
-		_AABB_COMMON_ANCESTOR(const glm::vec3& min, const glm::vec3& max);
+		AABB(const glm::vec3& min, const glm::vec3& max);
 
 		void init(const glm::vec3& min, const glm::vec3& max);
 
 		glm::vec3 get_half_extent() const;
 
-		virtual void move_reletive_to_dist(const glm::vec3& dist);
-		
-		virtual void move_x_reletive_to_dist(float dist);
-		virtual void move_y_reletive_to_dist(float dist);
-		virtual void move_z_reletive_to_dist(float dist);
+		void move_reletive_to_dist(const glm::vec3& dist);
 
-		virtual void change(const glm::vec3& offset);
+		void change(const glm::vec3& offset);
 	
-		virtual void change_x(float offset);
-		virtual void change_y(float offset);
-		virtual void change_z(float offset);
+		void change_x(float offset);
+		void change_y(float offset);
+		void change_z(float offset);
 
-		virtual void move(const glm::vec3& volocity, float deltaTime);
+		void move(const glm::vec3& volocity, float deltaTime);
 
-		virtual void move(const glm::vec3& volocityTimesDeltaTime);
+		void move(const glm::vec3& volocityTimesDeltaTime);
 
 		glm::vec3 get_center() const;
 
 		glm::vec3 get_min() const;
 		glm::vec3 get_max() const;
 
+		bool is_touching(const AABB& other) const;
+
+		bool is_touching(const OBB& other) const;
+
+		std::array <glm::vec3, 8> get_corners() const;
 
 		MinMax get_min_max() const;
 
-		virtual ~_AABB_COMMON_ANCESTOR();
-	};
-
-
-	template <>
-	class _AABB<_PRECALC_COORDS::NO> : virtual public _AABB_COMMON_ANCESTOR
-	{
-	public:
-		_AABB();
-		_AABB(const glm::vec3& min, const glm::vec3& max);
-
-		template <_PRECALC_COORDS T>
-		bool is_touching(const _AABB<T>& other) const;
-
-		template <_PRECALC_COORDS T>
-		bool is_touching(const _OBB<T>& other) const;
-
-		virtual ~_AABB();
+		~AABB();
 
 	protected:
+		glm::vec3 _min;
+		glm::vec3 _max;
+
+		friend class _CHECK_COLLISION;
 
 	};
 
+	/*
 
 	template <>
-	class _AABB <_PRECALC_COORDS::YES> : virtual public _AABB_COMMON_ANCESTOR
+	class aabb <_PRECALC_COORDS::YES> : public AABB
 	{
 	public:
-		_AABB(); 
-		_AABB(const glm::vec3& min, const glm::vec3& max);
+		aabb(); 
+		aabb(const glm::vec3& min, const glm::vec3& max);
 
-		template <_PRECALC_COORDS T>
-		bool is_touching(const _AABB<T>& other) const;
-
-		template <_PRECALC_COORDS T>
-		bool is_touching(const _OBB<T>& other) const;
-
-		virtual std::array <glm::vec3, 8> get_corners() const;
 		
-		virtual std::array <glType::Vertex, 48> get_vertices(const glm::vec3& color) const;
-		virtual std::array <glType::Index, 36> get_indices() const;
+		bool is_touching(const AABB& other) const;
+
+		
+		bool is_touching(const OBB& other) const;
+
+		std::array <glm::vec3, 8> get_corners() const;
+		
+		std::array <glType::Vertex, 48> get_vertices(const glm::vec3& color) const;
+		std::array <glType::Index, 36> get_indices() const;
 
 		void move_reletive_to_dist(const glm::vec3& dist) override;
 
@@ -172,7 +158,7 @@ namespace physics
 		void change_y(float offset) override;
 		void change_z(float offset) override;
 
-		virtual ~_AABB();
+		~aabb();
 
 	protected:
 		std::array <glm::vec3, 8> _corners;
@@ -181,13 +167,14 @@ namespace physics
 	MinMax get_min_max_from_vertices(const std::vector<glType::Vertex>& verts, FullStride fullStride, PosStride posStride);
 
 	//Compiler tricks to avoid code duplication (CTAD) -- ERROR!
-	//_AABB() -> _AABB<_PRECALC_COORDS::NO>;
+	//aabb() -> aabb<_PRECALC_COORDS::NO>;
 
-	//_AABB(const glm::vec3&, const glm::vec3&) -> _AABB<_PRECALC_COORDS::NO>;
+	//aabb(const glm::vec3&, const glm::vec3&) -> aabb<_PRECALC_COORDS::NO>;
 
-	using AABB = _AABB<_PRECALC_COORDS::NO>;
+	using AABB = aabb<_PRECALC_COORDS::NO>;
 
-	using AABBCoord = _AABB<_PRECALC_COORDS::YES>;
+	using AABBCoord = aabb<_PRECALC_COORDS::YES>;
+	*/
 }
 
 #include "physics/include/aabb.inl"

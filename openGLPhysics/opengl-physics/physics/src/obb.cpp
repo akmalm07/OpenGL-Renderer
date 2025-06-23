@@ -4,18 +4,18 @@
 namespace physics
 {
 
-	_OBB_COMMON_ANCESTOR::_OBB_COMMON_ANCESTOR() = default;
+	OBB::OBB() = default;
 
 
-	_OBB_COMMON_ANCESTOR::_OBB_COMMON_ANCESTOR(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree)
+	OBB::OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree)
 	{
 		init(min, max, xyzRotation, rotationDegree);
 	}
 
 
-	void _OBB_COMMON_ANCESTOR::init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree)
+	void OBB::init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree)
 	{
-		_AABB_COMMON_ANCESTOR::init(min, max);
+		AABB::init(min, max);
 		_xyzRotation = xyzRotation;
 		_rotationDeg = std::clamp(rotationDegree, -89.9f, 89.9f);
 
@@ -34,48 +34,48 @@ namespace physics
 	}
 
 
-	glm::vec3 _OBB_COMMON_ANCESTOR::get_rotation() const
+	glm::vec3 OBB::get_rotation() const
 	{
 		return _xyzRotation;
 	}
 
 
-	float _OBB_COMMON_ANCESTOR::get_rotation_degree() const
+	float OBB::get_rotation_degree() const
 	{
 		return _rotationDeg;
 	}
 
 
-	glm::mat4 _OBB_COMMON_ANCESTOR::get_rotation_matrix() const
+	glm::mat4 OBB::get_rotation_matrix() const
 	{
 		return _rotationMat;
 	}
 
-	glm::vec3 _OBB_COMMON_ANCESTOR::get_local_min() const
+	glm::vec3 OBB::get_local_min() const
 	{
 		return _localMin;
 	}
 
-	glm::vec3 _OBB_COMMON_ANCESTOR::get_local_max() const
+	glm::vec3 OBB::get_local_max() const
 	{
 		return _localMax;
 	}
 
-	glm::vec3 _OBB_COMMON_ANCESTOR::get_aabb_wrap_min() const
+	glm::vec3 OBB::get_aabb_wrap_min() const
 	{
 		return _center - get_extent();
 	}
 
-	glm::vec3 _OBB_COMMON_ANCESTOR::get_aabb_wrap_max() const
+	glm::vec3 OBB::get_aabb_wrap_max() const
 	{
 		return _center + get_extent();
 
 	}
 
-	_OBB_COMMON_ANCESTOR::~_OBB_COMMON_ANCESTOR() = default;
+	OBB::~OBB() = default;
 
 
-	glm::vec3 _OBB_COMMON_ANCESTOR::get_extent() const
+	glm::vec3 OBB::get_extent() const
 	{
 		return glm::abs(_rotationMat[0]) * _halfExtent.x +
 			glm::abs(_rotationMat[1]) * _halfExtent.y +
@@ -110,26 +110,8 @@ namespace physics
 	}
 
 
-	_OBB<_PRECALC_COORDS::NO>::_OBB() = default;
-
-	_OBB<_PRECALC_COORDS::NO>::_OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree)
-	{
-		_OBB_COMMON_ANCESTOR::init(min, max, xyzRotation, rotationDegree);
-	}
-
-	_OBB<_PRECALC_COORDS::NO>::~_OBB() = default;
-
-
-	_OBB<_PRECALC_COORDS::YES>::_OBB() = default;
-
-	_OBB<_PRECALC_COORDS::YES>::_OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree)
-	{
-		_OBB_COMMON_ANCESTOR::init(min, max, xyzRotation, rotationDegree);
-
-		glm::vec3 xAxisRotation = glm::vec3(_rotationMat[0]);
-		glm::vec3 yAxisRotation = glm::vec3(_rotationMat[1]);
-		glm::vec3 zAxisRotation = glm::vec3(_rotationMat[2]);
-
+}
+/*
 		_corners =
 		{
 			_center + _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
@@ -141,9 +123,5 @@ namespace physics
 			_center + _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
 			_center - _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
 		};
-	}
-
-	_OBB<_PRECALC_COORDS::YES>::~_OBB() = default;
-
-}
+*/
 

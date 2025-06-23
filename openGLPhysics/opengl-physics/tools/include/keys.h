@@ -100,13 +100,12 @@ namespace tools {
 		Count = 3
 	};
 
-	enum class Action
+	enum class Action : uint32_t
 	{
-		None = GLFW_KEY_UNKNOWN,
-		Release = GLFW_RELEASE, 
-		Press = GLFW_PRESS,
-		Repeat = GLFW_REPEAT,
-		Count = 3
+		None = 0,
+		Release = 1 << 0, 
+		Press = 1 << 1,  
+		Repeat = 1 << 2,
 	};
 
 	enum class InputType
@@ -145,6 +144,13 @@ namespace tools {
 	constexpr T operator&(T a, T b) {	
 		return static_cast<T>(static_cast<uint32_t>(a) & static_cast<uint32_t>(b));
 	}
+	
+	template <glType::Enum T>
+	constexpr bool has(T a, T b) {
+		using U = std::underlying_type_t<T>;
+		return (static_cast<U>(a) & static_cast<U>(b)) != 0;
+	}
+
 
 	template <glType::Enum T>
 	constexpr T operator^(T a, T b) {
@@ -171,6 +177,25 @@ namespace tools {
 	int toInt(T type) 
 	{
 		return static_cast<int>(type);
+	}
+
+	inline Action from_glfw_action(int glfwAction)
+	{
+		switch (glfwAction)
+		{
+		case GLFW_PRESS:   return Action::Press;
+		case GLFW_RELEASE: return Action::Release;
+		case GLFW_REPEAT:  return Action::Repeat;
+		default:           return Action::None;
+		}
+	}
+
+	inline int to_glfw_action(Action action)
+	{
+		if (action == Action::Press)   return GLFW_PRESS;
+		if (action == Action::Release) return GLFW_RELEASE;
+		if (action == Action::Repeat)  return GLFW_REPEAT;
+		return GLFW_KEY_UNKNOWN;
 	}
 }
 

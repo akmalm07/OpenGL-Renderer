@@ -84,16 +84,16 @@ namespace tools
 		view_ptr<InputStruct> casted = cast_to_type<InputStruct>(ptr);
 
 		if constexpr (std::same_as<InputStruct, KeyCombInputOne>) {
-			return input.number == casted->number && input.action == casted->action && input.mod == casted->mod;
+			return input.number == casted->number && has(input.action, casted->action) && input.mod == casted->mod;
 		}
 		else if constexpr (std::same_as<InputStruct, KeyCombInputPoly>) {
-			return input.numbers == casted->numbers && input.action == casted->action && input.mod == casted->mod;
+			return input.numbers == casted->numbers && has(input.action, casted->action) && input.mod == casted->mod;
 		}
 		else if constexpr (std::same_as<InputStruct, MouseButtonInput>) {
-			return input.button == casted->button && input.action == casted->action;
+			return input.button == casted->button && has(input.action, casted->action);
 		}
 		else if constexpr (std::same_as<InputStruct, AABButtonInput>) {
-			return input.name == casted->name && input.button == casted->button && input.action == casted->action;
+			return input.name == casted->name && input.button == casted->button && has(input.action, casted->action);
 		}
 		else if constexpr (std::same_as<InputStruct, MouseMoveInput>) {
 			return input.change == casted->change && input.button == casted->button;
