@@ -48,7 +48,7 @@ namespace Program
 		return physics::World(program, window, debug);
 	}
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_volocity_moveible_mesh()
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_volocity_moveible_mesh()
 	{
 
 		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
@@ -79,11 +79,11 @@ namespace Program
 		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
 		bundle.gravityAffected = true;
 
-		return std::make_shared<physics::MoveibleMesh<glType::MovementType::CONSTANT>>(bundle, true);
+		return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
 	}
 	
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::KINEMATIC>> create_demo_acceleration_moveible_mesh()
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Kenimatic>> create_demo_acceleration_moveible_mesh()
 	{
 
 		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
@@ -114,7 +114,7 @@ namespace Program
 		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
 		bundle.gravityAffected = true;
 
-		return std::make_shared<physics::MoveibleMesh<glType::MovementType::KINEMATIC>>(bundle, true);
+		return std::make_shared<physics::MoveibleMesh<glType::MovementType::Kenimatic>>(bundle, true);
 	}
 
 	glUtil::Mesh create_demo_mesh()
@@ -146,7 +146,7 @@ namespace Program
 		return glUtil::Mesh(bundle, true);
 	}
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_floor_mesh()
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_floor_mesh()
 	{
 
 		std::vector<glType::Vertex> vertices = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 30.0f);
@@ -175,7 +175,7 @@ namespace Program
 		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
 		bundle.gravityAffected = true;
 
-		return std::make_shared<physics::MoveibleMesh<glType::MovementType::CONSTANT>>(bundle, true);
+		return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
 	}
 
 	void clear_color()

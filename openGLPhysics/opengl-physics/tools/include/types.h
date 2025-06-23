@@ -1,8 +1,6 @@
 #pragma once
 
 
-#include "config.h"
-
 
 #define INT(x) static_cast<int>(x)
 #define SIZET(x) static_cast<size_t>(x)
@@ -45,9 +43,9 @@ namespace glType
 
 	enum class MovementType
 	{
-		STATIC,
-		CONSTANT,
-		KINEMATIC
+		Static,
+		Constant,
+		Kenimatic
 	};
 
 

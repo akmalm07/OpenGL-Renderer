@@ -1,9 +1,6 @@
 #pragma once
 #include "config.h"
 
-#include "tools/include/types.h"
-
-
 
 enum class Stride : uint8_t
 {

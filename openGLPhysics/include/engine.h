@@ -22,11 +22,11 @@ namespace Program
 
 	physics::World create_world(glInit::GLProgram& program, tools::Window& window, bool debug = false);
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_volocity_moveible_mesh();
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_volocity_moveible_mesh();
 	
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::KINEMATIC>> create_demo_acceleration_moveible_mesh();
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Kenimatic>> create_demo_acceleration_moveible_mesh();
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::CONSTANT>> create_demo_floor_mesh();
+	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_floor_mesh();
 
 	glUtil::Mesh create_demo_mesh();
 

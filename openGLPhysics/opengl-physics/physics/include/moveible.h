@@ -67,7 +67,7 @@ namespace physics
 	};
 
 	template<>
-	class Moveible<glType::MovementType::CONSTANT> : public MoveibleBody
+	class Moveible<glType::MovementType::Constant> : public MoveibleBody
 	{
 	public:
 		Moveible();
@@ -118,7 +118,7 @@ namespace physics
 	};
 
 	template<>
-	class Moveible<glType::MovementType::KINEMATIC> : public MoveibleBody
+	class Moveible<glType::MovementType::Kenimatic> : public MoveibleBody
 	{
 	public:
 		Moveible();

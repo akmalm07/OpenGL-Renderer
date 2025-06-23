@@ -16,7 +16,7 @@ namespace physics
 	class MoveibleMesh : public glUtil::Mesh {};
 
 	template<>
-	class MoveibleMesh<glType::MovementType::STATIC> : public glUtil::Mesh
+	class MoveibleMesh<glType::MovementType::Static> : public glUtil::Mesh
 	{
 	public:
 		MoveibleMesh();
@@ -26,7 +26,7 @@ namespace physics
 	};
 
 	template<>
-	class MoveibleMesh<glType::MovementType::CONSTANT> : public glUtil::Mesh
+	class MoveibleMesh<glType::MovementType::Constant> : public glUtil::Mesh
 	{
 	public:
 		MoveibleMesh();
@@ -80,7 +80,7 @@ namespace physics
 	};
 
 	template<>
-	class MoveibleMesh<glType::MovementType::KINEMATIC> : public glUtil::Mesh
+	class MoveibleMesh<glType::MovementType::Kenimatic> : public glUtil::Mesh
 	{
 	public:
 		MoveibleMesh();
