@@ -203,7 +203,6 @@
     <ClCompile Include="TESTER.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="opengl-physics\physics\include\aabb.inl" />
     <None Include="opengl-physics\tools\include\input_manager.inl" />
     <None Include="opengl-physics\tools\include\window_input.inl" />
     <None Include="shaders\shader.frag" />

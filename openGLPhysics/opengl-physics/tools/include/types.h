@@ -35,6 +35,13 @@ namespace glType
 	using Index = unsigned int;
 	using Vertex = float;
 
+	enum class BoundType
+	{
+		AABB = 0,
+		OBB,
+		Sphere
+	};
+
 
 	enum class MovementType
 	{

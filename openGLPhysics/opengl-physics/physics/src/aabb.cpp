@@ -1,5 +1,7 @@
 #include "headers.h"
 #include "physics/include/aabb.h"
+#include "physics/include/obb.h"
+#include "physics/include/sphere_bound.h"
 
 
 namespace physics
@@ -18,10 +20,22 @@ namespace physics
 		_center = (_min + _max) / 2.0f;
 		_halfExtent = (_max - _min) / 2.0f;
 	}
+	
 
-	glm::vec3 AABB::get_center() const
+	bool AABB::is_touching(const AABB& other) const
 	{
-		return _center;
+		return BoundTypeBase::is_touching(*this, other);
+	}
+
+
+	bool AABB::is_touching(const OBB& other) const
+	{
+		return BoundTypeBase::is_touching(*this, other);
+	}
+
+	bool AABB::is_touching(const SphereBound& other) const
+	{
+		return BoundTypeBase::sphere_check(other, *this);
 	}
 
 	glm::vec3 AABB::get_min() const
@@ -41,11 +55,6 @@ namespace physics
 
 	AABB::~AABB() = default;
 
-
-	glm::vec3 AABB::get_half_extent() const
-	{
-		return _halfExtent;
-	}
 
 	void AABB::change(const glm::vec3& val)
 	{
@@ -117,7 +126,7 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::is_touching(const AABB& a, const AABB& b) const
+	bool BoundTypeBase::is_touching(const AABB& a, const AABB& b) const
 	{
 		return !(
 			a._max.x < b._min.x || a._min.x > b._max.x ||
@@ -127,9 +136,9 @@ namespace physics
 
 
 
-	bool _CHECK_COLLISION::is_touching(const OBB& a, const OBB& b) const
+	bool BoundTypeBase::is_touching(const OBB& a, const OBB& b) const
 	{
-		if (_CHECK_COLLISION::sphere_check(a, b) || _CHECK_COLLISION::aabb_cast_check(b, a))
+		if (BoundTypeBase::sphere_check(a, b) || BoundTypeBase::aabb_cast_check(b, a))
 		{
 			return full_sat_check(a, b);
 		}
@@ -140,9 +149,9 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::is_touching(const AABB& a, const OBB& b) const
+	bool BoundTypeBase::is_touching(const AABB& a, const OBB& b) const
 	{
-		if (_CHECK_COLLISION::sphere_check(a, b) || _CHECK_COLLISION::partial_sat_check(b, a))
+		if (BoundTypeBase::sphere_check(a, b) || BoundTypeBase::partial_sat_check(b, a))
 		{
 			return full_sat_check(b, a);
 		}
@@ -153,7 +162,7 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::sphere_check(const AABB& a, const AABB& b) const
+	bool BoundTypeBase::sphere_check(const AABB& a, const AABB& b) const
 	{
 		return	glm::length(a._center - b._center) < // Distance
 			(
@@ -163,7 +172,7 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::sphere_check(const OBB& a, const OBB& b) const
+	bool BoundTypeBase::sphere_check(const OBB& a, const OBB& b) const
 	{
 		return	glm::length(a._center - b._center) < // Distance
 			(
@@ -173,7 +182,7 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::sphere_check(const AABB& a, const OBB& b) const
+	bool BoundTypeBase::sphere_check(const AABB& a, const OBB& b) const
 	{
 		return	glm::length(a._center - b._center) < // Distance
 			(
@@ -182,10 +191,28 @@ namespace physics
 				);
 	}
 
-
-	bool _CHECK_COLLISION::full_sat_check(const OBB& a, const OBB& b) const
+	bool BoundTypeBase::sphere_check(const SphereBound& a, const SphereBound& b) const
 	{
-		glm::vec3 centerDiff = b.get_center() - a.get_center();
+		return glm::length(a._center - b._center) < // Distance
+			(a._radius + b._radius); // radiusA + radiusB
+	}
+
+	bool BoundTypeBase::sphere_check(const SphereBound& a, const AABB& b) const
+	{
+		return glm::length(a._center - b._center) < // Distance
+			(a._radius + glm::length(0.5f * (b._max - b._min))); // radiusA + radiusB
+	}
+
+	bool BoundTypeBase::sphere_check(const SphereBound& a, const OBB& b) const
+	{
+		return glm::length(a._center - b._center) < // Distance
+			(a._radius + glm::length(0.5f * (b._max - b._min))); // radiusA + radiusB
+	}
+
+
+	bool BoundTypeBase::full_sat_check(const OBB& a, const OBB& b) const
+	{
+		glm::vec3 centerDiff = b._center - a._center;
 
 		glm::mat4 aRotationMat = a.get_rotation_matrix();
 		std::array<glm::vec3, 3> axisA = {
@@ -229,8 +256,8 @@ namespace physics
 			}
 		}
 
-		glm::vec3 aHalfExtent = a.get_half_extent();
-		glm::vec3 bHalfExtent = b.get_half_extent();
+		glm::vec3 aHalfExtent = a._halfExtent;
+		glm::vec3 bHalfExtent = b._halfExtent;
 
 		for (int i = 0; i < axisCount; i++)
 		{
@@ -249,9 +276,9 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::full_sat_check(const OBB& a, const AABB& b) const
+	bool BoundTypeBase::full_sat_check(const OBB& a, const AABB& b) const
 	{
-		glm::vec3 centerDiff = b.get_center() - a.get_center();
+		glm::vec3 centerDiff = b._center - a._center;
 
 		std::array<glm::vec3, 3> axisA = {
 			glm::vec3(a.get_rotation_matrix()[0]),
@@ -288,8 +315,8 @@ namespace physics
 			}
 		}
 
-		const glm::vec3 aHalf = a.get_half_extent();
-		const glm::vec3 bHalf = b.get_half_extent();
+		const glm::vec3 aHalf = a._halfExtent;
+		const glm::vec3 bHalf = b._halfExtent;
 
 		for (int i = 0; i < axisCount; i++)
 		{
@@ -306,7 +333,7 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::aabb_cast_check(const OBB& a, const AABB& b) const
+	bool BoundTypeBase::aabb_cast_check(const OBB& a, const AABB& b) const
 	{
 		const glm::vec3& aMin = a.get_aabb_wrap_min();
 		const glm::vec3& aMax = a.get_aabb_wrap_max();
@@ -320,7 +347,7 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::aabb_cast_check(const OBB& a, const OBB& b) const
+	bool BoundTypeBase::aabb_cast_check(const OBB& a, const OBB& b) const
 	{
 		const glm::vec3& aMin = a.get_aabb_wrap_min();
 		const glm::vec3& aMax = a.get_aabb_wrap_max();
@@ -334,14 +361,14 @@ namespace physics
 	}
 
 
-	bool _CHECK_COLLISION::partial_sat_check(const OBB& a, const AABB& b) const
+	bool BoundTypeBase::partial_sat_check(const OBB& a, const AABB& b) const
 	{
 		if (!(10.0f <= a.get_rotation_degree() <= -10.0f))
 		{
 			return false;
 		}
 
-		glm::vec3 centerDiff = b.get_center() - a.get_center();
+		glm::vec3 centerDiff = b._center - a._center;
 
 		std::array<glm::vec3, 3> axisA = {
 			glm::vec3(a.get_rotation_matrix()[0]),
@@ -368,8 +395,8 @@ namespace physics
 			testAxes[axisCount++] = axisB[i];
 		}
 
-		glm::vec3 aHalfExtent = a.get_half_extent();
-		glm::vec3 bHalfExtent = b.get_half_extent();
+		glm::vec3 aHalfExtent = a._halfExtent;
+		glm::vec3 bHalfExtent = b._halfExtent;
 
 		for (int i = 0; i < axisCount; i++)
 		{
@@ -388,7 +415,17 @@ namespace physics
 
 	}
 
-	float _CHECK_COLLISION::project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const
+	glm::vec3 BoundTypeBase::get_center() const
+	{
+		return _center;
+	}
+
+	glm::vec3 AABB::get_half_extent() const
+	{
+		return _halfExtent;
+	}
+
+	float BoundTypeBase::project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const
 	{
 		std::array<glm::vec3, 3> _OBBAxes = {
 			rotationMat[0],
@@ -401,7 +438,7 @@ namespace physics
 			std::abs(glm::dot(_OBBAxes[2], axis)) * halfExtent.z;
 	}
 
-	float _CHECK_COLLISION::project_extent_along_axis(const std::array<glm::vec3, 3>& axes, const glm::vec3& halfExtent, const glm::vec3& axis) const
+	float BoundTypeBase::project_extent_along_axis(const std::array<glm::vec3, 3>& axes, const glm::vec3& halfExtent, const glm::vec3& axis) const
 	{
 		return std::abs(glm::dot(axes[0], axis)) * halfExtent.x +
 			std::abs(glm::dot(axes[1], axis)) * halfExtent.y +

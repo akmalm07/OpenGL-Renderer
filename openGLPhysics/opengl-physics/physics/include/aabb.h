@@ -8,13 +8,6 @@
 
 namespace physics
 {
-	enum class BoundType
-	{
-		AABB = 0,
-		OBB,
-		Sphere
-	};
-
 	struct MinMax
 	{
 		glm::vec3 min;
@@ -31,10 +24,20 @@ namespace physics
 	class SphereBound;
 
 
-	class _CHECK_COLLISION
+	class BoundTypeBase
 	{
 	public:
-		
+
+		glm::vec3 get_center() const;
+
+		virtual bool is_touching(const SphereBound& other) const = 0;
+
+		virtual bool is_touching(const AABB& other) const = 0;
+
+		virtual bool is_touching(const OBB& other) const = 0;
+
+
+	protected:
 		bool is_touching(const AABB& a, const AABB& b) const;
 		
 		bool is_touching(const OBB& a, const OBB& b) const;
@@ -48,6 +51,13 @@ namespace physics
 		bool sphere_check(const OBB& a, const OBB& b) const;
 		
 		bool sphere_check(const AABB& a, const OBB& b) const;
+		
+		
+		bool sphere_check(const SphereBound& a, const SphereBound& b) const;
+
+		bool sphere_check(const SphereBound& a, const AABB& b) const;
+
+		bool sphere_check(const SphereBound& a, const OBB& b) const;
 
 
 		
@@ -64,19 +74,17 @@ namespace physics
 
 		bool partial_sat_check(const OBB& a, const AABB& b) const;
 
-	protected:
 
-		glm::vec3 _center;
-		glm::vec3 _halfExtent;
-			
-	protected:
 		float project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const;
 
 		float project_extent_along_axis(const std::array<glm::vec3, 3>& axes, const glm::vec3& halfExtent, const glm::vec3& axis) const;
 
+	protected:
+
+		glm::vec3 _center;
 	};
 
-	class AABB : public _CHECK_COLLISION
+	class AABB : public BoundTypeBase
 	{
 	public:
 		AABB();
@@ -84,8 +92,6 @@ namespace physics
 		AABB(const glm::vec3& min, const glm::vec3& max);
 
 		void init(const glm::vec3& min, const glm::vec3& max);
-
-		glm::vec3 get_half_extent() const;
 
 		void move_reletive_to_dist(const glm::vec3& dist);
 
@@ -99,16 +105,18 @@ namespace physics
 
 		void move(const glm::vec3& volocityTimesDeltaTime);
 
-		glm::vec3 get_center() const;
-
 		glm::vec3 get_min() const;
 		glm::vec3 get_max() const;
 
-		bool is_touching(const AABB& other) const;
+		bool is_touching(const AABB& other) const override final;
 
-		bool is_touching(const OBB& other) const;
+		bool is_touching(const OBB& other) const override final;
 
-		std::array <glm::vec3, 8> get_corners() const;
+		bool is_touching(const SphereBound& other) const override final;
+
+		glm::vec3 get_half_extent() const;
+
+		virtual std::array <glm::vec3, 8> get_corners() const;
 
 		MinMax get_min_max() const;
 
@@ -117,8 +125,9 @@ namespace physics
 	protected:
 		glm::vec3 _min;
 		glm::vec3 _max;
+		glm::vec3 _halfExtent;
 
-		friend class _CHECK_COLLISION;
+		friend class BoundTypeBase;
 
 	};
 
@@ -177,4 +186,3 @@ namespace physics
 	*/
 }
 
-#include "physics/include/aabb.inl"

@@ -42,16 +42,22 @@ namespace physics
 
 		glm::vec3 get_aabb_wrap_max() const;
 
+		std::array <glm::vec3, 8> get_corners() const;
+
 		virtual ~OBB();
 
-
 	private:
+
 		float _rotationDeg = 0.0f;
 		glm::vec3 _xyzRotation = glm::vec3(0.0f);
 		glm::mat4 _rotationMat = glm::mat4(1.0f);
 
 		glm::vec3 _localMin = glm::vec3(0.0f);
 		glm::vec3 _localMax = glm::vec3(0.0f);
+
+		glm::vec3 _halfExtent = glm::vec3(0.0f);
+
+		friend class BoundTypeBase;
 
 	private:
 		glm::vec3 get_extent() const;

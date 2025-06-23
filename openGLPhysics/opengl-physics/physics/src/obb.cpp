@@ -72,6 +72,23 @@ namespace physics
 
 	}
 
+	std::array<glm::vec3, 8> OBB::get_corners() const
+	{
+		glm::vec3 xAxisRotation = glm::vec3(_rotationMat[0]);
+		glm::vec3 yAxisRotation = glm::vec3(_rotationMat[1]);
+		glm::vec3 zAxisRotation = glm::vec3(_rotationMat[2]);
+		return {
+			_center + _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
+			_center - _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
+			_center + _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
+			_center - _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
+			_center + _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
+			_center - _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
+			_center + _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
+			_center - _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
+		};
+	}
+
 	OBB::~OBB() = default;
 
 
@@ -114,14 +131,7 @@ namespace physics
 /*
 		_corners =
 		{
-			_center + _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
-			_center - _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
-			_center + _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
-			_center - _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation + _halfExtent.z * zAxisRotation,
-			_center + _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
-			_center - _halfExtent.x * xAxisRotation + _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
-			_center + _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
-			_center - _halfExtent.x * xAxisRotation - _halfExtent.y * yAxisRotation - _halfExtent.z * zAxisRotation,
+	
 		};
 */
 
