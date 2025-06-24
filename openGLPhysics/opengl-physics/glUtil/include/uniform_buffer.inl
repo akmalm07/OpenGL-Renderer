@@ -8,8 +8,6 @@ namespace glUtil
     template <class T>
     void UniformBuffer::update_data(const T& data, const std::string& name)
     {
-        if (!_isInit)
-            return;
 
         auto it = _offsets.find(name);
 

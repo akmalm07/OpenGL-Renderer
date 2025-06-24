@@ -189,7 +189,7 @@ namespace tools
 	{
 		clamp_light_values();
 		_uniformBuffer = debug;
-		_uniformBuffer.init(programID, "LightData", 0, true);
+		_uniformBuffer.init(programID, "DirectionalLightData", 0, true);
 		update_uniform_buffer();
 	}
 
@@ -200,7 +200,7 @@ namespace tools
 
 		clamp_light_values();
 		_uniformBuffer = debug;
-		_uniformBuffer.init(programID, "LightData", 0, true);
+		_uniformBuffer.init(programID, "DirectionalLightData", 0, true);
 		update_uniform_buffer();
 	}
 
@@ -210,26 +210,26 @@ namespace tools
 
 		clamp_light_values();
 		_uniformBuffer = debug;
-		_uniformBuffer.init(programID, "LightData", 0, true);
+		_uniformBuffer.init(programID, "DirectionalLightData", 0, true);
 		update_uniform_buffer();
 	}
 
 	void DirectionalLight::set_amb_intensity(float val)
 	{
 		_light.ambInstensity = glm::clamp(val, 0.0f, 1.0f);
-		_uniformBuffer.update_data(val, "ambIntensity");
+		_uniformBuffer.update_data(val, "dirLight.ambIntensity");
 	}
 
 	void DirectionalLight::set_diff_intensity(float val)
 	{
 		_light.diffInstensity = glm::clamp(val, 0.0f, 1.0f);
-		_uniformBuffer.update_data(val, "diffIntensity");
+		_uniformBuffer.update_data(val, "dirLight.diffIntensity");
 	}
 
 	void DirectionalLight::set_spec_intensity(float val)
 	{
 		_light.specInstensity = glm::clamp(val, 0.0f, 1.0f);
-		_uniformBuffer.update_data(val, "specIntensity");
+		_uniformBuffer.update_data(val, "dirLight.specIntensity");
 	}
 
 
@@ -325,37 +325,37 @@ namespace tools
 	void DirectionalLight::set_color(const glm::vec3& col)
 	{
 		_light.color = col;
-		_uniformBuffer.update_data(_light.color, "lightColor");
+		_uniformBuffer.update_data(_light.color, "dirLight.color");
 	}
 
 	void DirectionalLight::set_ambient(const glm::vec3& amb)
 	{
 		_light.ambient = amb;
-		_uniformBuffer.update_data(_light.ambient, "lightAmbient");
+		_uniformBuffer.update_data(_light.ambient, "dirLight.ambient");
 	}
 
 	void DirectionalLight::set_diffuse(const glm::vec3& diff)
 	{
 		_light.diffuse = diff;
-		_uniformBuffer.update_data(_light.diffuse, "lightDiffuse");
+		_uniformBuffer.update_data(_light.diffuse, "dirLight.diffuse");
 	}
 
 	void DirectionalLight::set_specular(const glm::vec3& spec)
 	{
 		_light.specular = spec;
-		_uniformBuffer.update_data(_light.specular, "lightSpecular");
+		_uniformBuffer.update_data(_light.specular, "dirLight.specular");
 	}
 
 	void DirectionalLight::update_uniform_buffer()
 	{
-		_uniformBuffer.update_data(_light.direction, "lightDir");
-		_uniformBuffer.update_data(_light.ambient, "lightAmbient");
-		_uniformBuffer.update_data(_light.diffuse, "lightDiffuse");
-		_uniformBuffer.update_data(_light.specular, "lightSpecular");
-		_uniformBuffer.update_data(_light.ambInstensity, "ambIntensity");
-		_uniformBuffer.update_data(_light.diffInstensity, "diffIntensity");
-		_uniformBuffer.update_data(_light.specInstensity, "specIntensity");
-		_uniformBuffer.update_data(_light.color, "lightColor");
+		_uniformBuffer.update_data(_light.direction,		"dirLight.direction");
+		_uniformBuffer.update_data(_light.ambient,			"dirLight.ambient");
+		_uniformBuffer.update_data(_light.diffuse,			"dirLight.diffuse");
+		_uniformBuffer.update_data(_light.specular,			"dirLight.specular");
+		_uniformBuffer.update_data(_light.ambInstensity,	"dirLight.ambIntensity");
+		_uniformBuffer.update_data(_light.diffInstensity,	"dirLight.diffIntensity");
+		_uniformBuffer.update_data(_light.specInstensity,	"dirLight.specIntensity");
+		_uniformBuffer.update_data(_light.color,			"dirLight.color");
 
 		if (_cameraPosLoc != 0)
 		{

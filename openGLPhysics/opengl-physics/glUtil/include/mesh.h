@@ -22,8 +22,6 @@ namespace glUtil
 
 		void init(const MeshBundle& bundle);
 
-		void init(const MeshBundle& bundle);
-
 		void render();
 	
 		void change_position(const glm::vec3& pos);

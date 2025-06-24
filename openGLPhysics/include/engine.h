@@ -9,7 +9,6 @@
 #include "tools/include/window.h"
 #include "tools/include/directional_light.h"
 #include "glInit/include/program.h"
-#include "physics/include/meshes.h"
 #include "glUtil/include/uniform_buffer.h"
 #include "physics/include/world.h"
 
@@ -22,11 +21,11 @@ namespace Program
 
 	physics::World create_world(glInit::GLProgram& program, tools::Window& window, bool debug = false);
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_volocity_moveible_mesh();
-	
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Kenimatic>> create_demo_acceleration_moveible_mesh();
+	//std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_volocity_moveible_mesh();
+	//
+	//std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Kenimatic>> create_demo_acceleration_moveible_mesh();
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_floor_mesh();
+	//std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_floor_mesh();
 
 	glUtil::Mesh create_demo_mesh();
 

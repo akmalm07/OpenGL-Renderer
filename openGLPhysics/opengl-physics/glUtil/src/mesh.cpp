@@ -5,11 +5,6 @@
 //bool Mesh::_firstInstance = true;
 namespace glUtil
 {
-
-	Mesh::Mesh() : Mesh()
-	{
-	}
-
 	Mesh::Mesh(const MeshBundle& bundle)
 	{
 		init(bundle);
@@ -201,17 +196,17 @@ namespace glUtil
 	{
 
 		unsigned int stride = enumerate_stride(arrLayout.stride);
-		glVertexAttribPointer(arrLayout.location, stride, GL_FLOAT, GL_FALSE, sizeof(glType::Vertex) * enumerate_stride(absoluteStride), (void*)offsetCount);
+		glVertexAttribPointer(arrLayout.location, stride, GL_FLOAT, GL_FALSE, sizeof(glType::Vertex) * enumerate_stride(absoluteStride), (void*)_offsetCount);
 		glEnableVertexAttribArray(arrLayout.location);
 
 		DEBUG(
 			std::cout << "For _VAO ID: " << _VAO << "\n\tAttribute Location: " << arrLayout.location
 				<< "\n\tStride: " << stride
-				<< "\n\tOffset: " << offsetCount
+				<< "\n\tOffset: " << _offsetCount
 				<< std::endl;
 		)
 
-		offsetCount += stride * sizeof(glType::Vertex);
+		_offsetCount += stride * sizeof(glType::Vertex);
 	}
 
 }

@@ -55,7 +55,7 @@ namespace glType
 	};
 
 
-	using Entity = const uint64_t;
+	using Entity = uint64_t;
 
 
 	template <typename T, size_t S = 0>

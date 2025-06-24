@@ -24,12 +24,12 @@ namespace Renderer
 
 		World world = Program::create_world(program, window, true);
 
-		auto mesh = Program::create_demo_volocity_moveible_mesh();
-		
-		auto floor = Program::create_demo_floor_mesh();
+		//auto mesh = Program::create_demo_volocity_moveible_mesh();
+		//
+		//auto floor = Program::create_demo_floor_mesh();
 
-		world.add_mesh(mesh);
-		world.add_mesh(floor);
+	/*	world.add_mesh(mesh);
+		world.add_mesh(floor);*/
 
 		world.update_mv_matrices();
 

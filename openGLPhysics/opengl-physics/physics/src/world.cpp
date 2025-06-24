@@ -153,7 +153,6 @@ namespace physics
 
 	void World::add_mesh(std::shared_ptr<glUtil::Mesh> mesh)
 	{
-		mesh->add_gravity(_gravity);
 		_meshes.push_back(mesh);
 		if (_debug)
 		{
@@ -165,7 +164,7 @@ namespace physics
 	{
 		for (auto& m : mesh)
 		{
-			m->add_gravity(_gravity);
+
 		}
 
 		_meshes.insert(_meshes.end(), mesh.begin(), mesh.end());

@@ -48,135 +48,135 @@ namespace Program
 		return physics::World(program, window, debug);
 	}
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_volocity_moveible_mesh()
-	{
+	//std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_volocity_moveible_mesh()
+	//{
 
-		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
+	//	std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
 
-		std::vector<glType::Index> indices = tools::create_cube_indices();
+	//	std::vector<glType::Index> indices = tools::create_cube_indices();
 
-		//vertices = tools::calculate_face_normals(vertices, indices);
+	//	//vertices = tools::calculate_face_normals(vertices, indices);
 
-		physics::MoveibleMeshBundle bundle; // Change -- CRITICAL
-		ArrayBufferLayout layout1;
-		layout1.location = 0;
-		layout1.stride = Stride::STRIDE_3D;
-		layout1.type = StrideType::POS;
+	//	physics::MoveibleMeshBundle bundle; // Change -- CRITICAL
+	//	ArrayBufferLayout layout1;
+	//	layout1.location = 0;
+	//	layout1.stride = Stride::STRIDE_3D;
+	//	layout1.type = StrideType::POS;
 
-		ArrayBufferLayout layout2;
-		layout2.location = 1;
-		layout2.stride = Stride::STRIDE_3D;
-		layout2.type = StrideType::COL;
+	//	ArrayBufferLayout layout2;
+	//	layout2.location = 1;
+	//	layout2.stride = Stride::STRIDE_3D;
+	//	layout2.type = StrideType::COL;
 
-		bundle.vertexCount = vertices.size();
-		bundle.pVertices = vertices.data();
-		bundle.indexCount = indices.size();
-		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_6D;
-		bundle.indexed = true;
-		bundle.pLayout1 = &layout1;
-		bundle.pLayout2 = &layout2;
-		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
-		bundle.gravityAffected = true;
+	//	bundle.vertexCount = vertices.size();
+	//	bundle.pVertices = vertices.data();
+	//	bundle.indexCount = indices.size();
+	//	bundle.pIndices = indices.data();
+	//	bundle.fullStride = FullStride::STRIDE_6D;
+	//	bundle.indexed = true;
+	//	bundle.pLayout1 = &layout1;
+	//	bundle.pLayout2 = &layout2;
+	//	bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+	//	bundle.gravityAffected = true;
 
-		return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
-	}
-	
+	//	return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
+	//}
+	//
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Kenimatic>> create_demo_acceleration_moveible_mesh()
-	{
+	//std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Kenimatic>> create_demo_acceleration_moveible_mesh()
+	//{
 
-		std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
+	//	std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
 
-		std::vector<glType::Index> indices = tools::create_cube_indices();
+	//	std::vector<glType::Index> indices = tools::create_cube_indices();
 
-		//vertices = tools::calculate_face_normals(vertices, indices);
+	//	//vertices = tools::calculate_face_normals(vertices, indices);
 
-		physics::MoveibleMeshBundle bundle; // Change -- CRITICAL
-		ArrayBufferLayout layout1;
-		layout1.location = 0;
-		layout1.stride = Stride::STRIDE_3D;
-		layout1.type = StrideType::POS;
+	//	physics::MoveibleMeshBundle bundle; // Change -- CRITICAL
+	//	ArrayBufferLayout layout1;
+	//	layout1.location = 0;
+	//	layout1.stride = Stride::STRIDE_3D;
+	//	layout1.type = StrideType::POS;
 
-		ArrayBufferLayout layout2;
-		layout2.location = 1;
-		layout2.stride = Stride::STRIDE_3D;
-		layout2.type = StrideType::COL;
+	//	ArrayBufferLayout layout2;
+	//	layout2.location = 1;
+	//	layout2.stride = Stride::STRIDE_3D;
+	//	layout2.type = StrideType::COL;
 
-		bundle.vertexCount = vertices.size();
-		bundle.pVertices = vertices.data();
-		bundle.indexCount = indices.size();
-		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_6D;
-		bundle.indexed = true;
-		bundle.pLayout1 = &layout1;
-		bundle.pLayout2 = &layout2;
-		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
-		bundle.gravityAffected = true;
+	//	bundle.vertexCount = vertices.size();
+	//	bundle.pVertices = vertices.data();
+	//	bundle.indexCount = indices.size();
+	//	bundle.pIndices = indices.data();
+	//	bundle.fullStride = FullStride::STRIDE_6D;
+	//	bundle.indexed = true;
+	//	bundle.pLayout1 = &layout1;
+	//	bundle.pLayout2 = &layout2;
+	//	bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+	//	bundle.gravityAffected = true;
 
-		return std::make_shared<physics::MoveibleMesh<glType::MovementType::Kenimatic>>(bundle, true);
-	}
+	//	return std::make_shared<physics::MoveibleMesh<glType::MovementType::Kenimatic>>(bundle, true);
+	//}
 
-	glUtil::Mesh create_demo_mesh()
-	{
-	std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
-	
-	std::vector<glType::Index> indices = tools::create_cube_indices();
+	//glUtil::Mesh create_demo_mesh()
+	//{
+	//std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(1.0f, -1.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 2.0f);
+	//
+	//std::vector<glType::Index> indices = tools::create_cube_indices();
 
-		glUtil::MeshBundle bundle;
-		ArrayBufferLayout layout1;
-		layout1.location = 0;
-		layout1.stride = Stride::STRIDE_3D;
-		layout1.type = StrideType::POS;
+	//	glUtil::MeshBundle bundle;
+	//	ArrayBufferLayout layout1;
+	//	layout1.location = 0;
+	//	layout1.stride = Stride::STRIDE_3D;
+	//	layout1.type = StrideType::POS;
 
-		ArrayBufferLayout layout2;
-		layout2.location = 1;
-		layout2.stride = Stride::STRIDE_3D;
-		layout2.type = StrideType::COL;
+	//	ArrayBufferLayout layout2;
+	//	layout2.location = 1;
+	//	layout2.stride = Stride::STRIDE_3D;
+	//	layout2.type = StrideType::COL;
 
-		bundle.vertexCount = vertices.size();
-		bundle.pVertices = vertices.data();
-		bundle.indexCount = indices.size();
-		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_6D;
-		bundle.indexed = true;
-		bundle.pLayout1 = &layout1;
-		bundle.pLayout2 = &layout2;
+	//	bundle.vertexCount = vertices.size();
+	//	bundle.pVertices = vertices.data();
+	//	bundle.indexCount = indices.size();
+	//	bundle.pIndices = indices.data();
+	//	bundle.fullStride = FullStride::STRIDE_6D;
+	//	bundle.indexed = true;
+	//	bundle.pLayout1 = &layout1;
+	//	bundle.pLayout2 = &layout2;
 
-		return glUtil::Mesh(bundle, true);
-	}
+	//	return glUtil::Mesh(bundle, true);
+	//}
 
-	std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_floor_mesh()
-	{
+	//std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_floor_mesh()
+	//{
 
-		std::vector<glType::Vertex> vertices = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 30.0f);
-		
-		std::vector<glType::Index> indices = tools::create_floor_indices();
+	//	std::vector<glType::Vertex> vertices = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 30.0f);
+	//	
+	//	std::vector<glType::Index> indices = tools::create_floor_indices();
 
-		physics::MoveibleMeshBundle bundle;
-		ArrayBufferLayout layout1;
-		layout1.location = 0;
-		layout1.stride = Stride::STRIDE_3D;
-		layout1.type = StrideType::POS;
+	//	physics::MoveibleMeshBundle bundle;
+	//	ArrayBufferLayout layout1;
+	//	layout1.location = 0;
+	//	layout1.stride = Stride::STRIDE_3D;
+	//	layout1.type = StrideType::POS;
 
-		ArrayBufferLayout layout2;
-		layout2.location = 1;
-		layout2.stride = Stride::STRIDE_3D;
-		layout2.type = StrideType::COL;
+	//	ArrayBufferLayout layout2;
+	//	layout2.location = 1;
+	//	layout2.stride = Stride::STRIDE_3D;
+	//	layout2.type = StrideType::COL;
 
-		bundle.vertexCount = vertices.size();
-		bundle.pVertices = vertices.data();
-		bundle.indexCount = indices.size();
-		bundle.pIndices = indices.data();
-		bundle.fullStride = FullStride::STRIDE_6D;
-		bundle.indexed = true;
-		bundle.pLayout1 = &layout1;
-		bundle.pLayout2 = &layout2;
-		bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
-		bundle.gravityAffected = true;
+	//	bundle.vertexCount = vertices.size();
+	//	bundle.pVertices = vertices.data();
+	//	bundle.indexCount = indices.size();
+	//	bundle.pIndices = indices.data();
+	//	bundle.fullStride = FullStride::STRIDE_6D;
+	//	bundle.indexed = true;
+	//	bundle.pLayout1 = &layout1;
+	//	bundle.pLayout2 = &layout2;
+	//	bundle.rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+	//	bundle.gravityAffected = true;
 
-		return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
-	}
+	//	return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
+	//}
 
 	void clear_color()
 	{

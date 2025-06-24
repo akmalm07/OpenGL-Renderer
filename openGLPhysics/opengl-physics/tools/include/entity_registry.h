@@ -29,7 +29,8 @@ namespace tools
 
 	private:
 		EntityRegistry() = default;
-
+		~EntityRegistry() = default;
+		
 		std::unordered_map<glType::Entity, std::string> _entities;
 		size_t _nextEntityId = 0;
 	};

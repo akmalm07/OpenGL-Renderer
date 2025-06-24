@@ -70,9 +70,4 @@ namespace tools
 		}
 	}
 
-	EntityRegistry::~EntityRegistry()
-	{
-		_entities.clear();
-		_nextEntityId = 0;
-	}
 } // namespace tools

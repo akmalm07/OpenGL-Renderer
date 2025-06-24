@@ -25,7 +25,6 @@ namespace physics
 		glm::vec3 operator+(const glm::vec3& vec) override;
 		void operator+=(const glm::vec3& vec) override;
 
-		glm::vec3 operator+(const glm::vec3& vec) override;
 		glm::vec3 operator+(const Volocity& vec);
 
 		glm::vec3 operator*(const glm::vec3& vec) const override;
