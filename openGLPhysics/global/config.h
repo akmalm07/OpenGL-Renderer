@@ -16,7 +16,9 @@
 
 #include <GLFW/glfw3.h>
 
-
+#ifndef GLM_ENABLE_EXPERIMENTAL
+#define GLM_ENABLE_EXPERIMENTAL
+#endif
 
 namespace tools
 {

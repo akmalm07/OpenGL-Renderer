@@ -24,7 +24,7 @@ namespace physics
 	class SphereBound;
 
 
-	class BoundTypeBase
+	class BoundTypeBase : public glType::Component
 	{
 	public:
 
@@ -73,7 +73,6 @@ namespace physics
 
 
 		bool partial_sat_check(const OBB& a, const AABB& b) const;
-
 
 		float project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const;
 

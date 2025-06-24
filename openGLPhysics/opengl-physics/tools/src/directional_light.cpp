@@ -184,8 +184,6 @@ namespace tools
 		return result;
 	}
 
-	DirectionalLight::DirectionalLight() = default;
-
 
 	DirectionalLight::DirectionalLight(unsigned int programID, bool debug)
 	{
@@ -215,10 +213,6 @@ namespace tools
 		_uniformBuffer.init(programID, "LightData", 0, true);
 		update_uniform_buffer();
 	}
-
-	DirectionalLight::DirectionalLight(DirectionalLight&& other) noexcept = default;
-
-	DirectionalLight& DirectionalLight::operator=(DirectionalLight&& other) noexcept = default;
 
 	void DirectionalLight::set_amb_intensity(float val)
 	{

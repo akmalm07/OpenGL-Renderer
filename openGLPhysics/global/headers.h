@@ -1,3 +1,5 @@
+#define GLM_ENABLE_EXPERIMENTAL // to use glm/gtx/*.h
+
 
 #include <GL/glew.h>
 
@@ -7,6 +9,7 @@
 
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#include <glm/gtx/quaternion.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 
@@ -25,4 +28,7 @@
 #include <filesystem>
 
 
-#define GLM_ENABLE_EXPERIMENTAL // to use glm/gtx/*.h
+#define DEBUG(x) \
+if (true) { \
+	x \
+} 

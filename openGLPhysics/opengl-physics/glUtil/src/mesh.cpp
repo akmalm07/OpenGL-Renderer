@@ -6,67 +6,36 @@
 namespace glUtil
 {
 
-	Mesh::Mesh()
+	Mesh::Mesh() : Mesh()
 	{
-		VAO = 0;
-		VBO = 0;
-		IBO = 0;
-		indexCount = 0;
-		debug = 0;
 	}
 
-	Mesh::Mesh(bool debugMode) : Mesh()
+	Mesh::Mesh(const MeshBundle& bundle)
 	{
-		debug = debugMode;
-	}
-
-	Mesh::Mesh(const MeshBundle& bundle, bool debugMode)
-	{
-		debug = debugMode;
-
 		init(bundle);
 	}
 
-
-	Mesh::Mesh(Mesh&& other) noexcept = default;
-
-	Mesh& Mesh::operator=(Mesh&& other) noexcept = default;
-
-
-	bool Mesh::is_init() const
-	{
-		return isInit;
-	}
-
-
-	void Mesh::init(const MeshBundle& bundle, bool debugMode)
-	{
-		debug = debugMode;
-		init(bundle);
-	}
 
 	void Mesh::init(const MeshBundle& bundle)
 	{
-		indexCount = bundle.indexCount;
-		vertexCount = bundle.vertexCount;
+		_indexCount = bundle.indexCount;
+		_vertexCount = bundle.vertexCount;
 
-		indexed = (bundle.indexed || bundle.indexCount == 0 ? true : false);
+		_indexed = (bundle.indexed || bundle.indexCount == 0 ? true : false);
 
-		glGenVertexArrays(1, &VAO);
-		glBindVertexArray(VAO);
+		glGenVertexArrays(1, &_VAO);
+		glBindVertexArray(_VAO);
 
-		if (debug)
-		{
-			std::cout << "Creating VAO ID: " << VAO << "\n";
-		}
+		DEBUG(
+			std::cout << "Creating _VAO ID: " << _VAO << "\n";
+		)
 
-		glGenBuffers(1, &VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glGenBuffers(1, &_VBO);
+		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(glType::Vertex) * bundle.vertexCount, bundle.pVertices, GL_STATIC_DRAW);
 
-		if (debug)
-		{
-			std::cout << "\tCreating VBO ID: " << VBO << "\n";
+		DEBUG(
+			std::cout << "\tCreating _VBO ID: " << _VBO << "\n";
 			std::cout << "\tVertex Count: " << bundle.vertexCount << " * " << sizeof(glType::Vertex) << "\n";
 			std::cout << "\tBuffer Data: " << "\n";
 			for (size_t i = 0; i < bundle.vertexCount; i++)
@@ -90,13 +59,14 @@ namespace glUtil
 				std::cout << bundle.pIndices[i] << " ";
 			}
 			std::cout << std::endl;
-		}
+		
+		)
+			
 
-
-		if (indexed)
+		if (_indexed)
 		{
-			glGenBuffers(1, &IBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+			glGenBuffers(1, &_IBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _IBO);
 			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(glType::Index) * bundle.indexCount, bundle.pIndices, GL_STATIC_DRAW);
 		}
 
@@ -120,37 +90,83 @@ namespace glUtil
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-		if (indexed)
+		if (_indexed)
 		{
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 
-		isInit = true;
 	}
 
-	void Mesh::add_gravity(const glm::vec3& val)
-	{}
+	Transform Mesh::get_transform() const
+	{
+		return _transform;
+	}
 
 	glm::mat4 Mesh::get_model_matrix() const
 	{
-		return glm::mat4(1.0f);
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, _transform.position);
+		model = model * glm::toMat4(_transform.rotation);
+		model = glm::scale(model, _transform.scale);
+		return model;
+	}
+
+	void Mesh::change_position(const glm::vec3& pos)
+	{
+		_transform.position += pos;
+	}
+
+	void Mesh::set_position(const glm::vec3& pos)
+	{
+		_transform.position = pos;
+	}
+
+	void Mesh::change_rotation(const glm::quat& rotation)
+	{
+		_transform.rotation = _transform.rotation * rotation;
+	}
+
+	void Mesh::change_rotation(const glm::vec3& rotation)
+	{
+		_transform.rotation = _transform.rotation * glm::quat(rotation);
+	}
+
+
+	void Mesh::set_rotation(const glm::quat& rotation)
+	{
+		_transform.rotation = rotation;
+	}
+
+	void Mesh::set_rotation(const glm::vec3& rotation)
+	{
+		_transform.rotation = glm::quat(rotation);
+	}
+
+	void Mesh::change_scale(const glm::vec3& scale)
+	{
+		_transform.scale += scale;
+	}
+
+	void Mesh::set_scale(const glm::vec3& scale)
+	{
+		_transform.scale = scale;
 	}
 
 	void Mesh::render()
 	{
 
-		glBindVertexArray(VAO);
+		glBindVertexArray(_VAO);
 
-		if (indexed)
+		if (_indexed)
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
-			glDrawElements(GL_TRIANGLES, indexCount, GL_UNSIGNED_INT, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _IBO);
+			glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 		else
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, VBO);
-			glDrawArrays(GL_TRIANGLES, 0, vertexCount);
+			glBindBuffer(GL_ARRAY_BUFFER, _VBO);
+			glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 		}
@@ -161,19 +177,19 @@ namespace glUtil
 
 	void Mesh::clear()
 	{
-		if (VAO != 0) {
-			glDeleteVertexArrays(1, &VAO);
-			VAO = 0;
+		if (_VAO != 0) {
+			glDeleteVertexArrays(1, &_VAO);
+			_VAO = 0;
 		}
-		if (VBO != 0) {
-			glDeleteBuffers(1, &VBO);
-			VBO = 0;
+		if (_VBO != 0) {
+			glDeleteBuffers(1, &_VBO);
+			_VBO = 0;
 		}
-		if (IBO != 0) {
-			glDeleteBuffers(1, &IBO);
-			IBO = 0;
+		if (_IBO != 0) {
+			glDeleteBuffers(1, &_IBO);
+			_IBO = 0;
 		}
-		indexCount = 0;
+		_indexCount = 0;
 	}
 
 	Mesh::~Mesh()
@@ -188,16 +204,14 @@ namespace glUtil
 		glVertexAttribPointer(arrLayout.location, stride, GL_FLOAT, GL_FALSE, sizeof(glType::Vertex) * enumerate_stride(absoluteStride), (void*)offsetCount);
 		glEnableVertexAttribArray(arrLayout.location);
 
-		if (debug)
-		{
-			std::cout << "For VAO ID: " << VAO << "\n\tAttribute Location: " << arrLayout.location
+		DEBUG(
+			std::cout << "For _VAO ID: " << _VAO << "\n\tAttribute Location: " << arrLayout.location
 				<< "\n\tStride: " << stride
 				<< "\n\tOffset: " << offsetCount
 				<< std::endl;
-		}
+		)
 
 		offsetCount += stride * sizeof(glType::Vertex);
-
 	}
 
 }

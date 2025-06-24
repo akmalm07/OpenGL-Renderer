@@ -30,7 +30,6 @@ namespace glUtil
 		unsigned int _ubo = 0;
 		unsigned int _bindingPoint = 0;
 		size_t _totalSize = 0;
-		bool _isInit = false;
 		bool _debug = true;
 		int _usage = 0;
 

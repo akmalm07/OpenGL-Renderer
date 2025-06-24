@@ -6,6 +6,13 @@
 
 namespace glUtil
 {
+    struct Transform
+    {
+        glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::quat rotation = glm::vec3(0.0f, 0.0f, 0.0f);
+        glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
+    };
+
     struct MeshBundle
     {
 
@@ -19,6 +26,8 @@ namespace glUtil
         ArrayBufferLayout* pLayout3 = nullptr;
         ArrayBufferLayout* pLayout4 = nullptr;
 
+		Transform transform;
+
         size_t vertexCount = 0;
         size_t indexCount = 0;
 
@@ -26,18 +35,16 @@ namespace glUtil
 
     };
 }
-namespace physics
-{
-    struct MoveibleMeshBundle : public glUtil::MeshBundle
-    {
-        glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
 
-        glm::vec3 rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
+    //struct MoveibleMeshBundle : public glUtil::MeshBundle
+    //{
+    //    glm::vec3 gravity = glm::vec3(0.0f, 0.0f, 0.0f);
 
-        float mass = 1.0f;
+    //    glm::vec3 rateOfChange = glm::vec3(0.0f, 0.0f, 0.0f);
 
-        bool startTime = true;
+    //    float mass = 1.0f;
 
-        bool gravityAffected = true;
-    };
-}
+    //    bool startTime = true;
+
+    //    bool gravityAffected = true;
+    //};

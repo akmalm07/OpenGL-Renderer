@@ -1,6 +1,6 @@
 #pragma once
 
-#include "headers.h"
+#include "config.h"
 
 #include "tools\include\stride.h"
 #include "glUtil\include\mesh_bundle.h"
@@ -8,50 +8,59 @@
 
 namespace glUtil
 {
-	class Mesh
+
+	class Mesh : public glType::Component
 	{
 	public:
-		Mesh();
+		Mesh() = default;
 
-		Mesh(bool debugMode);
+		Mesh(const MeshBundle& bundle);
 
-		Mesh(const MeshBundle& bundle, bool debugMode);
+		Mesh(Mesh&& other) noexcept = default;
 
-		Mesh(Mesh&& other) noexcept;
-
-		Mesh& operator=(Mesh&& other) noexcept;
-
-		bool is_init() const;
-
-		void init(const MeshBundle& bundle, bool debugMode);
+		Mesh& operator=(Mesh&& other) noexcept = default;
 
 		void init(const MeshBundle& bundle);
 
-		virtual void add_gravity(const glm::vec3& val);
+		void init(const MeshBundle& bundle);
 
-		virtual glm::mat4 get_model_matrix() const;
+		void render();
+	
+		void change_position(const glm::vec3& pos);
 
-		virtual void render();
+		void set_position(const glm::vec3& pos);
+
+		void change_rotation(const glm::quat& rotation);
+		void change_rotation(const glm::vec3& rotation);
+
+		void set_rotation(const glm::quat& rotation);
+		void set_rotation(const glm::vec3& rotation);
+
+		void change_scale(const glm::vec3& scale);
+
+		void set_scale(const glm::vec3& scale);
+
+		Transform get_transform() const;
+
+		glm::mat4 get_model_matrix() const;
 
 		void clear();
 
 		virtual ~Mesh();
-	protected:
 
-		unsigned int VAO, VBO, IBO;
-		size_t indexCount;
-		size_t vertexCount;
+		private:
 
-		bool  isInit = false;
-		bool indexed = true;
+		unsigned int _VAO = 0, _VBO = 0, _IBO = 0;
+		size_t _indexCount = 0;
+		size_t _vertexCount = 0;
 
-		bool debug = false;
+		bool _indexed = true;
 
-		unsigned int offsetCount = 0;
+		unsigned int _offsetCount = 0;
 
+		Transform _transform;
 
 	private:
-
 		void set_vertex_attribs(const ArrayBufferLayout& arrLayout, FullStride absoluteStride);
 
 	};

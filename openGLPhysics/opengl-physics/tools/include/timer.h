@@ -16,7 +16,7 @@ namespace tools
 
 		Timer(bool start);
 
-		double stop_time(bool debug = false);
+		float stop_time(bool debug = false);
 
 		void start_time();
 

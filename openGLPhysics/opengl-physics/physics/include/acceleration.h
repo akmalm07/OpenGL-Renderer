@@ -2,59 +2,47 @@
 
 #include "config.h"
 
-#include "tools/include/timer.h"
+#include "physics/include/moveible.h"
 
 
 
 namespace physics
 {
-	class Acceleration
+	class Acceleration : public Moveible
 	{
 	public:
 		Acceleration();
 
-		Acceleration(const glm::vec3& val);
+		Acceleration(const glm::vec3& position, const glm::vec3& val);
 		
-		Acceleration(const glm::vec3& val, const tools::Timer& timer);
-		
-		void set_acceleration(const glm::vec3& val);
-		
+		Acceleration(const glm::vec3& position, const glm::vec3& val, const tools::Timer& timer);
+				
 		void set_inital_vol(const glm::vec3& val);
 
-		void start_time();
+		glm::vec3 operator+(const glm::vec3& vec) override;
+		glm::vec3 operator+(const Acceleration& vec);
 
-		double stop_time();
-		
-		void reset_time();
-
-		glm::vec3 operator+(const glm::vec3& vec);
-
-		void operator+=(const glm::vec3& vec);
+		void operator+=(const glm::vec3& vec) override;
+		void operator=(const glm::vec3& vec) override;
+	
+		glm::vec3 operator*(const glm::vec3& vec) const override;
+		glm::vec3 operator*(const float vec) const override;
 
 		glm::vec3 get_acceleration() const;
 		
 		glm::vec3 get_intial_vol() const;
 
-		double get_distance_x() const;
+		glm::vec3 get_distance() const override;
 		
-		double get_distance_y() const;
-
-		double get_distance_z() const;
-
-		glm::vec3 get_distance() const;
-
 		glm::vec3 get_current_volocity() const;
 		
-		double get_current_volocity_x() const;
-		double get_current_volocity_y() const;
-		double get_current_volocity_z() const;
-
-		double get_current_time() const;
 
 	private:
 		
 		glm::vec3 _acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
 		glm::vec3 _intialVol = glm::vec3(0.0f, 0.0f, 0.0f);
-		tools::Timer _timer;
 	};
+
+
+
 }

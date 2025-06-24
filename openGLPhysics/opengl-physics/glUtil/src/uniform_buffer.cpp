@@ -17,7 +17,6 @@ namespace glUtil
         _bindingPoint = other._bindingPoint;
         _totalSize = other._totalSize;
         _usage = other._usage;
-        _isInit = false;
         _debug = other._debug;
         _offsets = other._offsets;
         _sizes = other._sizes;
@@ -34,7 +33,6 @@ namespace glUtil
             _bindingPoint = other._bindingPoint;
             _totalSize = other._totalSize;
             _usage = other._usage;
-            _isInit = false;
             _debug = other._debug;
             _offsets = other._offsets;
             _sizes = other._sizes;
@@ -57,12 +55,10 @@ namespace glUtil
             _bindingPoint = other._bindingPoint;
             _totalSize = other._totalSize;
             _usage = other._usage;
-            _isInit = other._isInit;
             _debug = other._debug;
             _offsets = std::move(other._offsets);
             _sizes = std::move(other._sizes);
             other._ubo = 0;
-            other._isInit = false;
         }
         return *this;
     }
@@ -120,8 +116,6 @@ namespace glUtil
                 std::cout << "Uniform '" << uniformName << "' offset: " << offsets[i] << ", size: " << sizes[i] << std::endl;
             }
         }
-
-        _isInit = true;
         return true;
     }
 
@@ -145,7 +139,6 @@ namespace glUtil
         }
         _offsets.clear();
         _sizes.clear();
-        _isInit = false;
     }
 
     UniformBuffer::~UniformBuffer()

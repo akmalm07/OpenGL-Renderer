@@ -18,7 +18,7 @@ namespace tools
 	{
 	public:
 
-		DirectionalLight();
+		DirectionalLight() = default;
 
 		DirectionalLight(unsigned int programID, bool debug);
 
@@ -26,8 +26,8 @@ namespace tools
 
 		DirectionalLight(const DirectionalLightBundle& dir, unsigned int programID, bool debug);
 
-		DirectionalLight(DirectionalLight&& other) noexcept;
-		DirectionalLight& operator=(DirectionalLight&& other) noexcept;
+		DirectionalLight(DirectionalLight&& other) noexcept = default;
+		DirectionalLight& operator=(DirectionalLight&& other) noexcept = default;
 
 		void set_amb_intensity(float val);
 		void set_diff_intensity(float val);

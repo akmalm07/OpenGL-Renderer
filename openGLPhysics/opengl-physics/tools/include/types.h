@@ -6,6 +6,7 @@
 #define SIZET(x) static_cast<size_t>(x)
 #define UINT(x) static_cast<unsigned int>(x)
 
+constexpr size_t MAX_NUM_OF_ENTITIES = 5000;
 
 #define UINT32(x) static_cast<uint32_t>(x)  
 
@@ -30,6 +31,11 @@ std::cout << v[3][0] << " " << v[3][1] << " " << v[3][2] << " " << v[3][3] << st
 
 namespace glType
 {
+	class Component
+	{
+	public:
+		virtual ~Component() = default;
+	};
 	using Index = unsigned int;
 	using Vertex = float;
 
@@ -47,6 +53,9 @@ namespace glType
 		Constant,
 		Kenimatic
 	};
+
+
+	using Entity = const uint64_t;
 
 
 	template <typename T, size_t S = 0>
@@ -79,6 +88,8 @@ namespace glType
 	concept Callible = std::is_invocable_v<T>;
 
 
+	template<class T>
+	concept ComponentType = std::is_base_of_v<Component, T>;
 
 	//template<class Func, class ... Args>
 	//concept BoolLambdaVardic = std::invocable<Func, Args...>&& std::convertible_to<std::invoke_result_t<Func, Args...>, bool>;

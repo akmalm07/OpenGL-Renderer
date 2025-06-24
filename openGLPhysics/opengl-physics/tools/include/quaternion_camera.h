@@ -2,7 +2,6 @@
 
 #include "config.h"
 
-#include "tools/include/window.h"
 #include "tools/include/camera_bundle.h"
 #include "tools/include/base_camera.h"
 

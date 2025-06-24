@@ -101,6 +101,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="opengl-physics\tools\include\component_storage.h" />
+    <ClInclude Include="opengl-physics\tools\include\entity_registry.h" />
+    <ClInclude Include="opengl-physics\physics\include\force.h" />
     <ClInclude Include="opengl-physics\physics\include\aabb.h" />
     <ClInclude Include="opengl-physics\physics\include\obb.h" />
     <ClInclude Include="opengl-physics\physics\include\physics_bundles.h" />
@@ -123,10 +126,7 @@
     <ClInclude Include="opengl-physics\physics\include\aabb_box.h" />
     <ClInclude Include="opengl-physics\physics\include\aabb_cube.h" />
     <ClInclude Include="opengl-physics\physics\include\acceleration.h" />
-    <ClInclude Include="opengl-physics\physics\include\meshes.h" />
     <ClInclude Include="opengl-physics\physics\include\moveible_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\rigid_mesh.h" />
-    <ClInclude Include="opengl-physics\physics\include\soft_mesh.h" />
     <ClInclude Include="opengl-physics\physics\include\universal_time.h" />
     <ClInclude Include="opengl-physics\physics\include\volocity.h" />
     <ClInclude Include="opengl-physics\physics\include\world.h" />
@@ -155,8 +155,13 @@
     <ClInclude Include="opengl-physics\glUtil\include\shadow_map.h" />
     <ClInclude Include="opengl-physics\glUtil\include\shadow_map_bundle.h" />
     <ClInclude Include="opengl-physics\physics\include\sphere_bound.h" />
+    <ClInclude Include="opengl-physics\tools\include\point_light.h" />
+    <ClInclude Include="opengl-physics\tools\include\point_light_bundle.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="opengl-physics\tools\src\component_storage.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\entity_registry.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\force.cpp" />
     <ClCompile Include="opengl-physics\physics\src\aabb.cpp" />
     <ClCompile Include="opengl-physics\physics\src\moveible.cpp" />
     <ClCompile Include="opengl-physics\physics\src\obb.cpp" />
@@ -176,8 +181,6 @@
     <ClCompile Include="opengl-physics\physics\src\aabb_cube.cpp" />
     <ClCompile Include="opengl-physics\physics\src\acceleration.cpp" />
     <ClCompile Include="opengl-physics\physics\src\moveible_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\rigid_mesh.cpp" />
-    <ClCompile Include="opengl-physics\physics\src\soft_mesh.cpp" />
     <ClCompile Include="opengl-physics\physics\src\universal_time.cpp" />
     <ClCompile Include="opengl-physics\physics\src\volocity.cpp" />
     <ClCompile Include="opengl-physics\physics\src\world.cpp" />
@@ -198,6 +201,7 @@
     <ClCompile Include="opengl-physics\tools\src\quaternion_camera.cpp" />
     <ClCompile Include="opengl-physics\glUtil\src\shadow_map.cpp" />
     <ClCompile Include="opengl-physics\physics\src\sphere_bound.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\point_light.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="TESTER.cpp" />

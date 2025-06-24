@@ -1,4 +1,6 @@
+/*
 #include "headers.h"
+
 #include "physics/include/moveible_mesh.h"
 
 namespace physics
@@ -267,3 +269,5 @@ namespace physics
 	MoveibleMesh<glType::MovementType::Constant>::~MoveibleMesh() = default;
 
 }
+
+*/

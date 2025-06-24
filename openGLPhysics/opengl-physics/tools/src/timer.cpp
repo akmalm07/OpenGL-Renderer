@@ -30,7 +30,7 @@ namespace tools
 
 
 
-	double Timer::stop_time(bool debug)
+	float Timer::stop_time(bool debug)
 	{
 		_state = true;
 		_isStopped = true;
@@ -39,7 +39,7 @@ namespace tools
 
 		std::chrono::duration duration = _timeEnded - _timeStarted;
 
-		double milliseconds = static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
+		float milliseconds = static_cast<float>(std::chrono::duration_cast<std::chrono::milliseconds>(duration).count());
 
 		if (debug)
 		{
