@@ -30,19 +30,24 @@ namespace physics
 		return _force.get_current_volocity() * _mass;
 	}
 
-	glm::vec3 Force::operator+(const glm::vec3& vec)
+	Force Force::operator+(const Force& vec)
 	{
-		return _force.get_acceleration() + vec;
+		return ;
 	}
 
-	glm::vec3 Force::operator+(const Force& vec)
+	Force Force::operator+(const Force& vec)
 	{
-		return _force.get_acceleration() + vec._force.get_acceleration();
+		return (_force * _mass) + (vec._force * vec._mass);
 	}
 
 	void Force::operator+=(const glm::vec3& vec)
 	{
 		_force += vec;
+	}
+
+	Force Force::operator-(const Force& vec) const
+	{
+		return Force();
 	}
 
 	void Force::set_force(const glm::vec3& force)
@@ -51,3 +56,4 @@ namespace physics
 	}
 	
 }
+

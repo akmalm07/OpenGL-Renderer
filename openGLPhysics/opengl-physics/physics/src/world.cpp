@@ -3,7 +3,7 @@
 #include "physics\include\world.h"
 #include "tools\include\key_usage_registry.h"
 
-namespace physics
+namespace tools
 {
 	World::World() = default;
 

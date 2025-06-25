@@ -348,14 +348,14 @@ namespace tools
 
 	void DirectionalLight::update_uniform_buffer()
 	{
-		_uniformBuffer.update_data(_light.direction,		"dirLight.direction");
-		_uniformBuffer.update_data(_light.ambient,			"dirLight.ambient");
-		_uniformBuffer.update_data(_light.diffuse,			"dirLight.diffuse");
-		_uniformBuffer.update_data(_light.specular,			"dirLight.specular");
-		_uniformBuffer.update_data(_light.ambInstensity,	"dirLight.ambIntensity");
-		_uniformBuffer.update_data(_light.diffInstensity,	"dirLight.diffIntensity");
-		_uniformBuffer.update_data(_light.specInstensity,	"dirLight.specIntensity");
-		_uniformBuffer.update_data(_light.color,			"dirLight.color");
+		_uniformBuffer.update_data(_light.direction, "dirLight.direction");
+		_uniformBuffer.update_data(_light.ambient, "dirLight.ambient");
+		_uniformBuffer.update_data(_light.diffuse, "dirLight.diffuse");
+		_uniformBuffer.update_data(_light.specular,"dirLight.specular");
+		_uniformBuffer.update_data(_light.ambInstensity, "dirLight.ambIntensity");
+		_uniformBuffer.update_data(_light.diffInstensity, "dirLight.diffIntensity");
+		_uniformBuffer.update_data(_light.specInstensity, "dirLight.specIntensity");
+		_uniformBuffer.update_data(_light.color, "dirLight.color");
 
 		if (_cameraPosLoc != 0)
 		{

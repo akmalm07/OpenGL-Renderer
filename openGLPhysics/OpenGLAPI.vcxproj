@@ -101,7 +101,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="opengl-physics\tools\include\component_storage.h" />
+    <ClInclude Include="opengl-physics\tools\include\component_registry.h" />
     <ClInclude Include="opengl-physics\tools\include\entity_registry.h" />
     <ClInclude Include="opengl-physics\physics\include\force.h" />
     <ClInclude Include="opengl-physics\physics\include\aabb.h" />
@@ -159,7 +159,7 @@
     <ClInclude Include="opengl-physics\tools\include\point_light_bundle.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="opengl-physics\tools\src\component_storage.cpp" />
+    <ClCompile Include="opengl-physics\tools\include\component_registry.inl" />
     <ClCompile Include="opengl-physics\tools\src\entity_registry.cpp" />
     <ClCompile Include="opengl-physics\physics\src\force.cpp" />
     <ClCompile Include="opengl-physics\physics\src\aabb.cpp" />

@@ -24,6 +24,8 @@ namespace glUtil
 		template <class T>
 		void update_data(const T& data, const std::string& name);
 
+
+
 		~UniformBuffer();
 
 	private:

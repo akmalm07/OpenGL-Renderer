@@ -9,9 +9,13 @@ namespace tools
 	class EntityRegistry
 	{
 	public:
+		EntityRegistry() = default;
 
 		EntityRegistry(const EntityRegistry&) = delete;
 		EntityRegistry& operator=(const EntityRegistry&) = delete;
+
+		EntityRegistry(EntityRegistry&&) = default;
+		EntityRegistry& operator=(EntityRegistry&&) = default;
 
 		EntityRegistry& get();
 
@@ -27,9 +31,9 @@ namespace tools
 
 		bool is_entity_registered(const std::string& entityName) const;
 
-	private:
-		EntityRegistry() = default;
 		~EntityRegistry() = default;
+
+	private:
 		
 		std::unordered_map<glType::Entity, std::string> _entities;
 		size_t _nextEntityId = 0;

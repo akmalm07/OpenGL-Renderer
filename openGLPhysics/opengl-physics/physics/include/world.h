@@ -6,11 +6,20 @@
 #include "tools/include/directional_light.h"
 #include "tools/include/quaternion_camera.h"
 #include "tools/include/window.h"
-#include "physics/include/acceleration.h"
+#include "tools/include/entity_registry.h"
+#include "tools/include/component_registry.h"
+
+#include "glUtil/include/mesh.h"
+#include "glUtil/include/texture.h"
+#include "physics/include/aabb.h"
+#include "physics/include/obb.h"
+#include "physics/include/sphere_bound.h"
+#include "physics/include/force.h"
+
 //#include "glUtil/include/shadow_map.h"
 
 
-namespace physics
+namespace tools
 {
 
 	class World
@@ -68,8 +77,9 @@ namespace physics
 	private:
 		std::shared_ptr<tools::Scene> _scene;
 
-		std::vector<std::shared_ptr<glUtil::Mesh>> _meshes;
-		std::vector<std::shared_ptr<glUtil::Texture>> _textures;
+		EntityRegistry _entityRegistry;
+		
+		ComponentRegistry<Mesh> _componentRegistry;	
 
 		tools::DirectionalLight _directionalLight;
 

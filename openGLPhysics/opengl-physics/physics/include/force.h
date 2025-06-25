@@ -7,15 +7,15 @@
 
 namespace physics
 {
-	class Force : public Moveible
+	class Force 
 	{
 	public:
 
 		Force() = default;
 
-		Force(const glm::vec3& position, const glm::vec3& force);
+		Force(const glm::vec3& position, const glm::vec3& force, float mass);
 
-		Force(const glm::vec3& position, const glm::vec3& force, const tools::Timer& timer);
+		Force(const glm::vec3& position, const glm::vec3& force, float mass, const tools::Timer& timer);
 		
 		void set_force(const glm::vec3& force);
 
@@ -25,15 +25,18 @@ namespace physics
 
 		glm::vec3 get_current_momentum() const;
 
-		glm::vec3 operator+(const glm::vec3& vec);
+		Force operator+(const Force& vec);
 	
-		glm::vec3 operator+(const Force& vec);
+		Force operator+(const Force& vec);
 
 		void operator+=(const glm::vec3& vec);
 
+		Force operator-(const Force& vec) const;
+
 	private:
+
 		float _mass = 1.0f;
-		Acceleration _force;
+		Acceleration _force; // This is internal force, so the mas must be removed. Mass belongs in physics Body, a seperate class
 	};
 
 
