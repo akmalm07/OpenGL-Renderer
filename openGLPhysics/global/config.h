@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include <functional>
 #include <filesystem>
+#include <cmath>
+#include <numbers>
 
 #include <glm/glm.hpp>
 

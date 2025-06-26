@@ -1,59 +1,40 @@
 #include "headers.h"
 #include "physics/include/force.h"
 
-
 namespace physics
 {
-
-	Force::Force(const glm::vec3& position, const glm::vec3& force)
-		: _force(position, force)
+	GravityForce::GravityForce(Measurible gravity)
 	{
-	}
-	Force::Force(const glm::vec3& position, const glm::vec3& force, const tools::Timer& timer)
-		: _force(position, force, timer)
-	{
+		_acc = gravity;
 	}
 
-
-    glm::vec3 Force::get_force() const
-    {
-        return _force * _mass;
-    }
-
-	glm::vec3 Force::get_distance() const
+	Force GravityForce::calc_local_force_impl(ForceCalcInput<ForceType::Gravity> in) const
 	{
-		return _force.get_distance();
+		return Force(0.0f, _acc, 0.0f) * static_cast<float>(in.mass);
 	}
 
-	glm::vec3 Force::get_current_momentum() const
+
+	DragForce::DragForce(Measurible dragCoefficient, Measurible fluidDensity, Measurible area)
 	{
-		return _force.get_current_volocity() * _mass;
+		this->dragCoefficient = dragCoefficient;
+		this->fluidDensity = fluidDensity;
+		this->area = area;
 	}
 
-	Force Force::operator+(const Force& vec)
+	Force DragForce::calc_local_force_impl(ForceCalcInput<ForceType::Drag> in) const
 	{
-		return ;
+		return -0.5f * static_cast<float>(dragCoefficient * fluidDensity * area) * in.volocity * in.volocity;
 	}
 
-	Force Force::operator+(const Force& vec)
+	SpringForce::SpringForce(Measurible springConstant, Measurible restLength)
 	{
-		return (_force * _mass) + (vec._force * vec._mass);
+		this->springConstant = springConstant;
+		this->restLength = restLength;
 	}
 
-	void Force::operator+=(const glm::vec3& vec)
+	Force SpringForce::calc_local_force_impl(ForceCalcInput<ForceType::Spring> in) const
 	{
-		_force += vec;
+		return -static_cast<float>(springConstant * (in.compression - restLength));
 	}
 
-	Force Force::operator-(const Force& vec) const
-	{
-		return Force();
-	}
-
-	void Force::set_force(const glm::vec3& force)
-	{
-		_force = force;
-	}
-	
 }
-

@@ -2,6 +2,11 @@
 
 namespace tools
 {
+	template<glType::ComponentType T>
+	inline void ComponentRegistry<T>::invite(const T& component)
+	{
+		component.visit(_components)
+	}
 
 	template<glType::ComponentType T>
 	inline void ComponentRegistry<T>::add_component(glType::Entity entity, const T& component)

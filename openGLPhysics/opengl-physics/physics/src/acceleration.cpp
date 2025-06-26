@@ -1,21 +1,20 @@
 #include "headers.h"
 #include "physics/include/acceleration.h"
 
+#include "physics/include/units.h"
 
 namespace physics
 {
+
+	
 	Acceleration::Acceleration() = default;
 
-	Acceleration::Acceleration(const glm::vec3& position, const glm::vec3& val)
-		: _acceleration(val) {
-		_position = position;
+	Acceleration::Acceleration(const glm::vec3& val, bool start)
+		: _acceleration(units::to_meters_per_sec2(val)), Moveible(true) {
 	}
 
-	Acceleration::Acceleration(const glm::vec3& position, const glm::vec3& val, const tools::Timer& timer)
-		: _acceleration(val) 
-	{
-		_position = position;
-		_timer = timer;
+	Acceleration::Acceleration(const glm::vec3& val, const tools::Timer& timer)
+		: _acceleration(units::to_meters_per_sec2(val)), Moveible(timer) {
 	}
 
 
@@ -88,6 +87,11 @@ namespace physics
 			(_intialVol.y + (_acceleration.y * currentTime)),
 			(_intialVol.z + (_acceleration.z * currentTime))
 		);
+	}
+
+	bool Acceleration::in_motion() const
+	{
+		return _acceleration != glm::vec3(0.0f, 0.0f, 0.0f) || _intialVol != glm::vec3(0.0f, 0.0f, 0.0f) || _timer.get_state();
 	}
 
 

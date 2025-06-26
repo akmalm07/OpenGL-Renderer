@@ -24,7 +24,7 @@ namespace physics
 	class SphereBound;
 
 
-	class BoundTypeBase : public glType::Component
+	class BoundTypeBase
 	{
 	public:
 

@@ -2,20 +2,24 @@
 
 
 
-#define INT(x) static_cast<int>(x)
-#define SIZET(x) static_cast<size_t>(x)
-#define UINT(x) static_cast<unsigned int>(x)
+template<typename T>
+constexpr size_t SIZET(T x) {
+	return static_cast<size_t>(x);
+
+}
 
 constexpr size_t MAX_NUM_OF_ENTITIES = 5000;
 
-#define UINT32(x) static_cast<uint32_t>(x)  
+template<typename T>
+constexpr unsigned int UINT32(T x) {
+	return static_cast<uint32_t>(x);
+}
+//#define MOVE_ITR(x) std::make_move_iterator(x)
 
-#define ASSERT(cond, msg) if (!(cond)) { std::cerr << msg << std::endl; } 
-
-#define MOVE_ITR(x) std::make_move_iterator(x)
-
-#define BOOL(x) static_cast<bool>(x)
-
+template<typename T>
+constexpr unsigned int BOOL(T x) {
+	return static_cast<unsigned int>(x);
+}
 #define PRINT_VEC3(str, v) std::cout << str << ": " << v.x << " " << v.y << " " << v.z << std::endl;
 
 #define PRINT_MAT4(str, v) std::cout << str << ": \n" << v[0][0] << " " << v[0][1] << " " << v[0][2] << " " << v[0][3] << std::endl; \
@@ -23,17 +27,28 @@ std::cout << v[1][0] << " " << v[1][1] << " " << v[1][2] << " " << v[1][3] << st
 std::cout << v[2][0] << " " << v[2][1] << " " << v[2][2] << " " << v[2][3] << std::endl; \
 std::cout << v[3][0] << " " << v[3][1] << " " << v[3][2] << " " << v[3][3] << std::endl;
 
-#define UINT(x) static_cast<unsigned int>(x)
+template<typename T>
+constexpr unsigned int UINT(T x) {
+	return static_cast<unsigned int>(x);
+}
 
-#define INT(x) static_cast<int>(x)
+template<typename T>
+constexpr int INT(T x) {
+	return static_cast<int>(x);
+}
 
 #define KEY_MAX 1024
 
 namespace glType
 {
+
+	using Entity = uint64_t;
+
+	template<typename T>
 	class Component
 	{
 	public:
+		virtual void visit(const std::unordered_map<Entity, T>& components);
 		virtual ~Component() = default;
 	};
 	using Index = unsigned int;
@@ -53,9 +68,6 @@ namespace glType
 		Constant,
 		Kenimatic
 	};
-
-
-	using Entity = uint64_t;
 
 
 	template <typename T, size_t S = 0>

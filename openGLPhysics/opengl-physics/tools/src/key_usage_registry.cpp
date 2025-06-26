@@ -66,7 +66,7 @@ namespace tools
 		keys.reserve(_keys.size());
 		for (const auto& key : _keys)
 		{
-			if (toInt(key.first) >= toInt(Keys::A) && toInt(key.first) <= toInt(Keys::Z))
+			if (INT(key.first) >= INT(Keys::A) && INT(key.first) <= INT(Keys::Z))
 			{
 				keys.push_back(key);
 			}
@@ -79,7 +79,7 @@ namespace tools
 		size_t total = 0;
 		for (const auto& key : _keys)
 		{
-			if (toInt(key.first) >= toInt(Keys::A) && toInt(key.first) <= toInt(Keys::Z))
+			if (INT(key.first) >= INT(Keys::A) && INT(key.first) <= INT(Keys::Z))
 			{
 				total++;
 			}

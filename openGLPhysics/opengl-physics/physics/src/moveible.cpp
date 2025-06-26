@@ -3,6 +3,17 @@
 
 namespace physics
 {
+
+	Moveible::Moveible(bool start)
+		: _timer(start)
+	{}
+
+	Moveible::Moveible(const tools::Timer & start)
+	{
+		_timer = start;
+	}
+
+
 	void Moveible::start_time()
 	{
 		_timer.start_time();
@@ -16,11 +27,6 @@ namespace physics
 	void Moveible::reset_time()
 	{
 		_timer.reset();
-	}
-
-	glm::vec3 Moveible::get_position() const
-	{
-		return _position + get_distance();
 	}
 
 	float Moveible::get_current_time() const

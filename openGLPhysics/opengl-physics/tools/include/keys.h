@@ -4,10 +4,6 @@
 
 namespace tools {
 
-#define KEYS(x) static_cast<Keys>(x)
-#define MODS(x) static_cast<Mods>(x)
-#define MOUSE(x) static_cast<Mouse>(x)
-#define ACTION(x) static_cast<Action>(x)
 
 	enum class Mods
 	{
@@ -126,12 +122,38 @@ namespace tools {
 		Left = 1 << 3,
 		Forward = 1 << 4,
 		Backward = 1 << 5,
-		TurnRight = 1 << 6,
-		TurnLeft = 1 << 7,
-		TurnUp = 1 << 8,
-		TurnDown = 1 << 9,
-		Count = 10
+		Count = 6
 	};
+
+
+
+
+	template <typename T>
+	inline Keys KEYS(T x)
+	{
+		return static_cast<Keys>(x);
+	}
+
+	template <typename T>
+	inline Mods MODS(T x)
+	{
+		return static_cast<Mods>(x);
+	}
+
+	template <typename T>
+	inline Mouse MOUSE(T x)
+	{
+		return static_cast<Mouse>(x);
+	}
+
+	template <typename T>
+	inline Action ACTION(T x)
+	{
+		return static_cast<Action>(x);
+	}
+
+
+
 
 	template <glType::Enum T>
 	constexpr T operator|(T a, T b) {
@@ -168,32 +190,6 @@ namespace tools {
 	template <glType::Enum T>
 	constexpr T& operator&=(T& a, T b) {
 		return a = a & b;
-	}
-
-
-	template<class T> 
-	int toInt(T type) 
-	{
-		return static_cast<int>(type);
-	}
-
-	inline Action from_glfw_action(int glfwAction)
-	{
-		switch (glfwAction)
-		{
-		case GLFW_PRESS:   return Action::Press;
-		case GLFW_RELEASE: return Action::Release;
-		case GLFW_REPEAT:  return Action::Repeat;
-		default:           return Action::None;
-		}
-	}
-
-	inline int to_glfw_action(Action action)
-	{
-		if (action == Action::Press)   return GLFW_PRESS;
-		if (action == Action::Release) return GLFW_RELEASE;
-		if (action == Action::Repeat)  return GLFW_REPEAT;
-		return GLFW_KEY_UNKNOWN;
 	}
 }
 

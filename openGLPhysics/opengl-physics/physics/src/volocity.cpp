@@ -3,18 +3,13 @@
 
 namespace physics
 {
-	Volocity::Volocity() = default;
 
-	Volocity::Volocity(const glm::vec3& position, const glm::vec3& val)
-		: _volocity(val) {
-		_position = position;
+	Volocity::Volocity(const glm::vec3& val, bool start)
+		: _volocity(val), Moveible(start) {
 	}
 	
-	Volocity::Volocity(const glm::vec3& position, const glm::vec3& val, const tools::Timer& timer)
-		: _volocity(val)
-	{
-		_timer = timer;
-		_position = position;
+	Volocity::Volocity(const glm::vec3& val, const tools::Timer& timer)
+		: _volocity(val), Moveible(timer) {
 	}
 
 	void Volocity::set_volocity(const glm::vec3& val)
@@ -55,6 +50,16 @@ namespace physics
 	glm::vec3 Volocity::operator*(const float vec) const
 	{
 		return vec * _volocity;
+	}
+
+	void Volocity::operator=(const glm::vec3& vec)
+	{
+		_volocity = vec;
+	}
+
+	bool Volocity::in_motion() const
+	{
+		return _volocity != glm::vec3(0.0f, 0.0f, 0.0f) || _timer.get_state();
 	}
 
 	void Volocity::operator+=(const glm::vec3& vec)

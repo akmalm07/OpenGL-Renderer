@@ -9,7 +9,7 @@
 namespace glUtil
 {
 
-	class Mesh : public glType::Component
+	class Mesh : public glType::Component<Mesh>
 	{
 	public:
 		Mesh() = default;

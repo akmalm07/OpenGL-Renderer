@@ -11,21 +11,26 @@ namespace physics
 	class Moveible
 	{
 	public:
+
+		Moveible() = default;
+
+		Moveible(bool start);
+
+		Moveible(const tools::Timer& start);
+
 		void start_time();
 
 		double stop_time();
 
 		void reset_time();
 
-		glm::vec3 get_position() const;
-
 		virtual glm::vec3 get_distance() const = 0;
-		
 		virtual glm::vec3 operator+(const glm::vec3& vec) = 0;
 		virtual void operator+=(const glm::vec3& vec) = 0;
 		virtual void operator=(const glm::vec3& vec) = 0;
 		virtual glm::vec3 operator*(const glm::vec3& vec) const = 0;
 		virtual glm::vec3 operator*(const float vec) const = 0;
+		virtual bool in_motion() const = 0;
 
 		float get_current_time() const;
 		
@@ -33,11 +38,11 @@ namespace physics
 
 		tools::Timer get_timer() const;
 
+
 		virtual ~Moveible() = default;
 
 	protected:
 
-		glm::vec3 _position = glm::vec3(0.0f, 0.0f, 0.0f);
 		tools::Timer _timer;
 	};
 

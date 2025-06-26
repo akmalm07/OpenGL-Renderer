@@ -10,11 +10,11 @@ namespace physics
 	class Volocity : public Moveible
 	{  
 	public:  
-		Volocity();  
+		Volocity() = default;  
 
-		Volocity(const glm::vec3& position, const glm::vec3& val);  
+		Volocity(const glm::vec3& val, bool start = true);
+		Volocity(const glm::vec3& val, const tools::Timer& timer);
 
-		Volocity(const glm::vec3& position, const glm::vec3& val, const tools::Timer& timer);
 
 		void set_volocity(const glm::vec3& val);  
 
@@ -29,6 +29,10 @@ namespace physics
 
 		glm::vec3 operator*(const glm::vec3& vec) const override;
 		glm::vec3 operator*(const float vec) const override;
+
+		void operator=(const glm::vec3& vec) override;
+
+		bool in_motion() const override;
 
 	private:  
 		glm::vec3 _volocity = glm::vec3(0.0f, 0.0f, 0.0f);  

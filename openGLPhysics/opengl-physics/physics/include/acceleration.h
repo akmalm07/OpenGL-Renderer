@@ -5,7 +5,6 @@
 #include "physics/include/moveible.h"
 
 
-
 namespace physics
 {
 	class Acceleration : public Moveible
@@ -13,9 +12,9 @@ namespace physics
 	public:
 		Acceleration();
 
-		Acceleration(const glm::vec3& position, const glm::vec3& val);
+		Acceleration(const glm::vec3& val, bool start = true);
 		
-		Acceleration(const glm::vec3& position, const glm::vec3& val, const tools::Timer& timer);
+		Acceleration(const glm::vec3& val, const tools::Timer& timer);
 				
 		void set_inital_vol(const glm::vec3& val);
 
@@ -35,7 +34,8 @@ namespace physics
 		glm::vec3 get_distance() const override;
 		
 		glm::vec3 get_current_volocity() const;
-		
+
+		bool in_motion() const override;
 
 	private:
 		

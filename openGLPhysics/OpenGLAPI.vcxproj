@@ -101,6 +101,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="opengl-physics\physics\include\force_input.h" />
+    <ClInclude Include="opengl-physics\tools\include\features.h" />
     <ClInclude Include="opengl-physics\tools\include\component_registry.h" />
     <ClInclude Include="opengl-physics\tools\include\entity_registry.h" />
     <ClInclude Include="opengl-physics\physics\include\force.h" />
@@ -157,11 +159,14 @@
     <ClInclude Include="opengl-physics\physics\include\sphere_bound.h" />
     <ClInclude Include="opengl-physics\tools\include\point_light.h" />
     <ClInclude Include="opengl-physics\tools\include\point_light_bundle.h" />
+    <ClInclude Include="opengl-physics\physics\include\physics_body.h" />
+    <ClInclude Include="opengl-physics\physics\include\units.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="opengl-physics\tools\include\component_registry.inl" />
-    <ClCompile Include="opengl-physics\tools\src\entity_registry.cpp" />
     <ClCompile Include="opengl-physics\physics\src\force.cpp" />
+    <ClCompile Include="opengl-physics\tools\include\component_registry.inl" />
+    <ClCompile Include="opengl-physics\tools\include\types.cpp" />
+    <ClCompile Include="opengl-physics\tools\src\entity_registry.cpp" />
     <ClCompile Include="opengl-physics\physics\src\aabb.cpp" />
     <ClCompile Include="opengl-physics\physics\src\moveible.cpp" />
     <ClCompile Include="opengl-physics\physics\src\obb.cpp" />
@@ -202,6 +207,7 @@
     <ClCompile Include="opengl-physics\glUtil\src\shadow_map.cpp" />
     <ClCompile Include="opengl-physics\physics\src\sphere_bound.cpp" />
     <ClCompile Include="opengl-physics\tools\src\point_light.cpp" />
+    <ClCompile Include="opengl-physics\physics\src\physics_body.cpp" />
     <ClCompile Include="src\engine.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="TESTER.cpp" />

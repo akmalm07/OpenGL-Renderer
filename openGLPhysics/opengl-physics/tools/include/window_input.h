@@ -9,6 +9,7 @@
 
 namespace tools {
 
+
 	template<CallbackInputConcept InputStruct>
 	view_ptr<InputStruct> cast_to_type(view_ptr<CallbackInput> incoming);
 	
