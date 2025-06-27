@@ -231,7 +231,7 @@ namespace tools
 	{
 		move_and_turn_dir(dir, deltaTime);
 
-		_view = glm::lookAt(_position, _target, _up);
+		update_view_matrix();
 
 		//PRINT_MAT4("view: ", _view);
 
@@ -283,67 +283,40 @@ namespace tools
 	void Camera::move_and_turn_dir(Direction dir, double deltaTime)
 	{
 		bool move = false;
+
 		if (BOOL(dir & Direction::Forward))
 		{
 			move_forward(deltaTime, true);
-			move = true;
+
 		}
 		else if (BOOL(dir & Direction::Backward))
 		{
 			move_forward(deltaTime, false);
-			move = true;
+
 		}
 
 
 		if (BOOL(dir & Direction::Left))
 		{
 			move_right(deltaTime, false);
-			move = true;
+
 		}
 		else if (BOOL(dir & Direction::Right))
 		{
 			move_right(deltaTime, true);
-			move = true;
+
 		}
 
 
 		if (BOOL(dir & Direction::Up))
 		{
 			move_up(deltaTime, true);
-			move = true;
+
 		}
 		else if (BOOL(dir & Direction::Down))
 		{
 			move_up(deltaTime, false);
-			move = true;
-		}
 
-
-		if (BOOL(dir & Direction::TurnUp))
-		{
-			pitch(deltaTime, 1.0f);
-			move = true;
-		}
-		else if (BOOL(dir & Direction::TurnDown))
-		{
-			pitch(deltaTime, -1.0f);
-			move = true;
-		}
-
-
-		if (BOOL(dir & Direction::TurnLeft))
-		{
-			yaw(deltaTime, -1.0f);
-			move = true;
-		}
-		else if (BOOL(dir & Direction::TurnRight))
-		{
-			yaw(deltaTime, 1.0f);
-			move = true;
-		}
-		if (move)
-		{
-			update_view_matrix();
 		}
 	}
 

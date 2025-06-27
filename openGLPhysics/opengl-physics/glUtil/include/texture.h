@@ -21,7 +21,7 @@ namespace glUtil
 
 	};
 
-	class Texture : public glType::Component // ADD Mip map level 
+	class Texture : public glType::Component<Texture> // ADD Mip map level 
 	{
 	public:
 		Texture();

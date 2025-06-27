@@ -28,7 +28,13 @@ namespace physics
 	{
 	public:
 
+
+
+		MinMax get_min_max() const;
+
 		glm::vec3 get_center() const;
+
+		float get_volume() const;
 
 		virtual bool is_touching(const SphereBound& other) const = 0;
 
@@ -81,6 +87,15 @@ namespace physics
 	protected:
 
 		glm::vec3 _center;
+
+		glm::vec3 _min;
+		glm::vec3 _max;
+	};
+
+
+	class HasMinMax
+	{
+		//Finish from here to alow the class partioning reqister to know its bound types so that it can find the positions of the item
 	};
 
 	class AABB : public BoundTypeBase
@@ -122,8 +137,6 @@ namespace physics
 		~AABB();
 
 	protected:
-		glm::vec3 _min;
-		glm::vec3 _max;
 		glm::vec3 _halfExtent;
 
 		friend class BoundTypeBase;

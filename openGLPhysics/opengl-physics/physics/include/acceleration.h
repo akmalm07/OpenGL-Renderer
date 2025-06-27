@@ -12,6 +12,8 @@ namespace physics
 	public:
 		Acceleration();
 
+		Acceleration(const glm::vec3& val);
+
 		Acceleration(const glm::vec3& val, bool start = true);
 		
 		Acceleration(const glm::vec3& val, const tools::Timer& timer);

@@ -132,12 +132,12 @@ namespace tools
 
 	void World::render_meshes(glInit::GLProgram& program)
 	{
-		for (auto& mesh : _meshes)
-		{
-			_matrix.model = mesh->get_model_matrix();
-			program.link_model_matrix(_matrix.model);
-			mesh->render();
-		}
+		//for (auto& mesh : _meshes)
+		//{
+		//	_matrix.model = mesh->get_model_matrix();
+		//	program.link_model_matrix(_matrix.model);
+		//	mesh->render();
+		//}
 	}
 	
 	void World::unbind_light()
@@ -153,11 +153,11 @@ namespace tools
 
 	void World::add_mesh(std::shared_ptr<glUtil::Mesh> mesh)
 	{
-		_meshes.push_back(mesh);
-		if (_debug)
-		{
-			std::cout << "Mesh added to World." << std::endl;
-		}
+		//_meshes.push_back(mesh);
+		//if (_debug)
+		//{
+		//	std::cout << "Mesh added to World." << std::endl;
+		//}
 	}
 
 	void World::add_meshes(std::vector<std::shared_ptr<glUtil::Mesh>>& mesh)
@@ -167,11 +167,11 @@ namespace tools
 
 		}
 
-		_meshes.insert(_meshes.end(), mesh.begin(), mesh.end());
-		if (_debug)
-		{
-			std::cout << "Meshes added to World." << std::endl;
-		}
+		//_meshes.insert(_meshes.end(), mesh.begin(), mesh.end());
+		//if (_debug)
+		//{
+		//	std::cout << "Meshes added to World." << std::endl;
+		//}
 	}
 
 	void World::set_camera(std::shared_ptr<tools::BaseCamera> camera)

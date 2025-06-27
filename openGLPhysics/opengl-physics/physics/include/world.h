@@ -79,8 +79,6 @@ namespace tools
 
 		EntityRegistry _entityRegistry;
 		
-		ComponentRegistry<Mesh> _componentRegistry;	
-
 		tools::DirectionalLight _directionalLight;
 
 		glm::vec3 _gravity = { 0.0f, -0.1f, 0.0f };

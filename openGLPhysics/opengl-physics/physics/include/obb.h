@@ -42,6 +42,14 @@ namespace physics
 
 		glm::vec3 get_aabb_wrap_max() const;
 
+		void move_reletive_to_dist(const glm::vec3& dist);
+
+		void change(const glm::vec3& offset);
+
+		void change_x(float offset);
+		void change_y(float offset);
+		void change_z(float offset);
+
 		std::array <glm::vec3, 8> get_corners() const;
 
 		virtual ~OBB();

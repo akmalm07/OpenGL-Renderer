@@ -6,6 +6,12 @@
 #include "glUtil\include\mesh_bundle.h"
 
 
+namespace physics
+{
+	class PhysicsBodyBase;
+}
+
+
 namespace glUtil
 {
 
@@ -40,6 +46,8 @@ namespace glUtil
 
 		Transform get_transform() const;
 
+		glm::vec3 get_position() const;
+
 		glm::mat4 get_model_matrix() const;
 
 		void clear();
@@ -57,6 +65,8 @@ namespace glUtil
 		unsigned int _offsetCount = 0;
 
 		Transform _transform;
+
+		friend class physics::PhysicsBodyBase;
 
 	private:
 		void set_vertex_attribs(const ArrayBufferLayout& arrLayout, FullStride absoluteStride);
@@ -79,4 +89,6 @@ namespace tools
 	std::vector<glType::Vertex> create_floor_vertices(const glm::vec3& color, const glm::vec3& position, float size);
 	
 	std::vector<glType::Index> create_floor_indices();
+
+	glUtil::Mesh contruct_default_mesh();
 }

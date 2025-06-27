@@ -29,4 +29,8 @@ namespace tools
 
 	template<typename T>
 	using view_ptr_non_const = T const*;
+
+	template<typename T>
+	using view_ptr_mutable = T* const;
+
 }

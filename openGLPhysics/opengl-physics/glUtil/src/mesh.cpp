@@ -97,6 +97,11 @@ namespace glUtil
 		return _transform;
 	}
 
+	glm::vec3 Mesh::get_position() const
+	{
+		return _transform.position;
+	}
+
 	glm::mat4 Mesh::get_model_matrix() const
 	{
 		glm::mat4 model(1.0f);
@@ -214,7 +219,7 @@ namespace glUtil
 namespace tools
 {
 
-	std::vector<glType::Vertex> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color)
+	std::vector<glType::Vertex> create_circle_vertices(glType::Vertex radius, int segments, const glm::vec3& center, const glm::vec3& color)
 	{
 		if (segments < 3)
 		{
@@ -232,10 +237,10 @@ namespace tools
 
 		for (int i = 0; i <= segments; i++)
 		{
-			float theta = 2.0f * glm::pi<float>() * (float)i / segments;
+			glType::Vertex theta = 2.0f * glm::pi<glType::Vertex>() * (glType::Vertex)i / segments;
 
-			float x = center.x + radius * cos(theta);
-			float y = center.y + radius * sin(theta);
+			glType::Vertex x = center.x + radius * cos(theta);
+			glType::Vertex y = center.y + radius * sin(theta);
 
 			vertices.push_back(x);
 			vertices.push_back(y);
@@ -270,10 +275,10 @@ namespace tools
 		return indices;
 	}
 
-	std::vector<float> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size) 
+	std::vector<glType::Vertex> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, glType::Vertex size) 
 	{
 		std::vector<glType::Vertex> vertices;
-		float halfSize = size / 2.0f;
+		glType::Vertex halfSize = size / 2.0f;
 
 
 		glType::Vertex cubeVertices[] = {
@@ -327,9 +332,9 @@ namespace tools
 			6, 7, 3
 		};
 	}
-	std::vector<glType::Vertex> create_floor_vertices(const glm::vec3& color, const glm::vec3& position, float size)
+	std::vector<glType::Vertex> create_floor_vertices(const glm::vec3& color, const glm::vec3& position, glType::Vertex size)
 	{
-		std::vector<float> vertices = 
+		std::vector<glType::Vertex> vertices = 
 		{
 			-size / 2.0f, position.y, size / 2.0f + position.z, color.r, color.g, color.b,
 			size / 2.0f + position.x, position.y, size / 2.0f + position.z, color.r, color.g, color.b,
@@ -349,6 +354,26 @@ namespace tools
 		2, 3, 0 
 		};
 		return indices;
+	}
+
+	glUtil::Mesh contruct_default_mesh()
+	{
+		glUtil::MeshBundle bundle;
+
+		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
+		auto cubeVerts = tools::create_cube_vertices(glm::vec3(0.0, 10.0, 3.0), glm::vec3(1.0f), 2.0f);
+		auto cubeIndices = tools::create_cube_indices();
+
+		bundle.pVertices = cubeVerts.data();
+		bundle.pIndices = cubeIndices.data();
+		bundle.vertexCount = cubeVerts.size();
+		bundle.indexCount = cubeIndices.size();
+
+		bundle.pLayout1 = new glUtil::ArrayBufferLayout{ glUtil::StrideType::POS, glUtil::Stride::STRIDE_3D, 0 };
+
+		bundle.pLayout2 = new glUtil::ArrayBufferLayout{ glUtil::StrideType::COL, glUtil::Stride::STRIDE_3D, 1 };
+
+		return glUtil::Mesh(bundle);
 	}
 
 }

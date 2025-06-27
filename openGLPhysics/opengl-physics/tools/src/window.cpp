@@ -477,7 +477,7 @@ namespace tools {
 
 	}
 
-	void Window::world_visitor(physics::World& visitor)
+	void Window::world_visitor(World& visitor) const
 	{
 		visitor.set_camera(_camera);
 	}

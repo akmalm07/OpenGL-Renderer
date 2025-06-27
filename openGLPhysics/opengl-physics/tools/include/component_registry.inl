@@ -1,17 +1,33 @@
+#pragma once
 #include "tools/include/component_registry.h"
+#include "physics/include/physics_body.h"
 
 namespace tools
 {
+
 	template<glType::ComponentType T>
 	inline void ComponentRegistry<T>::invite(const T& component)
 	{
-		component.visit(_components)
+		component.visit(_components);
+	}
+
+	template<glType::ComponentType T>
+	inline ComponentRegistry<T>& ComponentRegistry<T>::get_instance()
+
+	{
+		static ComponentRegistry instance;
+		return instance;
 	}
 
 	template<glType::ComponentType T>
 	inline void ComponentRegistry<T>::add_component(glType::Entity entity, const T& component)
 	{
 		_components.emplace(entity, component);
+
+		if constexpr (std::same_as<T, physics::PhysicsBodyBase>)
+		{
+			component.communicate(ComponentRegistry<glUtil::Mesh>::get_instance(), entity);//ERR!
+		}
 	}
 
 	template<glType::ComponentType T>
@@ -23,6 +39,18 @@ namespace tools
 			return it->second;
 		}
 		throw std::runtime_error("Component not found for entity");
+	}
+
+	template<glType::ComponentType T>
+	inline std::unordered_map<glType::Entity, T>& ComponentRegistry<T>::get_entities() 
+	{
+		return _components;
+	}
+
+	template<glType::ComponentType T>
+	inline const std::unordered_map<glType::Entity, T>& ComponentRegistry<T>::get_entities() const
+	{
+		return _components;
 	}
 
 	template<glType::ComponentType T>
@@ -64,5 +92,5 @@ namespace tools
 			throw std::runtime_error("Component not found for entity");
 		}
 	}
-	
+
 }

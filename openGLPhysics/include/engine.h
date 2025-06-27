@@ -19,7 +19,7 @@ namespace Program
 
 	glInit::GLProgram create_program();
 
-	physics::World create_world(glInit::GLProgram& program, tools::Window& window, bool debug = false);
+	tools::World create_world(glInit::GLProgram& program, tools::Window& window, bool debug = false);
 
 	//std::shared_ptr<physics::MoveibleMesh<glType::MovementType::Constant>> create_demo_volocity_moveible_mesh();
 	//

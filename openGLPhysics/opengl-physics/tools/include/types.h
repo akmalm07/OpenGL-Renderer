@@ -37,20 +37,88 @@ constexpr int INT(T x) {
 	return static_cast<int>(x);
 }
 
+template<typename T>
+constexpr float FLOAT(T x) {
+	return static_cast<float>(x);
+}
+
+
+
 #define KEY_MAX 1024
 
 namespace glType
 {
 
 	using Entity = uint64_t;
+	
+
+
+	template<typename T>
+	class Component;
+
+	template<class T>
+	concept ComponentType = std::is_base_of_v<Component<T>, T>;
+
+
+
+	template<glType::ComponentType T>
+	class ComponentRegistry;
+
+
+	class ComponentRegistryBase
+	{
+	public:
+
+		/*
+		* 
+		template<glType::ComponentType T>
+		std::unordered_map<glType::Entity, T>& get_entities() const// Fix This so that you can access all the desired
+		{
+			return static_cast<ComponentRegistry<T>*>(this)->_components;
+		}
+		*
+		*/
+
+
+	};
+
+	template<typename U>
+	concept HasCommunicateImpl =
+		std::is_base_of_v<Component<U>, U>&&
+		requires(const U& t) {
+			{ t.communcate_impl(std::declval<Entity>()) } -> std::same_as<void>;
+	};
+
+	
+	template<typename U>
+	concept HasCheckImpl =
+		std::is_base_of_v<Component<U>, U>&&
+		requires(const U& t) {
+			{ t.check(std::declval<const std::unordered_map<Entity, U>&>()) } -> std::same_as<void>;
+	};
+
 
 	template<typename T>
 	class Component
 	{
 	public:
-		virtual void visit(const std::unordered_map<Entity, T>& components);
+
+		void check(const std::unordered_map<Entity, T>& components) requires HasCheckImpl<T>
+		{
+			static_cast<Component<T>*>(this)->check_impl(components);
+		}
+		
+		void communicate(Entity entity) requires HasCommunicateImpl<T>
+		{
+			static_cast<Component<T>*>(this)->communcate_impl(entity);
+		}
+
+
+
 		virtual ~Component() = default;
 	};
+
+
 	using Index = unsigned int;
 	using Vertex = float;
 
@@ -99,9 +167,6 @@ namespace glType
 	template <class T>
 	concept Callible = std::is_invocable_v<T>;
 
-
-	template<class T>
-	concept ComponentType = std::is_base_of_v<Component, T>;
 
 	//template<class Func, class ... Args>
 	//concept BoolLambdaVardic = std::invocable<Func, Args...>&& std::convertible_to<std::invoke_result_t<Func, Args...>, bool>;

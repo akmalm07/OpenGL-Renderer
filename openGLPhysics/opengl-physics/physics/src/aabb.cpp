@@ -126,6 +126,11 @@ namespace physics
 	}
 
 
+	MinMax BoundTypeBase::get_min_max() const
+	{
+		return { _min, _max };
+	}
+
 	bool BoundTypeBase::is_touching(const AABB& a, const AABB& b) const
 	{
 		return !(
@@ -420,6 +425,11 @@ namespace physics
 		return _center;
 	}
 
+	float BoundTypeBase::get_volume() const
+	{
+		return (_max.x - _min.x) * (_max.y - _min.y) * (_max.z - _min.z);
+	}
+
 	glm::vec3 AABB::get_half_extent() const
 	{
 		return _halfExtent;
@@ -446,7 +456,7 @@ namespace physics
 	}
 
 
-	MinMax get_min_max_from_vertices(const std::vector<glType::Vertex>& verts, FullStride fullStride, PosStride posStride)
+	MinMax get_min_max_from_vertices(const std::vector<glType::Vertex>& verts, glUtil::FullStride fullStride, glUtil::PosStride posStride)
 	{
 
 		if (verts.empty())
@@ -461,14 +471,15 @@ namespace physics
 
 			glm::vec3 vertex;
 
+
 			vertex.x = verts[i];
 			vertex.y = verts[i + 1];
 
-			if (posStride == PosStride::STRIDE_3D)
+			if (posStride == glUtil::PosStride::STRIDE_3D)
 			{
 				vertex.z = verts[i + 2];
 			}
-			else if (posStride == PosStride::STRIDE_2D)
+			else if (posStride == glUtil::PosStride::STRIDE_2D)
 			{
 				vertex.z = 0.0f;
 			}

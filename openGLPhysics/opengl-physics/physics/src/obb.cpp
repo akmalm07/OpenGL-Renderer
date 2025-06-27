@@ -72,6 +72,66 @@ namespace physics
 
 	}
 
+	void OBB::move_reletive_to_dist(const glm::vec3& dist)
+	{
+		_center += dist;
+		_rotationMat = glm::translate(_rotationMat, dist);
+		_min += dist;
+		_max += dist;
+		// Update corners after moving
+		auto corners = get_corners();
+		for (auto& corner : corners)
+		{
+			corner += dist;
+		}
+	}
+
+	void OBB::change(const glm::vec3& offset)
+	{
+		_center += offset;
+		_min += offset;
+		_max += offset;
+
+		_rotationMat = glm::translate(glm::mat4(1.0f), _center);
+		_rotationMat = glm::rotate(_rotationMat, glm::radians(_rotationDeg), _xyzRotation);
+		_rotationMat = glm::translate(_rotationMat, -_center);
+
+		_halfExtent = (_max - _min) * 0.5f;
+	}
+
+	void OBB::change_x(float offset)
+	{
+		_center.x += offset;
+		_min.x += offset;
+		_max.x += offset;
+		_rotationMat = glm::translate(glm::mat4(1.0f), _center);
+		_rotationMat = glm::rotate(_rotationMat, glm::radians(_rotationDeg), _xyzRotation);
+		_rotationMat = glm::translate(_rotationMat, -_center);
+		_halfExtent = (_max - _min) * 0.5f;
+	}
+
+	void OBB::change_y(float offset)
+	{
+		_center.y += offset;
+		_min.y += offset;
+		_max.y += offset;
+		_rotationMat = glm::translate(glm::mat4(1.0f), _center);
+		_rotationMat = glm::rotate(_rotationMat, glm::radians(_rotationDeg), _xyzRotation);
+		_rotationMat = glm::translate(_rotationMat, -_center);
+		_halfExtent = (_max - _min) * 0.5f;
+	}
+
+	void OBB::change_z(float offset)
+	{
+		_center.z += offset;
+		_min.z += offset;
+		_max.z += offset;
+		_rotationMat = glm::translate(glm::mat4(1.0f), _center);
+		_rotationMat = glm::rotate(_rotationMat, glm::radians(_rotationDeg), _xyzRotation);
+		_rotationMat = glm::translate(_rotationMat, -_center);
+		_halfExtent = (_max - _min) * 0.5f;
+	}
+
 	std::array<glm::vec3, 8> OBB::get_corners() const
 	{
 		glm::vec3 xAxisRotation = glm::vec3(_rotationMat[0]);

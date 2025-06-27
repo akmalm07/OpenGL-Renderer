@@ -14,14 +14,14 @@
 #include "tools\include\quaternion_camera.h"
 
 
-namespace physics
-{
-	class World;
-}
 
 
 namespace tools 
 {
+
+	class World;
+
+
 	struct OrthoBundle
 	{
 		float left;
@@ -75,7 +75,7 @@ namespace tools
 
 		bool set_window(GLFWwindow* window);
 
-		void world_visitor(physics::World& visitor);
+		void world_visitor(World& visitor) const;
 
 		float get_width() const;
 
