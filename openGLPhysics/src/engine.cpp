@@ -178,7 +178,12 @@ namespace Program
 	//	return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
 	//}
 
-	void clear_color()
+glUtil::Mesh create_demo_mesh()
+{
+	return tools::contruct_default_mesh();
+}
+
+void clear_color()
 	{
 		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

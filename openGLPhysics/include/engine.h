@@ -11,6 +11,9 @@
 #include "glInit/include/program.h"
 #include "glUtil/include/uniform_buffer.h"
 #include "physics/include/world.h"
+#include "tools/include/component_registry.h"
+#include "tools/include/entity_registry.h"
+#include "physics/include/physics_body.h"
 
 
 

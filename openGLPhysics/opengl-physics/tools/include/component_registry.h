@@ -18,7 +18,7 @@ namespace tools
 	
 		static ComponentRegistry& get_instance();
 		
-		void add_component(glType::Entity entity, const T& component);
+		void add_component(glType::Entity entity, T& component); // ERR!
 		
 		T& get_component(glType::Entity entity);
 		

@@ -24,6 +24,21 @@ namespace Renderer
 
 		World world = Program::create_world(program, window, true);
 
+		tools::ComponentRegistry<Mesh>& meshes = tools::ComponentRegistry<Mesh>::get_instance();
+		//tools::ComponentRegistry<PhysicsBodyBase>& phys = tools::ComponentRegistry<PhysicsBodyBase>::get_instance();
+
+		EntityRegistry reg;
+
+		Entity entity = reg.register_entity("Joe");
+
+		//PhysicsBodyBase physicsBody;
+
+		//phys.add_component(entity, physicsBody);
+
+		auto msh = Program::create_demo_mesh();
+
+		meshes.add_component(entity, msh);
+
 		//auto mesh = Program::create_demo_volocity_moveible_mesh();
 		//
 		//auto floor = Program::create_demo_floor_mesh();
@@ -42,6 +57,13 @@ namespace Renderer
 			window.update();
 			
 			program.bind();
+
+			meshes.get_component(entity).render(); // ERR!
+
+			program.link_model_matrix( // ERR!
+				//meshes.get_component(entity).get_model_matrix()
+				meshes.get_component(entity).get_model_matrix()
+			);
 
 			world.update_mv_matrices_and_link(program);
 

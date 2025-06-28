@@ -121,7 +121,7 @@ namespace tools
 		update_mv_matrices();
 
 		program.link_projection_matrix(_matrix.projection);
-		program.link_model_matrix(_matrix.model);
+		//program.link_model_matrix(_matrix.model);
 		program.link_view_matrix(_matrix.view);
 	}
 

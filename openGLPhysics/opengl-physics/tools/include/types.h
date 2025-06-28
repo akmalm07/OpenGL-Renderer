@@ -86,7 +86,7 @@ namespace glType
 	concept HasCommunicateImpl =
 		std::is_base_of_v<Component<U>, U>&&
 		requires(const U& t) {
-			{ t.communcate_impl(std::declval<Entity>()) } -> std::same_as<void>;
+			{ t.communicate_impl(std::declval<Entity>()) } -> std::same_as<void>;
 	};
 
 	
@@ -105,12 +105,12 @@ namespace glType
 
 		void check(const std::unordered_map<Entity, T>& components) requires HasCheckImpl<T>
 		{
-			static_cast<Component<T>*>(this)->check_impl(components);
+			static_cast<T*>(this)->check_impl(components);
 		}
 		
-		void communicate(Entity entity) requires HasCommunicateImpl<T>
+		void communicate(Entity entity) // requires HasCommunicateImpl<T>//ERR!
 		{
-			static_cast<Component<T>*>(this)->communcate_impl(entity);
+			static_cast<T*>(this)->communicate_impl(entity);
 		}
 
 

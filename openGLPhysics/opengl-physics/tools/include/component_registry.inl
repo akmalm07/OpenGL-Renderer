@@ -20,13 +20,13 @@ namespace tools
 	}
 
 	template<glType::ComponentType T>
-	inline void ComponentRegistry<T>::add_component(glType::Entity entity, const T& component)
+	inline void ComponentRegistry<T>::add_component(glType::Entity entity, T& component)
 	{
-		_components.emplace(entity, component);
+		_components.emplace(entity, std::move(component));
 
 		if constexpr (std::same_as<T, physics::PhysicsBodyBase>)
 		{
-			component.communicate(ComponentRegistry<glUtil::Mesh>::get_instance(), entity);//ERR!
+			component.communicate(entity);
 		}
 	}
 

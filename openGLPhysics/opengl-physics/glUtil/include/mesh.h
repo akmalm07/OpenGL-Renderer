@@ -23,8 +23,10 @@ namespace glUtil
 		Mesh(const MeshBundle& bundle);
 
 		Mesh(Mesh&& other) noexcept = default;
-
 		Mesh& operator=(Mesh&& other) noexcept = default;
+
+		glUtil::Mesh(const glUtil::Mesh&) = delete;
+		glUtil::Mesh& operator=(const glUtil::Mesh&) = delete;
 
 		void init(const MeshBundle& bundle);
 

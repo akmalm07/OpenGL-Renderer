@@ -587,7 +587,7 @@ namespace tools {
 				{
 					_updated = true;
 					_keys[key] = true;
-
+					std::cout << "Key pressed: " << key << "\n";
 					_inputManager.emit(KeyCombInputOne(KEYS(key), Action::Press, mod));
 				}
 			}

@@ -106,7 +106,7 @@ namespace glUtil
 	{
 		glm::mat4 model(1.0f);
 		model = glm::translate(model, _transform.position);
-		model = model * glm::toMat4(_transform.rotation);
+		//model = model * glm::toMat4(_transform.rotation);
 		model = glm::scale(model, _transform.scale);
 		return model;
 	}
@@ -361,7 +361,7 @@ namespace tools
 		glUtil::MeshBundle bundle;
 
 		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
-		auto cubeVerts = tools::create_cube_vertices(glm::vec3(0.0, 10.0, 3.0), glm::vec3(1.0f), 2.0f);
+		auto cubeVerts = tools::create_cube_vertices(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0f), 2.0f);
 		auto cubeIndices = tools::create_cube_indices();
 
 		bundle.pVertices = cubeVerts.data();

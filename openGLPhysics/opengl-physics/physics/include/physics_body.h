@@ -40,7 +40,7 @@ namespace physics
 	class PhysicsBodyBase : public glType::Component<PhysicsBodyBase>
 	{
 	public:
-
+		
 		void communicate_impl(glType::Entity entity);
 
 		glm::vec3 get_volocity() const;
@@ -127,10 +127,7 @@ namespace physics
 			input.mass =  1.0f / _massInv;
 			input.angle = glm::degrees(glm::angle(glm::vec3(0.0f, -1.0f, 0.0f), glm::normalize(_volocity)));
 		}
-		else
-		{
-			static_assert(tools::has(T, tools::PhysBodyFeatures::Force), "Unsupported Force Type");
-		}
+
 
 		return input;
 	}
