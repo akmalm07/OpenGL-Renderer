@@ -25,7 +25,7 @@ namespace tools
 	class World
 	{
 	public:
-		World();
+		World() = default;
 
 		World(glInit::GLProgram& program, tools::Window& window, bool debug);
 
@@ -39,7 +39,7 @@ namespace tools
 		
 		void add_meshes(std::vector<std::shared_ptr<glUtil::Mesh>>& mesh);
 
-		void set_camera(std::shared_ptr<tools::BaseCamera> camera);
+		void set_camera(const tools::BaseCamera* camera);
 
 		glm::mat4 get_model_matrix();
 		glm::mat4 get_view_matrix() const;
@@ -83,7 +83,7 @@ namespace tools
 
 		glm::vec3 _gravity = { 0.0f, -0.1f, 0.0f };
 		
-		std::shared_ptr<tools::BaseCamera> _camera;
+		view_ptr_non_const<tools::BaseCamera> _camera;
 		
 		//glUtil::ShadowMap _shadowMap;
 

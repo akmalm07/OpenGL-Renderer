@@ -5,8 +5,6 @@
 
 namespace tools
 {
-	World::World() = default;
-
 
 	World::World(glInit::GLProgram& program, tools::Window& window, bool debug)
 	{
@@ -121,7 +119,7 @@ namespace tools
 		update_mv_matrices();
 
 		program.link_projection_matrix(_matrix.projection);
-		//program.link_model_matrix(_matrix.model);
+		program.link_model_matrix(_matrix.model);
 		program.link_view_matrix(_matrix.view);
 	}
 
@@ -174,9 +172,9 @@ namespace tools
 		//}
 	}
 
-	void World::set_camera(std::shared_ptr<tools::BaseCamera> camera)
+	void World::set_camera(const tools::BaseCamera* camera)
 	{
-		_camera = std::move(camera);
+		_camera = camera;
 	}
 
 	glm::vec3 World::get_acc_due_to_gravity() const

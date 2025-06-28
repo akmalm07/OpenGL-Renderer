@@ -13,11 +13,11 @@ namespace tools
 	class Camera : public BaseCamera
 	{
 	public:
-		Camera();
+		Camera() = default;
 		
-		Camera(Camera&& other);
+		Camera(Camera&&) = default;
 
-		Camera& operator=(Camera&& other);
+		Camera& operator=(Camera&&) = default;
 
 		Camera(CameraBundlePerspective bundle);
 

@@ -13,7 +13,6 @@ namespace tools
 
 	template<glType::ComponentType T>
 	inline ComponentRegistry<T>& ComponentRegistry<T>::get_instance()
-
 	{
 		static ComponentRegistry instance;
 		return instance;

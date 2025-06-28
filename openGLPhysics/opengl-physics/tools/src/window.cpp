@@ -36,11 +36,11 @@ namespace tools {
 
 		if (type == CameraType::Classic)
 		{
-			_camera = std::make_shared<Camera>(camBundle);
+			_camera = std::make_unique<Camera>(camBundle);
 		}
 		else if (type == CameraType::Quaternion)
 		{
-			_camera = std::make_shared<QuaternionCamera>(camBundle);
+			_camera = std::make_unique<QuaternionCamera>(camBundle);
 		}
 	}
 
@@ -50,11 +50,11 @@ namespace tools {
 		
 		if (type == CameraType::Classic)
 		{
-			_camera = std::make_shared<Camera>(camBundle);
+			_camera = std::make_unique<Camera>(camBundle);
 		}
 		else if (type == CameraType::Quaternion)
 		{
-			_camera = std::make_shared<QuaternionCamera>(camBundle);
+			_camera = std::make_unique<QuaternionCamera>(camBundle);
 		}
 	}
 
@@ -479,7 +479,7 @@ namespace tools {
 
 	void Window::world_visitor(World& visitor) const
 	{
-		visitor.set_camera(_camera);
+		visitor.set_camera(_camera.get());
 	}
 
 	float Window::get_width() const

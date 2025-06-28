@@ -136,7 +136,7 @@ namespace tools
 
 		WindowInputManager _inputManager;
 
-		std::shared_ptr<BaseCamera> _camera; 
+		std::unique_ptr<BaseCamera> _camera;
 
 		//WindowT Vars
 		static bool _calledBufferSize;

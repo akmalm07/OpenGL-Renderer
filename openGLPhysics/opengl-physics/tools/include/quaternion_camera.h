@@ -12,9 +12,13 @@ namespace tools
 	class QuaternionCamera : public BaseCamera
 	{
 	public:
-		QuaternionCamera();
-		QuaternionCamera(QuaternionCamera&& other) noexcept;
-		QuaternionCamera& operator=(QuaternionCamera&& other) noexcept;
+		QuaternionCamera() = default;
+
+		QuaternionCamera(QuaternionCamera&&) = default;
+		QuaternionCamera& operator=(QuaternionCamera&&) = default;
+		
+		QuaternionCamera(const QuaternionCamera&) = default;
+		QuaternionCamera& operator=(const QuaternionCamera&) = default;
 		
 		QuaternionCamera(CameraBundlePerspective bundle);
 		QuaternionCamera(CameraBundleOrthographic bundle);
@@ -46,6 +50,7 @@ namespace tools
 		glm::vec3 _front;
 		glm::vec3 _up; 
 		glm::vec3 _right; 
+		glm::vec3 _target;
 
 		float _speed;
 		float _turnSpeed;

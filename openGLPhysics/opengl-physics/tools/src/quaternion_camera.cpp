@@ -7,60 +7,6 @@
 
 namespace tools
 {
-	QuaternionCamera::QuaternionCamera() 
-		: _orientation(glm::quat(1.0f, 0.0f, 0.0f, 0.0f)) 
-	{
-		_worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-		_position = glm::vec3(0.0f);
-		_speed = 0.0f;
-		_turnSpeed = 0.0f;
-		_front = glm::vec3(0.0f, 0.0f, -1.0f);
-		_up = glm::vec3(0.0f, 1.0f, 0.0f);
-		_right = glm::vec3(1.0f, 0.0f, 0.0f);
-		_prevPosition = glm::vec3(0.0f);
-		_prevOrientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-	}
-
-
-	QuaternionCamera::QuaternionCamera(QuaternionCamera&& other) noexcept 
-		: _orientation(1.0f, 0.0f, 0.0f, 0.0f) 
-	{
-		*this = std::move(other);
-	}
-
-
-	QuaternionCamera& QuaternionCamera::operator=(QuaternionCamera&& other) noexcept
-	{
-		if (this != &other) 
-		{
-			_worldUp = other._worldUp;
-			_position = other._position;
-			_orientation = other._orientation;
-			_speed = other._speed;
-			_front = other._front;
-			_up = other._up;
-			_right = other._right;
-			_projection = other._projection;
-			_view = other._view;
-			_prevPosition = other._prevPosition;
-			_prevOrientation = other._prevOrientation;
-
-
-			other._worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-			other._position = glm::vec3(0.0f);
-			other._orientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-			other._speed = 0.0f;
-			other._front = glm::vec3(0.0f);
-			other._up = glm::vec3(0.0f);
-			other._right = glm::vec3(0.0f);
-			other._projection = glm::mat4(1.0f); 
-			other._view = glm::mat4(1.0f); 
-			other._prevPosition = glm::vec3(0.0f);
-			other._prevOrientation = glm::quat(1.0f, 0.0f, 0.0f, 0.0f);
-		}
-		return *this;
-	}
-
 
 	QuaternionCamera::QuaternionCamera(CameraBundlePerspective bundle)
 	{
@@ -175,21 +121,25 @@ namespace tools
 		_right = glm::normalize(glm::cross(_front, _worldUp));
 		_up = glm::normalize(glm::cross(_right, _front));
 
+		_target = _position + _front;
 
-		_view = glm::lookAt(_position, _position + _front, _up);
+		_view = glm::lookAt(_position, _target, _up);
 	}
 
 
 	void QuaternionCamera::update(Direction dir, double deltaTime) 
 	{
 		move_and_turn_dir(dir, deltaTime);
-		update_view_matrix();
 	}
 
 
 	bool QuaternionCamera::event_key(Direction dir, double deltaTime)
 	{
+		PRINT_VEC3("Camera position: ", _position);
+
 		update(dir, deltaTime);
+		
+		update_view_matrix(); // This is being called more then once, but only captured once, waste of CPU resources
 		return true;
 	}
 
@@ -205,6 +155,10 @@ namespace tools
 			pitch(deltaTime, yMove);
 		}
 		update_view_matrix();
+
+
+		PRINT_MAT4("view from camera!: ", _view);
+
 		return true;
 	}
 

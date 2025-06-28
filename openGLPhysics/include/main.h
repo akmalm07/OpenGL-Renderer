@@ -58,18 +58,20 @@ namespace Renderer
 			
 			program.bind();
 
-			meshes.get_component(entity).render(); // ERR!
-
 			program.link_model_matrix( // ERR!
 				//meshes.get_component(entity).get_model_matrix()
 				meshes.get_component(entity).get_model_matrix()
 			);
 
+
+			meshes.get_component(entity).render(); // ERR!
+
+
 			world.update_mv_matrices_and_link(program);
 
 			Program::clear_color();
 
-			world.render_meshes(program);
+			//world.render_meshes(program);
 
 			program.unbind();
 
