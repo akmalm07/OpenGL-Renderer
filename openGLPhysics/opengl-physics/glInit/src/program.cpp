@@ -257,6 +257,7 @@ namespace glInit
 		glDebugMessageCallback(opengl_debug_callback, nullptr);
 
 
+
 		linking_uniforms();
 	}
 
