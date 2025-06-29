@@ -92,5 +92,7 @@ namespace tools
 	
 	std::vector<glType::Index> create_floor_indices();
 
-	glUtil::Mesh contruct_default_mesh();
+	glUtil::Mesh construct_default_mesh();
+
+	glUtil::Mesh construct_default_floor_mesh();
 }

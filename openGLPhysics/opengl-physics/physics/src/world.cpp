@@ -104,19 +104,18 @@ namespace tools
 	void World::bind_light()
 	{
 		_directionalLight.bind();
+
+		_directionalLight.set_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
+		_directionalLight.set_cam_pos(_camera->get_position());
+
 	}
 
-	void World::update_mv_matrices(const glm::mat4& model)
+	void World::link_and_update_mv_matrices(glInit::GLProgram& program, const glm::mat4& model)
 	{
 		_matrix.model = model;
 		_matrix.view = _camera->get_view();
 		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
 		_directionalLight.link_camera_pos(_camera->get_position());
-	}
-
-	void World::update_mv_matrices_and_link(glInit::GLProgram& program)
-	{
-		update_mv_matrices();
 
 		program.link_projection_matrix(_matrix.projection);
 		program.link_model_matrix(_matrix.model);

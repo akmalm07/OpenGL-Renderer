@@ -37,6 +37,8 @@ namespace Renderer
 
 		auto msh = Program::create_demo_mesh();
 
+		auto floor = Program::create_demo_floor_mesh();
+
 		//meshes.add_component(entity, msh);
 
 		//auto mesh = Program::create_demo_volocity_moveible_mesh();
@@ -46,17 +48,15 @@ namespace Renderer
 	/*	world.add_mesh(mesh);
 		world.add_mesh(floor);*/
 
-		world.update_mv_matrices();
-
-		//world.bind_light();
+		world.bind_light();
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		while (!window.get_should_close())
 		{
-			window.update();
 			
 			program.bind();
+			Program::clear_color();
 
 			//program.link_model_matrix( // ERR!
 			//	//meshes.get_component(entity).get_model_matrix()
@@ -67,28 +67,31 @@ namespace Renderer
 			//meshes.get_component(entity).render(); // ERR!
 
 			msh.render();
-
+			floor.render();
 
 			//PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
 
-			world.update_mv_matrices_and_link(program);
+			world.link_and_update_mv_matrices(program);
 
 			GLenum err;
 			while ((err = glGetError()) != GL_NO_ERROR) {
 				std::cerr << "OpenGL error: " << std::hex << err << std::endl;
 			}
 
-			Program::clear_color();
+			program.link_model_matrix(msh.get_model_matrix());
+			msh.render();
+
 
 			// phys.get_component(entity).update(0.016);
 
 			//world.render_meshes(program);
 
+			window.update();
 			program.unbind();
 
 		}
 
-		//world.unbind_light();
+		world.unbind_light();
 
 		std::cout << "Exiting application..." << std::endl;
 	}

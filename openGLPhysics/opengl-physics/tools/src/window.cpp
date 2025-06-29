@@ -247,23 +247,25 @@ namespace tools {
 				std::cerr << "Error initializing GLEW! \n";
 				return false;
 			}
-			/*
 			
-			glEnable(GL_CULL_FACE); //DEBUG
+			
+			//glEnable(GL_CULL_FACE); //DEBUG
+			//glCullFace(GL_BACK);
+			//glFrontFace(GL_CCW);
+
+			//glEnable(GL_DEPTH_TEST);
+			//glDepthFunc(GL_LESS);
+			
+
+			glEnable(GL_CULL_FACE);
 			glCullFace(GL_BACK);
 			glFrontFace(GL_CCW);
 
 			glEnable(GL_DEPTH_TEST);
-			glDepthFunc(GL_LESS);
-			*/
-
-			//glEnable(GL_CULL_FACE);
-			//glCullFace(GL_BACK);
-			//glFrontFace(GL_CCW);
-
-			glEnable(GL_DEPTH_TEST);
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+			glDisable(GL_DEPTH_TEST);
+			glDisable(GL_CULL_FACE);
 		}
 
 		g_numOfWindows++;

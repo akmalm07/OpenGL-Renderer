@@ -356,7 +356,7 @@ namespace tools
 		return indices;
 	}
 
-	glUtil::Mesh contruct_default_mesh()
+	glUtil::Mesh construct_default_mesh()
 	{
 		glUtil::MeshBundle bundle;
 
@@ -369,9 +369,29 @@ namespace tools
 		bundle.vertexCount = cubeVerts.size();
 		bundle.indexCount = cubeIndices.size();
 
-		bundle.pLayout1 = new glUtil::ArrayBufferLayout{ glUtil::StrideType::POS, glUtil::Stride::STRIDE_3D, 0 };
+		glUtil::ArrayBufferLayout buff1{ glUtil::StrideType::POS, glUtil::Stride::STRIDE_3D, 0 };
+		glUtil::ArrayBufferLayout buff2{ glUtil::StrideType::COL, glUtil::Stride::STRIDE_3D, 1 };
 
-		bundle.pLayout2 = new glUtil::ArrayBufferLayout{ glUtil::StrideType::COL, glUtil::Stride::STRIDE_3D, 1 };
+		bundle.pLayout1 = &buff1;
+		bundle.pLayout2 = &buff2;
+
+		return glUtil::Mesh(bundle);
+	}
+
+	glUtil::Mesh construct_default_floor_mesh()
+	{
+		glUtil::MeshBundle bundle;
+		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
+		auto floorVerts = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 30.0f);
+		auto floorIndices = tools::create_floor_indices();
+		bundle.pVertices = floorVerts.data();
+		bundle.pIndices = floorIndices.data();
+		bundle.vertexCount = floorVerts.size();
+		bundle.indexCount = floorIndices.size();
+		glUtil::ArrayBufferLayout buff1{ glUtil::StrideType::POS, glUtil::Stride::STRIDE_3D, 0 };
+		glUtil::ArrayBufferLayout buff2{ glUtil::StrideType::COL, glUtil::Stride::STRIDE_3D, 1 };
+		bundle.pLayout1 = &buff1;
+		bundle.pLayout2 = &buff2;
 
 		return glUtil::Mesh(bundle);
 	}

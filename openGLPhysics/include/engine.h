@@ -32,6 +32,8 @@ namespace Program
 
 	glUtil::Mesh create_demo_mesh();
 
+	glUtil::Mesh create_demo_floor_mesh();
+
 	void clear_color();
 
 	tools::Window create_window(int width = 800, int height = 600, const std::string& title = "OpenGL", const std::optional<tools::CameraBundlePerspective>& camBundle = std::nullopt);

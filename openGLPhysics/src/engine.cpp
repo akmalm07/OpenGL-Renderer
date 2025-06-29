@@ -37,8 +37,8 @@ namespace Program
 	{
 		auto& config = Config::instance();
 
-		glInit::GLProgram program;
-		program.create_shaders_from_files(config.get_vert_shader_path(), config.get_frag_shader_path(), config.get_geom_shader_path());
+		glInit::GLProgram program(
+			config.get_vert_shader_path(), config.get_frag_shader_path(), config.get_geom_shader_path());
 
 		return program;
 	}
@@ -185,37 +185,18 @@ namespace Program
 
 glUtil::Mesh create_demo_mesh()
 {
-	std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 4.0f);
+	return tools::construct_default_mesh();
+}
 
-	//std::vector<glType::Index> indices = tools::create_cube_indices();
-
-	glUtil::MeshBundle bundle;
-	glUtil::ArrayBufferLayout layout1;
-	layout1.location = 0;
-	layout1.stride = glUtil::Stride::STRIDE_3D;
-	layout1.type = glUtil::StrideType::POS;
-
-	glUtil::ArrayBufferLayout layout2;
-	layout2.location = 1;
-	layout2.stride = glUtil::Stride::STRIDE_3D;
-	layout2.type = glUtil::StrideType::COL;
-
-	bundle.vertexCount = vertices.size();
-	bundle.pVertices = vertices.data();
-	bundle.indexCount = 0; //indices.size();
-	bundle.pIndices = 0; //indices.data();
-	bundle.fullStride = glUtil::FullStride::STRIDE_6D;
-	bundle.indexed = false; //true;
-	bundle.pLayout1 = &layout1;
-	bundle.pLayout2 = &layout2;
-
-	return glUtil::Mesh(bundle);
+glUtil::Mesh create_demo_floor_mesh()
+{
+	return tools::construct_default_floor_mesh();
 }
 
 void clear_color()
 	{
-		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
 	tools::Window create_window(int width, int height, const std::string& title, const std::optional<tools::CameraBundlePerspective>& camBundle)
@@ -227,7 +208,7 @@ void clear_color()
 			defaultCamBundle.farZ = 1000.0f;
 			defaultCamBundle.speed = 0.03f;
 			defaultCamBundle.turnSpeed = 0.03f;
-			defaultCamBundle.position = glm::vec3(0.0f, 0.0f, 1.0f);
+			defaultCamBundle.position = glm::vec3(0.0f, 0.0f, 0.0f);
 			defaultCamBundle.front = glm::vec3(0.0f, 0.0f, -1.0f);
 			defaultCamBundle.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 			defaultCamBundle.fov = 45.0f;

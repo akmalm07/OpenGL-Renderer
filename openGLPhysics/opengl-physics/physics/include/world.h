@@ -58,8 +58,7 @@ namespace tools
 
 		void bind_light();
 
-		void update_mv_matrices(const glm::mat4& model = glm::mat4(1.0f));
-		void update_mv_matrices_and_link(glInit::GLProgram& program);
+		void link_and_update_mv_matrices(glInit::GLProgram& program, const glm::mat4& model = glm::mat4());
 
 		void render_meshes(glInit::GLProgram& program);
 

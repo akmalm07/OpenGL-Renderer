@@ -26,7 +26,7 @@ namespace physics
 		}
 		else
 		{
-			registered.emplace(entity, tools::contruct_default_mesh());
+			registered.emplace(entity, tools::construct_default_mesh());
 
 			_mesh = &registered[entity];
 		}

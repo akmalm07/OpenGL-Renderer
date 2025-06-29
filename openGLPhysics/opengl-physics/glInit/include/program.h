@@ -22,7 +22,9 @@ namespace glInit
 	class GLProgram
 	{
 	public:
+
 		GLProgram();
+		GLProgram(const std::filesystem::path& vertex_location, const std::filesystem::path& fragment_location, const std::filesystem::path& geomatry_shader = "");
 		GLProgram(bool debug);
 
 		// Vertex/Fragment shader shader.geom

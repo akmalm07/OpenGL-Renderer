@@ -7,6 +7,11 @@ namespace glInit
 	GLProgram::GLProgram() : _shaderId(0), _uniformProjection(0), _uniformModel(0), _uniformView(0) 
 	{}
 
+	GLProgram::GLProgram(const std::filesystem::path & vertex_location, const std::filesystem::path & fragment_location, const std::filesystem::path & geomatry_shader)
+	{
+		create_shaders_from_files(vertex_location, fragment_location, geomatry_shader);
+	}
+
 	GLProgram::GLProgram(bool debug) : GLProgram()
 	{
 		_debugMode = debug;
