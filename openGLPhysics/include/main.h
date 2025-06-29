@@ -25,19 +25,19 @@ namespace Renderer
 		World world = Program::create_world(program, window, true);
 
 		tools::ComponentRegistry<Mesh>& meshes = tools::ComponentRegistry<Mesh>::get_instance();
-		//tools::ComponentRegistry<PhysicsBodyBase>& phys = tools::ComponentRegistry<PhysicsBodyBase>::get_instance();
+		tools::ComponentRegistry<PhysicsBodyBase>& phys = tools::ComponentRegistry<PhysicsBodyBase>::get_instance();
 
 		EntityRegistry reg;
 
 		Entity entity = reg.register_entity("Joe");
 
-		//PhysicsBodyBase physicsBody;
+		PhysicsBodyBase physicsBody;
 
-		//phys.add_component(entity, physicsBody);
 
-		auto msh = Program::create_demo_mesh();
+		phys.add_component(entity, physicsBody);
+		//auto msh = Program::create_demo_mesh();
 
-		meshes.add_component(entity, msh);
+		//meshes.add_component(entity, msh);
 
 		//auto mesh = Program::create_demo_volocity_moveible_mesh();
 		//
@@ -67,10 +67,13 @@ namespace Renderer
 			meshes.get_component(entity).render(); // ERR!
 
 
+			PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
+
 			world.update_mv_matrices_and_link(program);
 
 			Program::clear_color();
 
+			phys.get_component(entity).update(0.016);
 			//world.render_meshes(program);
 
 			program.unbind();

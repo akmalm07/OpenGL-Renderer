@@ -30,7 +30,7 @@ namespace tools
 	}
 
 	template<glType::ComponentType T>
-	inline T& ComponentRegistry<T>::get_component(glType::Entity entity)
+	inline T& ComponentRegistry<T>::get_component(glType::Entity entity)// 
 	{
 		auto it = _components.find(entity);
 		if (it != _components.end())

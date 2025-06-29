@@ -156,9 +156,6 @@ namespace tools
 		}
 		update_view_matrix();
 
-
-		PRINT_MAT4("view from camera!: ", _view);
-
 		return true;
 	}
 
