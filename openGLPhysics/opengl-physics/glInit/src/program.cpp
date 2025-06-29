@@ -4,7 +4,8 @@
 
 namespace glInit
 {
-	GLProgram::GLProgram() : _shaderId(0), _uniformProjection(0), _uniformModel(0), _uniformView(0) {}
+	GLProgram::GLProgram() : _shaderId(0), _uniformProjection(0), _uniformModel(0), _uniformView(0) 
+	{}
 
 	GLProgram::GLProgram(bool debug) : GLProgram()
 	{
@@ -251,6 +252,11 @@ namespace glInit
 			return;
 		}
 
+		glEnable(GL_DEBUG_OUTPUT);
+		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
+		glDebugMessageCallback(opengl_debug_callback, nullptr);
+
+
 		linking_uniforms();
 	}
 
@@ -287,4 +293,13 @@ namespace glInit
 		_uniformModel = glGetUniformLocation(_shaderId, "uModel");
 		_uniformView = glGetUniformLocation(_shaderId, "uView");
 	}
+
+	void GLProgram::opengl_debug_callback(GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar* message, const void* userParam)
+	{
+		std::cerr << "[OpenGL DEBUG] "
+			<< "Type: " << type << ", "
+			<< "Severity: " << severity << ", "
+			<< "Message: " << message << std::endl;
+	}
+
 }

@@ -236,7 +236,7 @@ namespace tools
 	template<CallbackInputConcept InputStruct>
 	inline void WindowInputManager::emit(const std::string& name)
 	{
-		InputManager::emit_and_update<InputStruct>(name);
+		InputManager::emit_and_update<InputStruct>(name);// The key and the mouse take different pathways the the emit, loook into it
 	}
 
 

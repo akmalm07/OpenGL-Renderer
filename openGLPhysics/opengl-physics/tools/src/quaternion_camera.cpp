@@ -181,7 +181,6 @@ namespace tools
 
 	void QuaternionCamera::move_and_turn_dir(Direction dir, double deltaTime) 
 	{
-		bool move = false;
 		if (BOOL(dir & Direction::Forward))
 		{
 			move_forward(deltaTime, true);

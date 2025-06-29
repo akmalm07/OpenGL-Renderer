@@ -24,18 +24,18 @@ namespace Renderer
 
 		World world = Program::create_world(program, window, true);
 
-		tools::ComponentRegistry<Mesh>& meshes = tools::ComponentRegistry<Mesh>::get_instance();
-		tools::ComponentRegistry<PhysicsBodyBase>& phys = tools::ComponentRegistry<PhysicsBodyBase>::get_instance();
+	//	tools::ComponentRegistry<Mesh>& meshes = tools::ComponentRegistry<Mesh>::get_instance();
+		//tools::ComponentRegistry<PhysicsBodyBase>& phys = tools::ComponentRegistry<PhysicsBodyBase>::get_instance();
 
 		EntityRegistry reg;
 
 		Entity entity = reg.register_entity("Joe");
 
-		PhysicsBodyBase physicsBody;
+		//PhysicsBodyBase physicsBody;
+		//phys.add_component(entity, physicsBody);
 
 
-		phys.add_component(entity, physicsBody);
-		//auto msh = Program::create_demo_mesh();
+		auto msh = Program::create_demo_mesh();
 
 		//meshes.add_component(entity, msh);
 
@@ -48,7 +48,7 @@ namespace Renderer
 
 		world.update_mv_matrices();
 
-		world.bind_light();
+		//world.bind_light();
 
 		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
@@ -58,29 +58,37 @@ namespace Renderer
 			
 			program.bind();
 
-			program.link_model_matrix( // ERR!
-				//meshes.get_component(entity).get_model_matrix()
-				meshes.get_component(entity).get_model_matrix()
-			);
+			//program.link_model_matrix( // ERR!
+			//	//meshes.get_component(entity).get_model_matrix()
+			//	meshes.get_component(entity).get_model_matrix()
+			//);
 
 
-			meshes.get_component(entity).render(); // ERR!
+			//meshes.get_component(entity).render(); // ERR!
+
+			msh.render();
 
 
-			PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
+			//PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
 
 			world.update_mv_matrices_and_link(program);
 
+			GLenum err;
+			while ((err = glGetError()) != GL_NO_ERROR) {
+				std::cerr << "OpenGL error: " << std::hex << err << std::endl;
+			}
+
 			Program::clear_color();
 
-			phys.get_component(entity).update(0.016);
+			// phys.get_component(entity).update(0.016);
+
 			//world.render_meshes(program);
 
 			program.unbind();
 
 		}
 
-		world.unbind_light();
+		//world.unbind_light();
 
 		std::cout << "Exiting application..." << std::endl;
 	}

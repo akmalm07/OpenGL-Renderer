@@ -83,6 +83,10 @@ namespace glInit
 
 		void compile_compute_shader(std::string_view compute_code);
 		void linking_uniforms();
+
+		static void APIENTRY opengl_debug_callback(GLenum source, GLenum type, GLuint id,
+			GLenum severity, GLsizei length,
+			const GLchar* message, const void* userParam);
 	};
 
 

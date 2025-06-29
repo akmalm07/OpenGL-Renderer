@@ -21,7 +21,7 @@ namespace tools
 	template<glType::ComponentType T>
 	inline void ComponentRegistry<T>::add_component(glType::Entity entity, T& component)
 	{
-		_components.emplace(entity, std::move(component));
+ 		_components.emplace(entity, std::move(component));
 
 		if constexpr (std::same_as<T, physics::PhysicsBodyBase>)
 		{

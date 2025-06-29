@@ -177,15 +177,44 @@ namespace Program
 
 	//	return std::make_shared<physics::MoveibleMesh<glType::MovementType::Constant>>(bundle, true);
 	//}
+//
+//glUtil::Mesh create_demo_mesh()
+//{
+//	return tools::contruct_default_mesh();
+//}
 
 glUtil::Mesh create_demo_mesh()
 {
-	return tools::contruct_default_mesh();
+	std::vector<glType::Vertex> vertices = tools::create_cube_vertices(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f, 1.0f, 1.0f), 4.0f);
+
+	//std::vector<glType::Index> indices = tools::create_cube_indices();
+
+	glUtil::MeshBundle bundle;
+	glUtil::ArrayBufferLayout layout1;
+	layout1.location = 0;
+	layout1.stride = glUtil::Stride::STRIDE_3D;
+	layout1.type = glUtil::StrideType::POS;
+
+	glUtil::ArrayBufferLayout layout2;
+	layout2.location = 1;
+	layout2.stride = glUtil::Stride::STRIDE_3D;
+	layout2.type = glUtil::StrideType::COL;
+
+	bundle.vertexCount = vertices.size();
+	bundle.pVertices = vertices.data();
+	bundle.indexCount = 0; //indices.size();
+	bundle.pIndices = 0; //indices.data();
+	bundle.fullStride = glUtil::FullStride::STRIDE_6D;
+	bundle.indexed = false; //true;
+	bundle.pLayout1 = &layout1;
+	bundle.pLayout2 = &layout2;
+
+	return glUtil::Mesh(bundle);
 }
 
 void clear_color()
 	{
-		glClearColor(0.0f, 1.0f, 0.0f, 1.0f);
+		glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
