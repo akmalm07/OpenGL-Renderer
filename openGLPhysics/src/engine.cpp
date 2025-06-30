@@ -183,19 +183,19 @@ namespace Program
 //	return tools::contruct_default_mesh();
 //}
 
-glUtil::Mesh create_demo_mesh()
-{
-	return tools::construct_default_mesh();
-}
-
-glUtil::Mesh create_demo_floor_mesh()
-{
-	return tools::construct_default_floor_mesh();
-}
-
-void clear_color()
+	glUtil::Mesh create_demo_mesh()
 	{
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		return tools::construct_default_mesh();
+	}
+
+	glUtil::Mesh create_demo_floor_mesh()
+	{
+		return tools::construct_default_floor_mesh();
+	}
+
+	void clear_color()
+	{
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	}
 
@@ -214,7 +214,7 @@ void clear_color()
 			defaultCamBundle.fov = 45.0f;
 			defaultCamBundle.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 			
-			return tools::Window(width, height, title, true, defaultCamBundle, tools::CameraType::Quaternion);
+			return tools::Window(width, height, title, true, defaultCamBundle, tools::CameraType::Classic);
 		}
 		return tools::Window(width, height, title, true, camBundle.value(), tools::CameraType::Quaternion);
 	}

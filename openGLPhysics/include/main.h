@@ -66,8 +66,6 @@ namespace Renderer
 
 			//meshes.get_component(entity).render(); // ERR!
 
-			msh.render();
-			floor.render();
 
 			//PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
 
@@ -80,6 +78,7 @@ namespace Renderer
 
 			program.link_model_matrix(msh.get_model_matrix());
 			msh.render();
+			floor.render();
 
 
 			// phys.get_component(entity).update(0.016);

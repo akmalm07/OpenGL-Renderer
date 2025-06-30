@@ -63,5 +63,5 @@ void main()
 
     vec3 finalColor = calculate_directional_light(norm, gVertexColor);
 
-    fragColor = vec4(vec3(1.0), 1.0);
+    fragColor = vec4(finalColor, 1.0);
 }

@@ -156,12 +156,6 @@ namespace tools
 		}
 		update_view_matrix();
 
-		_view = glm::lookAt(
-			glm::vec3(0.0f, 0.0f, 5.0f),  // camera position
-			glm::vec3(0.0f, 0.0f, 0.0f),  // look at origin
-			glm::vec3(0.0f, 1.0f, 0.0f)   // up
-		);
-
 		return true;
 	}
 
