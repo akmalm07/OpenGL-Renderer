@@ -361,13 +361,15 @@ namespace tools
 		glUtil::MeshBundle bundle;
 
 		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
-		auto cubeVerts = tools::create_cube_vertices(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0f), 2.0f);
+		auto cubeVerts = tools::create_cube_vertices(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0f), 02.0f);
 		auto cubeIndices = tools::create_cube_indices();
 
 		bundle.pVertices = cubeVerts.data();
-		bundle.pIndices = cubeIndices.data();
+		//bundle.pIndices = 0; // cubeIndices.data();
 		bundle.vertexCount = cubeVerts.size();
-		bundle.indexCount = cubeIndices.size();
+		bundle.indexCount = 0; // cubeIndices.size();
+
+		bundle.indexed = false; // true;
 
 		glUtil::ArrayBufferLayout buff1{ glUtil::StrideType::POS, glUtil::Stride::STRIDE_3D, 0 };
 		glUtil::ArrayBufferLayout buff2{ glUtil::StrideType::COL, glUtil::Stride::STRIDE_3D, 1 };

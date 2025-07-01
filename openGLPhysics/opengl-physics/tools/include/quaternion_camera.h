@@ -20,8 +20,8 @@ namespace tools
 		QuaternionCamera(const QuaternionCamera&) = default;
 		QuaternionCamera& operator=(const QuaternionCamera&) = default;
 		
-		QuaternionCamera(CameraBundlePerspective bundle);
-		QuaternionCamera(CameraBundleOrthographic bundle);
+		QuaternionCamera(const CameraBundlePerspective& bundle);
+		QuaternionCamera(const CameraBundleOrthographic& bundle);
 
 		void init(CameraBundlePerspective bundle);
 		
@@ -38,6 +38,9 @@ namespace tools
 	
 		bool event_key(Direction dir, double deltaTime) override;
 		bool event_key(double deltaTime, float xMove, float yMove) override;
+		bool event_scroll(float yOffset) override;
+
+		void on_scroll(double yOffset);
 
 		~QuaternionCamera();
 
@@ -52,6 +55,14 @@ namespace tools
 		glm::vec3 _right; 
 		glm::vec3 _target;
 
+		float _fov;
+		
+		bool _ortho = false;
+		float _zoomSpeed, _aspectRatio, _nearZ, _farZ;
+
+		float _yawAngle = 0.0f;
+		float _pitchAngle = 0.0f;
+
 		float _speed;
 		float _turnSpeed;
 		float _aspect;
@@ -59,6 +70,7 @@ namespace tools
 
 		void initialize(glm::vec3 worldUp, glm::vec3 startPYR, glm::vec3 position, glm::vec3 front, float speed, float turnSpeed);
 
+		void update_orientation_from_angles();
 
 		void move_forward(double deltaTime, bool forwardOrBack);
 		void move_up(double deltaTime, bool upOrDown);

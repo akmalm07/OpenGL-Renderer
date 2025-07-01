@@ -22,6 +22,7 @@ namespace tools
 	{
 		float fov = 45.0f;
 		float aspectRatio;
+		float zoomSpeed = 1.0f; // Speed of zooming in and out
 
 	};
 

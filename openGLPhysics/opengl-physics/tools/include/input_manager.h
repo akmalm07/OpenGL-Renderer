@@ -74,6 +74,8 @@ namespace tools
 		std::unordered_map<std::string, std::unique_ptr<InputEntry<AABButtonInput>>> _AABBInputs;
 
 		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseMoveInput>>> _mouseMoveInputs;
+		
+		std::unordered_map<std::string, std::unique_ptr<InputEntry<MouseScrollInput>>> _mouseScrollInputs;
 
 
 		// Better Yet, make different constainers for all the different inputs
@@ -127,6 +129,8 @@ namespace tools
 		std::vector<view_ptr_non_const<InputEntry<AABButtonInput>>> _AABBInputsWindow;
 
 		std::vector<view_ptr_non_const<InputEntry<MouseMoveInput>>> _mouseMoveInputsWindow;
+
+		std::vector<view_ptr_non_const<InputEntry<MouseScrollInput>>> _mouseScrollInputsWindow;
 
 	};
 

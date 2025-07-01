@@ -20,6 +20,7 @@ namespace tools
 
 		virtual bool event_key(Direction dir, double deltaTime) = 0;
 		virtual bool event_key(double deltaTime, float xMove, float yMove) = 0;
+		virtual bool event_scroll(float yOffset) = 0;
 
 	protected:
 

@@ -205,16 +205,16 @@ namespace Program
 		{
 			tools::CameraBundlePerspective defaultCamBundle;
 			defaultCamBundle.nearZ = 0.1f;
-			defaultCamBundle.farZ = 1000.0f;
-			defaultCamBundle.speed = 0.03f;
-			defaultCamBundle.turnSpeed = 0.03f;
+			defaultCamBundle.farZ = 100.0f;
+			defaultCamBundle.speed = 0.01f;
+			defaultCamBundle.turnSpeed = 0.01f;
 			defaultCamBundle.position = glm::vec3(0.0f, 0.0f, 0.0f);
 			defaultCamBundle.front = glm::vec3(0.0f, 0.0f, -1.0f);
 			defaultCamBundle.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 			defaultCamBundle.fov = 45.0f;
 			defaultCamBundle.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 			
-			return tools::Window(width, height, title, true, defaultCamBundle, tools::CameraType::Classic);
+			return tools::Window(width, height, title, true, defaultCamBundle, tools::CameraType::Quaternion);
 		}
 		return tools::Window(width, height, title, true, camBundle.value(), tools::CameraType::Quaternion);
 	}

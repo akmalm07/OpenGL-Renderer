@@ -165,6 +165,9 @@ namespace tools
 		double _mouseChangeX = 0.0;
 		double _mouseChangeY = 0.0;
 
+		double _scrollOffsetX = 0.0;
+		double _scrollOffsetY = 0.0;
+
 		double _mouseCurrentX = 0.0;
 		double _mouseCurrentY = 0.0;
 
@@ -174,11 +177,13 @@ namespace tools
 
 		void HandleKeys(int key, int code, int action, int mode);
 		void HandleMouseCursor(double posX, double posY);
+		void HandleMouseScroll(double xOffset, double yOffset);
 		void HandleMouseButtons(int mouseButton, int action, int mods);
 
 		void CreateCallbacks();
 		static void m_HandleKeys(GLFWwindow* window, int key, int code, int action, int mode);
 		static void m_HandleMouseCursor(GLFWwindow* window, double posX, double posY);
+		static void m_HandleMouseScroll(GLFWwindow* window, double xOffset, double yOffset);
 		static void m_HandleMouseButtons(GLFWwindow* window, int button, int action, int mods);
 
 	};

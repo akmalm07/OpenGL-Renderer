@@ -42,6 +42,9 @@ namespace tools
 
 		bool event_key(Direction dir, double deltaTime) override;
 		bool event_key(double deltaTime, float xMove, float yMove) override;
+		bool event_scroll(float yOffset) override;
+
+		void on_scroll(double yOffset);
 
 		~Camera();
 
@@ -59,6 +62,11 @@ namespace tools
 		glm::vec3 _worldUp;
 		glm::vec3 _direction;
 		glm::vec3 _target;
+
+		float _fov;
+
+		bool _ortho = false;
+		float _zoomSpeed, _aspectRatio, _nearZ, _farZ;
 
 		float _speed;
 		float _turnSpeed;

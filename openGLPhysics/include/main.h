@@ -76,7 +76,7 @@ namespace Renderer
 				std::cerr << "OpenGL error: " << std::hex << err << std::endl;
 			}
 
-			program.link_model_matrix(msh.get_model_matrix());
+			program.link_model_matrix(glm::mat4(1.0f));
 			msh.render();
 			floor.render();
 

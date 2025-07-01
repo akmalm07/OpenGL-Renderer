@@ -30,9 +30,9 @@ namespace tools {
 		_mouseCurrentY = _height / 2;
 	}
 
-	Window::Window(float windowWidth, float windowHeight, const std::string& name, bool createWindowT, CameraBundleOrthographic camBundle, CameraType type)
+	Window::Window(float windowWidth, float windowHeight, const std::string& name, bool createWindow, CameraBundleOrthographic camBundle, CameraType type)
 	{
-		init(windowWidth, windowHeight, name, createWindowT);
+		init(windowWidth, windowHeight, name, createWindow);
 
 		if (type == CameraType::Classic)
 		{
@@ -44,9 +44,9 @@ namespace tools {
 		}
 	}
 
-	Window::Window(float windowWidth, float windowHeight, const std::string& name, bool createWindowT, CameraBundlePerspective camBundle, CameraType type)
+	Window::Window(float windowWidth, float windowHeight, const std::string& name, bool createWindow, CameraBundlePerspective camBundle, CameraType type)
 	{
-		init(windowWidth, windowHeight, name, createWindowT);
+		init(windowWidth, windowHeight, name, createWindow);
 		
 		if (type == CameraType::Classic)
 		{
@@ -263,9 +263,9 @@ namespace tools {
 
 			glEnable(GL_DEPTH_TEST);
 
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-			glDisable(GL_DEPTH_TEST);
 			glDisable(GL_CULL_FACE);
+
+			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}
 
 		g_numOfWindows++;
@@ -373,13 +373,25 @@ namespace tools {
 
 		std::function<void()> mouseFuncs = [this]() -> bool
 			{
-				return _camera->event_key(_deltaTime, _mouseChangeX, _mouseChangeY);
+				return _camera->event_key(_deltaTime, -_mouseChangeX, -_mouseChangeY);
 			};
 		register_callback<MouseMoveInput>(
 			MouseMoveInput(MouseChange::MoveXY),
 			mouseFuncs,
 			"MouseMove"
 		);
+
+		std::function<void()> scrollFunc = [this]() -> bool
+			{
+				return _camera->event_scroll(_scrollOffsetY);
+			};
+
+		register_callback<MouseScrollInput>(
+			MouseScrollInput(MouseChange::MoveY),
+			scrollFunc,
+			"MouseScroll"
+		);
+
 	}
 
 
@@ -540,6 +552,7 @@ namespace tools {
 		glfwSetKeyCallback(_mainWindow, m_HandleKeys);
 		glfwSetCursorPosCallback(_mainWindow, m_HandleMouseCursor);
 		glfwSetMouseButtonCallback(_mainWindow, m_HandleMouseButtons);
+		glfwSetScrollCallback(_mainWindow, m_HandleMouseScroll);
 
 
 	}
@@ -558,6 +571,12 @@ namespace tools {
 		Window* instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
 
 		instance->HandleMouseCursor(posX, posY);
+	}
+
+	void Window::m_HandleMouseScroll(GLFWwindow* window, double posX, double posY)
+	{
+		Window* instance = static_cast<Window*>(glfwGetWindowUserPointer(window));
+		instance->HandleMouseScroll(posX, posY);
 	}
 
 
@@ -673,6 +692,22 @@ namespace tools {
 			}
 		}
 	}
+
+	void Window::HandleMouseScroll(double xOffset, double yOffset)
+	{
+		_scrollOffsetY = yOffset;
+		_scrollOffsetX = xOffset;
+
+		const auto scrolls = _inputManager.list_entires_const<MouseScrollInput>();
+		if (!scrolls.empty())
+		{
+			for (const auto& scroll : scrolls)
+			{
+				scroll->emit_and_update();
+			}
+		}
+	}
+
 
 	void Window::HandleMouseButtons(int mouseButton, int action, int mods)
 	{

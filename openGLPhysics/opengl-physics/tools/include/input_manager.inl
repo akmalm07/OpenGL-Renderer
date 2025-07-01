@@ -193,6 +193,8 @@ namespace tools
 			return _AABBInputs;
 		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
 			return _mouseMoveInputs;
+		else if constexpr (std::same_as<MouseScrollInput, InputStruct>)
+			return _mouseScrollInputs;
 		else
 			throw std::runtime_error("Unknown input type");
 	}
@@ -211,6 +213,8 @@ namespace tools
 			return _AABBInputs;
 		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
 			return _mouseMoveInputs;
+		else if constexpr (std::same_as<MouseScrollInput, InputStruct>)
+			return _mouseScrollInputs;
 		else
 			throw std::runtime_error("Unknown input type");
 	}
@@ -253,6 +257,8 @@ namespace tools
 			return _AABBInputsWindow;
 		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
 			return _mouseMoveInputsWindow;
+		else if constexpr (std::same_as<MouseScrollInput, InputStruct>)
+			return _mouseScrollInputsWindow;
 		else
 			throw std::runtime_error("Unknown input type");
 	}
@@ -270,6 +276,8 @@ namespace tools
 			return _AABBInputsWindow;
 		else if constexpr (std::same_as<MouseMoveInput, InputStruct>)
 			return _mouseMoveInputsWindow;
+		else if constexpr (std::same_as<MouseScrollInput, InputStruct>)
+			return _mouseScrollInputsWindow;
 		else
 			throw std::runtime_error("Unknown input type");
 

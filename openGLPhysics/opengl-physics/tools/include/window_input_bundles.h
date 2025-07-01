@@ -32,6 +32,20 @@ namespace tools
 		}
 	};
 
+	struct MouseScrollInput : CallbackInput
+	{
+		MouseChange offset = MouseChange::None;
+
+		MouseScrollInput(MouseChange action)
+			: offset(action) {
+		}
+
+		InputType get_type() const override
+		{
+			return InputType::MouseScroll;
+		}
+	};
+
 	struct KeyCombInputPoly : CallbackInput
 	{
 		std::array<Keys, 2> numbers;

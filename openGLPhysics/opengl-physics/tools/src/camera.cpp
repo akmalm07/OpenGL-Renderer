@@ -21,12 +21,21 @@ namespace tools
 	void Camera::init(CameraBundlePerspective bundle)
 	{
 		_projection = glm::perspective(glm::radians(bundle.fov), bundle.aspectRatio, bundle.nearZ, bundle.farZ);
+
+		_nearZ = bundle.nearZ;
+		_farZ = bundle.farZ;
+		_zoomSpeed = bundle.zoomSpeed;
+		_aspectRatio = bundle.aspectRatio;
+		_ortho = false;
+
 		initalize(bundle.worldUp, bundle.startPYR, bundle.position, bundle.front, bundle.speed, bundle.turnSpeed);
 	}
 
 	void Camera::init(CameraBundleOrthographic bundle)
 	{
 		_projection = glm::ortho(bundle.left, bundle.right, bundle.bottom, bundle.top, bundle.nearZ, bundle.farZ);
+		_ortho = true;
+
 		initalize(bundle.worldUp, bundle.startPYR, bundle.position, bundle.front, bundle.speed, bundle.turnSpeed);
 	}
 
@@ -193,6 +202,12 @@ namespace tools
 		return true;
 	}
 
+	bool Camera::event_scroll(float yOffset)
+	{
+		on_scroll(yOffset);
+		return true;
+	}
+
 
 	void Camera::set_speed(float speed)
 	{
@@ -263,6 +278,22 @@ namespace tools
 		return positionChanged || rotationChanged;
 	}
 
+
+	void Camera::on_scroll(double yOffset)
+	{
+		if (_ortho) 
+		{
+			float zoomFactor = 1.0f + (yOffset * _zoomSpeed);
+			_projection = glm::ortho(-_aspect * zoomFactor, _aspect * zoomFactor, -zoomFactor, zoomFactor, _nearZ, _farZ);
+		}
+		else 
+		{
+			_fov -= yOffset * _zoomSpeed;
+			_fov = glm::clamp(_fov, 1.0f, 90.0f);
+
+			_projection = glm::perspective(glm::radians(_fov), _aspectRatio, _nearZ, _farZ);
+		}
+	}
 
 	Camera::~Camera() = default;
 

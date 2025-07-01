@@ -114,6 +114,7 @@ namespace tools
 	{
 		_matrix.model = model;
 		_matrix.view = _camera->get_view();
+		_matrix.projection = _camera->get_projection();
 		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
 		_directionalLight.link_camera_pos(_camera->get_position());
 

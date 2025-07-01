@@ -110,7 +110,8 @@ namespace tools {
 		Key = 1 << 2,
 		KeyPoly = 1 << 3,
 		MouseMovement = 1 << 4,
-		Count = 5
+		MouseScroll = 1 << 5,
+		Count = 6
 	};
 
 	enum class Direction
