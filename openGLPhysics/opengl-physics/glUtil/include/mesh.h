@@ -84,7 +84,7 @@ namespace tools
 
 	std::vector<glType::Index> create_circle_indices(int segments);
 
-	std::vector<glType::Vertex> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, float size);
+	std::vector<glType::Vertex> create_cube_vertices(const glm::vec3& color, const glm::vec3& center, float size);
 	
 	std::vector<glType::Index> create_cube_indices();
 

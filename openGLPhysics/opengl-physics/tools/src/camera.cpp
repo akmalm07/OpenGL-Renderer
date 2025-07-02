@@ -168,7 +168,7 @@ namespace tools
 
 	}
 
-	void Camera::update(Direction dir, double deltaTime)
+	void Camera::update(Direction dir, float deltaTime)
 	{
 		move_and_turn_dir(dir, deltaTime);
 
@@ -179,13 +179,13 @@ namespace tools
 	}
 
 
-	bool Camera::event_key(Direction dir, double deltaTime)
+	bool Camera::event_key(Direction dir, float deltaTime)
 	{
 		update(dir, deltaTime);
 		return true;
 	}
 
-	bool Camera::event_key(double deltaTime, float xMove, float yMove)
+	bool Camera::event_key(float deltaTime, float xMove, float yMove)
 	{
 		if (xMove != 0)
 		{
@@ -227,7 +227,7 @@ namespace tools
 	}
 
 
-	void Camera::move_and_turn_dir(Direction dir, double deltaTime)
+	void Camera::move_and_turn_dir(Direction dir, float deltaTime)
 	{
 		bool move = false;
 

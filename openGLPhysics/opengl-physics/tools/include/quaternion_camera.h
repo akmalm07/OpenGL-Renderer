@@ -26,8 +26,6 @@ namespace tools
 		void init(CameraBundlePerspective bundle);
 		
 		void init(CameraBundleOrthographic bundle);
-
-		void update(Direction dir, double deltaTime);
 		
 		void set_speed(float speed);
 		float get_speed() const;
@@ -36,8 +34,8 @@ namespace tools
 		
 		bool is_moving();
 	
-		bool event_key(Direction dir, double deltaTime) override;
-		bool event_key(double deltaTime, float xMove, float yMove) override;
+		bool event_key(Direction dir, float deltaTime) override;
+		bool event_key(float deltaTime, float xMove, float yMove) override;
 		bool event_scroll(float yOffset) override;
 
 		void on_scroll(double yOffset);
@@ -70,7 +68,7 @@ namespace tools
 
 		void initialize(glm::vec3 worldUp, glm::vec3 startPYR, glm::vec3 position, glm::vec3 front, float speed, float turnSpeed);
 
-		void update_orientation_from_angles();
+		//void update_orientation_from_angles();
 
 		void move_forward(double deltaTime, bool forwardOrBack);
 		void move_up(double deltaTime, bool upOrDown);
@@ -78,9 +76,9 @@ namespace tools
 
 		void move_and_turn_dir(Direction dir, double deltaTime);
 
-		void pitch(double deltaTime, float xMove);
-		void yaw(double deltaTime, float yMove);
-		void roll(double deltaTime, float zMove);
+		void pitch(float deltaTime, float xMove);
+		void yaw(float deltaTime, float yMove);
+		void roll(float deltaTime, float zMove);
 
 		void update_view_matrix();
 	};

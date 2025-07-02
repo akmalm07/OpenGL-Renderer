@@ -21,9 +21,6 @@ namespace glUtil
 		glGenVertexArrays(1, &_VAO);
 		glBindVertexArray(_VAO);
 
-		DEBUG(
-			std::cout << "Creating _VAO ID: " << _VAO << "\n";
-		)
 
 		glGenBuffers(1, &_VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, _VBO);
@@ -84,11 +81,6 @@ namespace glUtil
 
 		glBindVertexArray(0);
 		glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-		if (_indexed)
-		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-		}
 
 	}
 
@@ -159,16 +151,11 @@ namespace glUtil
 
 		if (_indexed)
 		{
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _IBO);
 			glDrawElements(GL_TRIANGLES, _indexCount, GL_UNSIGNED_INT, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 		}
 		else
 		{
-			glBindBuffer(GL_ARRAY_BUFFER, _VBO);
 			glDrawArrays(GL_TRIANGLES, 0, _vertexCount);
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-
 		}
 		glBindVertexArray(0);
 	}
@@ -275,7 +262,7 @@ namespace tools
 		return indices;
 	}
 
-	std::vector<glType::Vertex> create_cube_vertices(const glm::vec3& center, const glm::vec3& color, glType::Vertex size) 
+	std::vector<glType::Vertex> create_cube_vertices(const glm::vec3& color, const glm::vec3& center, glType::Vertex size)
 	{
 		std::vector<glType::Vertex> vertices;
 		glType::Vertex halfSize = size / 2.0f;
@@ -294,7 +281,7 @@ namespace tools
 		};
 
 
-		for (int i = 0; i < 8; ++i)
+		for (int i = 0; i < 8; i++)
 		{
 			vertices.push_back(cubeVertices[i * 6 + 0] + center.x);
 			vertices.push_back(cubeVertices[i * 6 + 1] + center.y);
@@ -349,11 +336,11 @@ namespace tools
 
 	std::vector<glType::Index> create_floor_indices()
 	{
-		std::vector<unsigned int> indices = {
+		return {
 		0, 1, 2, 
 		2, 3, 0 
 		};
-		return indices;
+		
 	}
 
 	glUtil::Mesh construct_default_mesh()
@@ -361,15 +348,15 @@ namespace tools
 		glUtil::MeshBundle bundle;
 
 		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
-		auto cubeVerts = tools::create_cube_vertices(glm::vec3(0.0, 0.0, 0.0), glm::vec3(1.0f), 02.0f);
+		auto cubeVerts = tools::create_cube_vertices(glm::vec3(1.0f), glm::vec3(0.0f, 8.0, 0.0f), 2.0f);
 		auto cubeIndices = tools::create_cube_indices();
 
 		bundle.pVertices = cubeVerts.data();
-		//bundle.pIndices = 0; // cubeIndices.data();
+		bundle.pIndices = cubeIndices.data();
 		bundle.vertexCount = cubeVerts.size();
-		bundle.indexCount = 0; // cubeIndices.size();
+		bundle.indexCount = cubeIndices.size();
 
-		bundle.indexed = false; // true;
+		bundle.indexed = true;
 
 		glUtil::ArrayBufferLayout buff1{ glUtil::StrideType::POS, glUtil::Stride::STRIDE_3D, 0 };
 		glUtil::ArrayBufferLayout buff2{ glUtil::StrideType::COL, glUtil::Stride::STRIDE_3D, 1 };

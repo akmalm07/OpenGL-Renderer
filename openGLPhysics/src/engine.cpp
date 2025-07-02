@@ -206,8 +206,8 @@ namespace Program
 			tools::CameraBundlePerspective defaultCamBundle;
 			defaultCamBundle.nearZ = 0.1f;
 			defaultCamBundle.farZ = 100.0f;
-			defaultCamBundle.speed = 0.01f;
-			defaultCamBundle.turnSpeed = 0.01f;
+			defaultCamBundle.speed = 0.03f;
+			defaultCamBundle.turnSpeed = 0.03f;
 			defaultCamBundle.position = glm::vec3(0.0f, 0.0f, 0.0f);
 			defaultCamBundle.front = glm::vec3(0.0f, 0.0f, -1.0f);
 			defaultCamBundle.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);

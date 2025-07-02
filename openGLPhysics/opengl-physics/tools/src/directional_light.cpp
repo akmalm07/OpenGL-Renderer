@@ -216,19 +216,19 @@ namespace tools
 
 	void DirectionalLight::set_amb_intensity(float val)
 	{
-		_light.ambInstensity = glm::clamp(val, 0.0f, 1.0f);
+		_light.ambIntensity = glm::clamp(val, 0.0f, 1.0f);
 		_uniformBuffer.update_data(val, "dirLight.ambIntensity");
 	}
 
 	void DirectionalLight::set_diff_intensity(float val)
 	{
-		_light.diffInstensity = glm::clamp(val, 0.0f, 1.0f);
+		_light.diffIntensity = glm::clamp(val, 0.0f, 1.0f);
 		_uniformBuffer.update_data(val, "dirLight.diffIntensity");
 	}
 
 	void DirectionalLight::set_spec_intensity(float val)
 	{
-		_light.specInstensity = glm::clamp(val, 0.0f, 1.0f);
+		_light.specIntensity = glm::clamp(val, 0.0f, 1.0f);
 		_uniformBuffer.update_data(val, "dirLight.specIntensity");
 	}
 
@@ -352,9 +352,9 @@ namespace tools
 		_uniformBuffer.update_data(_light.ambient, "dirLight.ambient");
 		_uniformBuffer.update_data(_light.diffuse, "dirLight.diffuse");
 		_uniformBuffer.update_data(_light.specular,"dirLight.specular");
-		_uniformBuffer.update_data(_light.ambInstensity, "dirLight.ambIntensity");
-		_uniformBuffer.update_data(_light.diffInstensity, "dirLight.diffIntensity");
-		_uniformBuffer.update_data(_light.specInstensity, "dirLight.specIntensity");
+		_uniformBuffer.update_data(_light.ambIntensity, "dirLight.ambIntensity");
+		_uniformBuffer.update_data(_light.diffIntensity, "dirLight.diffIntensity");
+		_uniformBuffer.update_data(_light.specIntensity, "dirLight.specIntensity");
 		_uniformBuffer.update_data(_light.color, "dirLight.color");
 
 		if (_cameraPosLoc != 0)
@@ -375,9 +375,9 @@ namespace tools
 
 	void DirectionalLight::clamp_light_values()
 	{
-		_light.ambInstensity = glm::clamp(_light.ambInstensity, 0.0f, 1.0f);
-		_light.diffInstensity = glm::clamp(_light.diffInstensity, 0.0f, 1.0f);
-		_light.specInstensity = glm::clamp(_light.specInstensity, 0.0f, 1.0f);
+		_light.ambIntensity = glm::clamp(_light.ambIntensity, 0.0f, 1.0f);
+		_light.diffIntensity = glm::clamp(_light.diffIntensity, 0.0f, 1.0f);
+		_light.specIntensity = glm::clamp(_light.specIntensity, 0.0f, 1.0f);
 	}
 }
 

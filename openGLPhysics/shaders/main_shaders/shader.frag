@@ -7,8 +7,8 @@ in vec3 gVertexColor;
 
 out vec4 fragColor;
 
-uniform mat3 uNormalMatrix;
 uniform vec3 uCameraPos;
+uniform mat3 uNormalMatrix;
 
 
 struct DirLight
@@ -35,7 +35,6 @@ vec3 calculate_directional_light(vec3 norm, vec3 fragColor)
 {
     vec3 lightDirNormalized = normalize(dirLight.direction);
 
-
     vec3 normNormalized = normalize(norm);
 
 
@@ -53,6 +52,7 @@ vec3 calculate_directional_light(vec3 norm, vec3 fragColor)
 
 
     vec3 finalColor = (ambient + diffuse + specular) * fragColor;
+
     return finalColor;
 }
 
@@ -60,6 +60,7 @@ vec3 calculate_directional_light(vec3 norm, vec3 fragColor)
 void main() 
 {
     vec3 norm = normalize(uNormalMatrix * gNormal);
+    
 
     vec3 finalColor = calculate_directional_light(norm, gVertexColor);
 

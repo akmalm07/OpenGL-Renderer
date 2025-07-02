@@ -29,19 +29,19 @@ namespace tools
 
 		void update_view_matrix();
 		
-		void update(Direction dir, double deltaTime);
+		void update(Direction dir, float deltaTime);
 		
 		void set_speed(float speed);
 		float get_speed() const;
 
 		void set_position(const glm::vec3& position);
 
-		void move_and_turn_dir(Direction dir, double deltaTime);
+		void move_and_turn_dir(Direction dir, float deltaTime);
 
 		bool is_moving();
 
-		bool event_key(Direction dir, double deltaTime) override;
-		bool event_key(double deltaTime, float xMove, float yMove) override;
+		bool event_key(Direction dir, float deltaTime) override;
+		bool event_key(float deltaTime, float xMove, float yMove) override;
 		bool event_scroll(float yOffset) override;
 
 		void on_scroll(double yOffset);

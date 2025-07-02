@@ -10,7 +10,7 @@ namespace tools
 	{
 
 		tools::DirectionalLightBundle dirLightBundle;
-		dirLightBundle.direction = glm::normalize(glm::vec3(1.0f, 1.0f, 1.0f));
+		//dirLightBundle.direction = glm::normalize(glm::vec3(0.5f, 1.0f, 1.0f));
 		dirLightBundle.color = glm::vec3(1.0f);
 
 		_directionalLight = tools::DirectionalLight(dirLightBundle, program.get_id(), debug);
@@ -115,6 +115,8 @@ namespace tools
 		_matrix.model = model;
 		_matrix.view = _camera->get_view();
 		_matrix.projection = _camera->get_projection();
+		PRINT_MAT4("Model Matrix: ", _matrix.model);
+
 		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
 		_directionalLight.link_camera_pos(_camera->get_position());
 

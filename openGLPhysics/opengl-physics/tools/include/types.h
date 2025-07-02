@@ -27,6 +27,10 @@ std::cout << v[1][0] << " " << v[1][1] << " " << v[1][2] << " " << v[1][3] << st
 std::cout << v[2][0] << " " << v[2][1] << " " << v[2][2] << " " << v[2][3] << std::endl; \
 std::cout << v[3][0] << " " << v[3][1] << " " << v[3][2] << " " << v[3][3] << std::endl;
 
+#define PRINT_MAT3(str, v) std::cout << str << ": \n" << v[0][0] << " " << v[0][1] << " " << v[0][2] << std::endl; \
+std::cout << v[1][0] << " " << v[1][1] << " " << v[1][2] << std::endl; \
+std::cout << v[2][0] << " " << v[2][1] << " " << v[2][2] << std::endl;
+
 template<typename T>
 constexpr unsigned int UINT(T x) {
 	return static_cast<unsigned int>(x);

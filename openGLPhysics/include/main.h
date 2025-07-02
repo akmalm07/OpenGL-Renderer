@@ -69,12 +69,8 @@ namespace Renderer
 
 			//PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
 
-			world.link_and_update_mv_matrices(program);
+			world.link_and_update_mv_matrices(program, glm::mat4(1.0f));
 
-			GLenum err;
-			while ((err = glGetError()) != GL_NO_ERROR) {
-				std::cerr << "OpenGL error: " << std::hex << err << std::endl;
-			}
 
 			program.link_model_matrix(glm::mat4(1.0f));
 			msh.render();
