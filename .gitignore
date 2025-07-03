@@ -20,6 +20,11 @@
 *.log
 *.tlog
 *.lastbuildstate
+*.sln
+*.vcxproj
+*.filters
+*.user
+
 
 # Ignore generated files
 *.user
