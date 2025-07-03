@@ -8,7 +8,7 @@
 
 namespace physics
 {
-	class PhysicsBodyBase;
+	class PhysicsBody;
 }
 
 
@@ -72,7 +72,7 @@ namespace glUtil
 
 		Transform _transform;
 
-		friend class physics::PhysicsBodyBase;
+		friend class physics::PhysicsBody;
 
 	private:
 		void set_vertex_attribs(const ArrayBufferLayout& arrLayout, FullStride absoluteStride);

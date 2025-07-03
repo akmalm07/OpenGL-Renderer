@@ -2,6 +2,11 @@
 
 #include "config.h"
 
+namespace glInit
+{
+	class GLProgram;
+}
+
 namespace glUtil
 {
 
@@ -25,11 +30,11 @@ namespace glUtil
 	{
 	public:
 		Texture();
-		Texture(const std::filesystem::path& texAddress, TextureUnit unit = TextureUnit::TEX0);
+		Texture(glInit::GLProgram& program, const std::filesystem::path& texAddress, TextureUnit unit = TextureUnit::TEX0);
 
 		std::filesystem::path get_path() const;
 
-		bool init(const std::filesystem::path& path, TextureUnit texUnit = TextureUnit::TEX0);
+		bool init(glInit::GLProgram& program, const std::filesystem::path& path, TextureUnit texUnit = TextureUnit::TEX0);
 
 		void communicate_impl(glType::Entity entity);
 
@@ -51,8 +56,10 @@ namespace glUtil
 
 		unsigned int _textureLocation = 0;
 
-		unsigned int _textureId;
-		int _height, _width, _bitDepth;
+		unsigned int _textureId = 0;
+		int _height = 0, _width = 0, _bitDepth = 0;
+
+		unsigned int _hasTextureLoc = 0;
 
 		glType::Entity _entityId = 0;
 

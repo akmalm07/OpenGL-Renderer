@@ -1,5 +1,6 @@
 #include "headers.h"
 #include "glUtil/include/texture.h"
+#include "glInit/include/program.h"
 #include <stb/stb_image.h>
 
 
@@ -8,10 +9,10 @@ namespace glUtil
     Texture::Texture() = default;
 
 
-    Texture::Texture(const std::filesystem::path& texAdress, TextureUnit unit)
+    Texture::Texture(glInit::GLProgram& program, const std::filesystem::path& texAdress, TextureUnit unit)
         : _textureId(0), _height(0), _width(0), _bitDepth(0), _textureUnit(unit)
     {
-        init(texAdress);
+        init(program, texAdress);
     }
 
     std::filesystem::path Texture::get_path() const
@@ -20,11 +21,14 @@ namespace glUtil
     }
 
 
-    bool Texture::init(const std::filesystem::path& path, TextureUnit texUnit)
+    bool Texture::init(glInit::GLProgram& program, const std::filesystem::path& path, TextureUnit texUnit)
     {
 		_texturePath = path;
 
 		_textureUnit = texUnit;
+
+		_hasTextureLoc = program.add_uniform("uUseTexture");
+
 
         unsigned char* texData = stbi_load(_texturePath.string().c_str(), &_width, &_height, &_bitDepth, 0);
         if (!texData)
@@ -66,6 +70,7 @@ namespace glUtil
         stbi_image_free(texData);
 
 
+
         _isLoaded = true;
         return true;
     }
@@ -87,18 +92,17 @@ namespace glUtil
 
     void Texture::bind()
     {
-        if (_textureLocation == 0)
-        {
-			std::cerr << "Texture location for texture unit " << UINT(_textureUnit) << " is not set!" << std::endl;
-			return; 
-        }
+        
+		glUniform1i(_hasTextureLoc, GL_TRUE);
         glActiveTexture(GL_TEXTURE0 + UINT(_textureUnit));
         glBindTexture(GL_TEXTURE_2D, _textureId);
         glUniform1i(_textureLocation, UINT(_textureUnit));
+
     }
 
     void Texture::unbind()
     {
+        glUniform1i(_hasTextureLoc, GL_FALSE);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		glActiveTexture(GL_TEXTURE0);
     }

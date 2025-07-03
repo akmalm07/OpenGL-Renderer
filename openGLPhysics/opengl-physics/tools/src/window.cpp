@@ -56,6 +56,10 @@ namespace tools {
 		{
 			_camera = std::make_unique<QuaternionCamera>(camBundle);
 		}
+
+		set_disable_cursor(true);
+		set_escape_button(Keys::Esc, Action::Press);
+		set_movement_callbacks();
 	}
 
 	void Window::init(float windowWidth, float windowHeight, const std::string& name, bool createWindow)

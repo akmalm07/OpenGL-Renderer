@@ -19,7 +19,7 @@ namespace physics
 	}
 
 	template<size_t CellCount>
-	inline static void SpatialPartioning<CellCount>::register_body(const PhysicsBodyBase& body)
+	inline static void SpatialPartioning<CellCount>::register_body(const PhysicsBody& body)
 	{
 		MinMax position = body.get_aabb();
 

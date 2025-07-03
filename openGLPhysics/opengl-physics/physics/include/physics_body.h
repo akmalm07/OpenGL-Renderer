@@ -37,7 +37,7 @@ namespace physics
 
 
 
-	class PhysicsBodyBase : public glType::Component<PhysicsBodyBase>
+	class PhysicsBody : public glType::Component<PhysicsBody>
 	{
 	public:
 		
@@ -50,7 +50,7 @@ namespace physics
 
 		void add_force(const Force& val);
 
-		bool is_colliding(const PhysicsBodyBase& other) const;
+		bool is_colliding(const PhysicsBody& other) const;
 
 		glm::vec3 get_position() const;
 
@@ -91,14 +91,14 @@ namespace physics
 	};
 
 	template<ForceType T>
-	inline void PhysicsBodyBase::add_external_force(const GlobalForce<T>& val)
+	inline void PhysicsBody::add_external_force(const GlobalForce<T>& val)
 	{
 		_netForce += val.calc_local_force(determine_input_for_force<T>());
 		_addedForce = true;
 	}
 
 	template<ForceType T>
-	inline ForceCalcInput<T> PhysicsBodyBase::determine_input_for_force()
+	inline ForceCalcInput<T> PhysicsBody::determine_input_for_force()
 	{
 		ForceCalcInput<T> input;
 		if constexpr (T == ForceType::Gravity)
@@ -133,7 +133,7 @@ namespace physics
 	}
 
 	template<size_t T>
-	inline void PhysicsBodyBase::add_to_partioner(SpatialPartioning<T>& partioner)
+	inline void PhysicsBody::add_to_partioner(SpatialPartioning<T>& partioner)
 	{
 		partioner.register_body(this);
 	}

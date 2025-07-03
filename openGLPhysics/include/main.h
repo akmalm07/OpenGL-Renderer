@@ -16,72 +16,45 @@ namespace Renderer
 
 		Window window = Program::create_window(1000, 1000);
 
-		window.set_disable_cursor(true);
-		window.set_escape_button(Keys::Esc, Action::Press);
-		window.set_movement_callbacks();
-
 		GLProgram program = Program::create_program();
 
 		World world = Program::create_world(program, window, true);
 
-		EntityRegistry reg;
-
-		Entity entity = reg.register_entity("Joe");
-
-		//PhysicsBodyBase physicsBody;
-		//phys.add_component(entity, physicsBody);
 
 		auto& mesh = tools::ComponentRegistry<Mesh>::get_instance();
+		
+		auto& phys = tools::ComponentRegistry<PhysicsBody>::get_instance();
 
+		
 		auto msh = Program::create_demo_mesh();
 
 		auto floor = Program::create_demo_floor_mesh();
 
-		//meshes.add_component(entity, msh);
-
-		//auto mesh = Program::create_demo_volocity_moveible_mesh();
-		//
-		//auto floor = Program::create_demo_floor_mesh();
 
 		auto ent = world.add_entity("Joe");
+		
 		auto entFlr = world.add_entity("Floor");
 
 		mesh.add_component(ent, msh);
+		
 		mesh.add_component(entFlr, floor);
 
 		world.bind_light();
 
-		glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		while (!window.get_should_close())
 		{
-			
 			program.bind();
-			Program::clear_color();
+			{
+				Program::clear_color();
 
-			//program.link_model_matrix( // ERR!
-			//	//meshes.get_component(entity).get_model_matrix()
-			//	meshes.get_component(entity).get_model_matrix()
-			//);
+				world.update(program);
 
+				window.update();
 
-			//meshes.get_component(entity).render(); // ERR!
-
-
-			//PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
-
-			world.update(program);
-
-			
-
-
-			// phys.get_component(entity).update(0.016);
-
-			//world.render_meshes(program);
-
-			window.update();
+			}
 			program.unbind();
-
 		}
 
 		world.unbind_light();

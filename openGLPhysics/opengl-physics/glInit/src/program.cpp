@@ -131,9 +131,14 @@ namespace glInit
 
 	unsigned int GLProgram::add_uniform(std::string_view name)
 	{
-		//glLinkProgram(_shaderId);
-		//glUseProgram(_shaderId);
+		if (_uniforms.find(name) != _uniforms.end())
+		{
+			std::cerr << "Warning: uniform '" << name << "' already exists in shader program " << _shaderId << "! Returning existing location." << std::endl;
+			return _uniforms[name].location;
+		}
+
 		int location = glGetUniformLocation(_shaderId, name.data());
+		
 		if (location == -1)
 		{
 			std::cerr << "Warning: uniform '" << name << "' not found in shader program "<< _shaderId << "!Did you forget to add it ? " << std::endl; // EROR HERE, PORGRAM CANNO FIND THE ITEM

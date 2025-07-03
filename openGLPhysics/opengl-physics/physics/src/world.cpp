@@ -117,17 +117,30 @@ namespace tools
 	void World::render_entities(const glInit::GLProgram& program)
 	{
 		const auto& meshes = ComponentRegistry<glUtil::Mesh>::get_instance();
+		const auto& texes = ComponentRegistry<glUtil::Texture>::get_instance();
+		//const auto& materials = ComponentRegistry<glUtil::Material>::get_instance();
 
 		for (const auto& entity : _entities.get_entities())
 		{
-			const auto ptr = meshes.get_component_or_null(entity);
+			const auto msh = meshes.get_component_or_null(entity);
+			const auto tex = texes.get_component_or_null(entity);
 
-			if (ptr)
+			if (tex)
 			{
-				glm::mat4 modelMatrix = ptr->get_model_matrix();
+				tex->bind();
+			}
+
+			if (msh)
+			{
+				glm::mat4 modelMatrix = msh->get_model_matrix();
 				program.link_model_matrix(modelMatrix);
 				_directionalLight.link_normal_mat(glm::inverse(glm::transpose(modelMatrix)));
-				ptr->render();
+				msh->render();
+			}
+
+			if (tex)
+			{
+				tex->unbind();
 			}
 		}
 	}

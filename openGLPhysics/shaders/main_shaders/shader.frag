@@ -4,12 +4,16 @@
 in vec3 gNormal;
 in vec3 gFragPos;
 in vec3 gVertexColor;
+in vec3 gColor;
+in vec2 gTexCoord;
 
 out vec4 fragColor;
 
 uniform vec3 uCameraPos;
 uniform mat3 uNormalMatrix;
 
+uniform bool uUseTexture;
+uniform sampler2D uTexture;
 
 struct DirLight
 {
@@ -62,7 +66,16 @@ void main()
     vec3 norm = normalize(uNormalMatrix * gNormal);
     
 
-    vec3 finalColor = calculate_directional_light(norm, gVertexColor);
+    vec3 dirLightColor = calculate_directional_light(norm, gVertexColor);
 
-    fragColor = vec4(finalColor, 1.0);
+    if (uUseTexture)
+    {
+        vec4 texColor = texture(uTexture, gTexCoord);
+        fragColor = texColor * vec4(dirLightColor, 1.0); 
+    }
+    else
+    {
+        fragColor = vec4(dirLightColor, 1.0);
+    }
+
 }

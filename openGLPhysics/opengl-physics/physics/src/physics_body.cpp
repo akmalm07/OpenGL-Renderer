@@ -11,7 +11,7 @@
 namespace physics
 {
 
-	void PhysicsBodyBase::communicate_impl(glType::Entity entity)
+	void PhysicsBody::communicate_impl(glType::Entity entity)
 	{
 		auto& registry = tools::ComponentRegistry<glUtil::Mesh>::get_instance();
 		auto& registered = registry.get_entities();
@@ -32,48 +32,48 @@ namespace physics
 		}
 	}
 
-	glm::vec3 PhysicsBodyBase::get_volocity() const
+	glm::vec3 PhysicsBody::get_volocity() const
 	{
 		return _volocity;
 	}
 
-	void PhysicsBodyBase::add_force(const Force& val)
+	void PhysicsBody::add_force(const Force& val)
 	{
 		_netForce += val;
 		_addedForce = true;
 	}
 
-	bool PhysicsBodyBase::is_colliding(const PhysicsBodyBase& other) const
+	bool PhysicsBody::is_colliding(const PhysicsBody& other) const
 	{
 		return false;
 	}
 
-	glm::vec3 PhysicsBodyBase::get_position() const
+	glm::vec3 PhysicsBody::get_position() const
 	{
 		return _mesh->_transform.position;
 	}
 
-	MinMax PhysicsBodyBase::get_aabb() const
+	MinMax PhysicsBody::get_aabb() const
 	{
 		return _boundType->get_min_max();
 	}
 
-	float PhysicsBodyBase::get_mass() const
+	float PhysicsBody::get_mass() const
 	{
 		return 1.0f / _massInv;
 	}
 
-	float PhysicsBodyBase::get_volume() const
+	float PhysicsBody::get_volume() const
 	{
 		return _boundType->get_volume();
 	}
 
-	void PhysicsBodyBase::set_position(const glm::vec3& pos)
+	void PhysicsBody::set_position(const glm::vec3& pos)
 	{
 		_mesh->set_position(pos);
 	}
 
-	void PhysicsBodyBase::update(float dt)
+	void PhysicsBody::update(float dt)
 	{
 		if (_addedForce)
 		{
@@ -87,7 +87,7 @@ namespace physics
 
 	}
 
-	glType::Entity PhysicsBodyBase::get_entity_id() const
+	glType::Entity PhysicsBody::get_entity_id() const
 
 	{
 		return _entityId;

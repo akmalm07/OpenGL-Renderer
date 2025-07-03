@@ -7,7 +7,7 @@
 namespace physics
 {
 
-	class PhysicsBodyBase;
+	class PhysicsBody;
 
 
 	class SpatialPartioningBase
@@ -20,7 +20,7 @@ namespace physics
 		SpatialPartioningBase& operator=(SpatialPartioningBase&&) noexcept = default;
 		virtual ~SpatialPartioningBase() = default;
 
-		virtual void register_body(const PhysicsBodyBase& body) = 0;
+		virtual void register_body(const PhysicsBody& body) = 0;
 		virtual void update_entity_position(glType::Entity entity, const glm::vec3& newPosition) = 0;
 		virtual std::vector<glType::Entity> query(const glm::vec3& position, const glm::vec3& size) const = 0;
 	};
@@ -38,7 +38,7 @@ namespace physics
 
 		SpatialPartioning(const glm::vec3& minBound, const glm::vec3& maxBound);
 
-		static void register_body(const PhysicsBodyBase& body);
+		static void register_body(const PhysicsBody& body);
 		void update_entity_position(glType::Entity entity, const glm::vec3& newPosition);
 		std::vector<glType::Entity> query(const glm::vec3& position, const glm::vec3& size) const;
 
