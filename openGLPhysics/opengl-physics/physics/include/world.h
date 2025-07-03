@@ -68,13 +68,13 @@ namespace tools
 
 		glm::vec3 get_acc_due_to_gravity() const;
 		
-		void add_scene(std::shared_ptr<tools::Scene> scene);
+		//void add_scene(std::shared_ptr<tools::Scene> scene);
 
 		~World();
 
 		//void run_shadow_pass();
 	private:
-		std::shared_ptr<tools::Scene> _scene;
+		//std::shared_ptr<tools::Scene> _scene;
 
 		EntityRegistry _entities;
 		

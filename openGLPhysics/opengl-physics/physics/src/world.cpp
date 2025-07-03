@@ -31,15 +31,15 @@ namespace tools
 		}
 	}
 
-	void World::add_scene(std::shared_ptr<tools::Scene> scene)
-	{
-		_scene = scene;
-		
-		if (_debug)
-		{
-			std::cout << "Scene added to World." << std::endl;
-		}
-	}
+	//void World::add_scene(std::shared_ptr<tools::Scene> scene)
+	//{
+	//	_scene = scene;
+	//	
+	//	if (_debug)
+	//	{
+	//		std::cout << "Scene added to World." << std::endl;
+	//	}
+	//}
 
 	glm::mat4 World::get_view_matrix() const
 	{
