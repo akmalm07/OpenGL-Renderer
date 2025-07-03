@@ -25,12 +25,14 @@ namespace glUtil
 		Mesh(Mesh&& other) noexcept = default;
 		Mesh& operator=(Mesh&& other) noexcept = default;
 
-		glUtil::Mesh(const glUtil::Mesh&) = delete;
-		glUtil::Mesh& operator=(const glUtil::Mesh&) = delete;
+		glUtil::Mesh(const glUtil::Mesh&) = default;
+		glUtil::Mesh& operator=(const glUtil::Mesh&) = default;
+
+		void communicate_impl(glType::Entity entity);
 
 		void init(const MeshBundle& bundle);
 
-		void render();
+		void render() const;
 	
 		void change_position(const glm::vec3& pos);
 
@@ -65,6 +67,8 @@ namespace glUtil
 		bool _indexed = true;
 
 		unsigned int _offsetCount = 0;
+
+		glType::Entity _entityId = 0;
 
 		Transform _transform;
 

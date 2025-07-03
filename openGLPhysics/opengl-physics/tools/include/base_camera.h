@@ -4,6 +4,11 @@
 #include "config.h"
 #include "tools/include/keys.h"
 
+namespace glInit
+{
+	class GLProgram;
+}
+
 namespace tools
 {
 	class BaseCamera
@@ -11,6 +16,13 @@ namespace tools
 	public:
 
 		BaseCamera() = default;
+
+		void update_matricies(const glInit::GLProgram& program) const;
+
+		void set_view(const glm::mat4& mat);
+
+		void set_projection(const glm::mat4& mat);
+
 
 		glm::vec3 get_position() const;
 

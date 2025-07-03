@@ -70,6 +70,11 @@ namespace glUtil
         return true;
     }
 
+    void Texture::communicate_impl(glType::Entity entity)
+    {
+		_entityId = entity;
+    }
+
     bool Texture::is_loaded() const
     {
         return _isLoaded;

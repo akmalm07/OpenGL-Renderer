@@ -263,7 +263,7 @@ namespace tools {
 
 			glEnable(GL_DEPTH_TEST);
 
-			glDisable(GL_CULL_FACE);
+			glViewport(0, 0, static_cast<int>(_width), static_cast<int>(_height));
 
 			glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 		}

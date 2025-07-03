@@ -27,6 +27,10 @@ namespace tools
 
 		std::string get_entity_name(int entityId) const;
 
+		std::vector <glType::Entity> get_entities() const;
+
+		glType::Entity get_entity(const std::string& entityName) const;
+
 		bool is_entity_registered(size_t entityId) const;
 
 		bool is_entity_registered(const std::string& entityName) const;
@@ -36,6 +40,8 @@ namespace tools
 	private:
 		
 		std::unordered_map<glType::Entity, std::string> _entities;
+		std::vector <glType::Entity> _entitiesVec; 
+
 		size_t _nextEntityId = 0;
 	};
 

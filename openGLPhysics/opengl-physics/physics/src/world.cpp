@@ -15,17 +15,13 @@ namespace tools
 
 		_directionalLight = tools::DirectionalLight(dirLightBundle, program.get_id(), debug);
 
-		_directionalLight.set_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
+		_directionalLight.set_normal_mat(glm::mat3(1.0f));
 
 		_directionalLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
 
 		_directionalLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
 		
 		window.world_visitor(*this); // Camera is set here
-
-		_matrix.projection = _camera->get_projection();
-		_matrix.view = _camera->get_projection();
-		_matrix.model = glm::mat4(1.0f);
 
 		_debug = debug;
 
@@ -45,19 +41,14 @@ namespace tools
 		}
 	}
 
-	glm::mat4 World::get_model_matrix()
-	{
-		return _matrix.model;
-	}
-
 	glm::mat4 World::get_view_matrix() const
 	{
-		return _matrix.view;
+		return _camera->get_view();
 	}
 
 	glm::mat4 World::get_projection_matrix() const
 	{
-		return _matrix.projection;
+		return _camera->get_projection();
 	}
 
 	//void World::bind_shadow_tex()
@@ -71,25 +62,19 @@ namespace tools
 	//	_shadowMap.unbind_shadow_tex();
 	//}
 
-	void World::set_model_matrix(const glm::mat4& mat)
-	{
-		_matrix.model = mat;
-	}
-
 	void World::set_view_matrix(const glm::mat4& mat)
 	{
-		_matrix.view = mat;
+		_camera->set_view(mat);
 	}
 
 	void World::set_projection_matrix(const glm::mat4& mat)
 	{
-		_matrix.projection = mat;
+		_camera->set_projection(mat);
 	}
 
-	void World::update_model_matrix(const glm::mat4& mat)
+	void World::update_normal_matrix(const glm::mat3& mat)
 	{
-		_matrix.model = mat;
-		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
+		_directionalLight.link_normal_mat(mat);
 	}
 
 	void World::set_directional_light(tools::DirectionalLight& light)
@@ -105,24 +90,23 @@ namespace tools
 	{
 		_directionalLight.bind();
 
-		_directionalLight.set_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
+		_directionalLight.set_normal_mat(glm::mat3(1.0f));
 		_directionalLight.set_cam_pos(_camera->get_position());
 
 	}
 
-	void World::link_and_update_mv_matrices(glInit::GLProgram& program, const glm::mat4& model)
+	void World::link_and_update_mv_matrices(const glInit::GLProgram& program)
 	{
-		_matrix.model = model;
-		_matrix.view = _camera->get_view();
-		_matrix.projection = _camera->get_projection();
-		PRINT_MAT4("Model Matrix: ", _matrix.model);
+		_camera->update_matricies(program);
 
-		_directionalLight.link_normal_mat(glm::transpose(glm::inverse(glm::mat3(_matrix.model))));
 		_directionalLight.link_camera_pos(_camera->get_position());
+	}
 
-		program.link_projection_matrix(_matrix.projection);
-		program.link_model_matrix(_matrix.model);
-		program.link_view_matrix(_matrix.view);
+	void World::update(const glInit::GLProgram& program)
+	{
+		link_and_update_mv_matrices(program);
+
+		render_entities(program);
 	}
 
 	//void World::run_shadow_pass()
@@ -130,14 +114,22 @@ namespace tools
 	//	_shadowMap.run_shadow_map_pass(_meshes);
 	//}
 
-	void World::render_meshes(glInit::GLProgram& program)
+	void World::render_entities(const glInit::GLProgram& program)
 	{
-		//for (auto& mesh : _meshes)
-		//{
-		//	_matrix.model = mesh->get_model_matrix();
-		//	program.link_model_matrix(_matrix.model);
-		//	mesh->render();
-		//}
+		const auto& meshes = ComponentRegistry<glUtil::Mesh>::get_instance();
+
+		for (const auto& entity : _entities.get_entities())
+		{
+			const auto ptr = meshes.get_component_or_null(entity);
+
+			if (ptr)
+			{
+				glm::mat4 modelMatrix = ptr->get_model_matrix();
+				program.link_model_matrix(modelMatrix);
+				_directionalLight.link_normal_mat(glm::inverse(glm::transpose(modelMatrix)));
+				ptr->render();
+			}
+		}
 	}
 	
 	void World::unbind_light()
@@ -151,32 +143,27 @@ namespace tools
 	}
 
 
-	void World::add_mesh(std::shared_ptr<glUtil::Mesh> mesh)
-	{
-		//_meshes.push_back(mesh);
-		//if (_debug)
-		//{
-		//	std::cout << "Mesh added to World." << std::endl;
-		//}
-	}
-
-	void World::add_meshes(std::vector<std::shared_ptr<glUtil::Mesh>>& mesh)
-	{
-		for (auto& m : mesh)
-		{
-
-		}
-
-		//_meshes.insert(_meshes.end(), mesh.begin(), mesh.end());
-		//if (_debug)
-		//{
-		//	std::cout << "Meshes added to World." << std::endl;
-		//}
-	}
-
-	void World::set_camera(const tools::BaseCamera* camera)
+	void World::set_camera(tools::BaseCamera* camera)
 	{
 		_camera = camera;
+	}
+	
+	glType::Entity World::add_entity(const std::string& name)
+	{
+		if (_debug)
+		{
+			std::cout << "Entity '" << name << "' added to World." << std::endl;
+		}
+		return _entities.register_entity(name);
+	}
+
+	glType::Entity World::get_entity(const std::string& name)
+	{
+		if (_debug)
+		{
+			std::cout << "Entity '" << name << "' retrieved from World." << std::endl;
+		}
+		return _entities.get_entity(name);
 	}
 
 	glm::vec3 World::get_acc_due_to_gravity() const

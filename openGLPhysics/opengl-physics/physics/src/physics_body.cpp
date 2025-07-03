@@ -22,13 +22,13 @@ namespace physics
 
 		if (it != registered.end())
 		{
-			_mesh = &it->second;
+			_mesh = it->second;
 		}
 		else
 		{
-			registered.emplace(entity, tools::construct_default_mesh());
+			registry.add_component(entity, tools::construct_default_mesh());
 
-			_mesh = &registered[entity];
+			_mesh = registered[entity];
 		}
 	}
 

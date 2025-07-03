@@ -112,7 +112,7 @@ namespace glType
 			static_cast<T*>(this)->check_impl(components);
 		}
 		
-		void communicate(Entity entity) // requires HasCommunicateImpl<T>//ERR!
+		void communicate(Entity entity) // requires HasCommunicateImpl<T> In Construction
 		{
 			static_cast<T*>(this)->communicate_impl(entity);
 		}

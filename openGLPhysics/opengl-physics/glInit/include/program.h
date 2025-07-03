@@ -52,9 +52,9 @@ namespace glInit
 
 		unsigned int get_id() const;
 
-		void link_model_matrix(const glm::mat4& modelMatrix);
-		void link_projection_matrix(const glm::mat4& projectionMatrix);
-		void link_view_matrix(const glm::mat4& viewMatrix);
+		void link_model_matrix(const glm::mat4& modelMatrix) const;
+		void link_projection_matrix(const glm::mat4& projectionMatrix) const;
+		void link_view_matrix(const glm::mat4& viewMatrix) const;
 
 		void bind();
 		void unbind();

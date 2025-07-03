@@ -22,7 +22,7 @@
 namespace tools
 {
 
-	class World
+	class World //NEW!!
 	{
 	public:
 		World() = default;
@@ -35,32 +35,32 @@ namespace tools
 		World(const World&) noexcept = delete;
 		World& operator=(const World&) noexcept = delete;
 
-		void add_mesh(std::shared_ptr<glUtil::Mesh> mesh);
-		
-		void add_meshes(std::vector<std::shared_ptr<glUtil::Mesh>>& mesh);
+		glType::Entity add_entity(const std::string& name);
 
-		void set_camera(const tools::BaseCamera* camera);
+		glType::Entity get_entity(const std::string& name);
 
-		glm::mat4 get_model_matrix();
+		void set_camera(tools::BaseCamera* camera);
+
 		glm::mat4 get_view_matrix() const;
 		glm::mat4 get_projection_matrix() const;
 
 		//void bind_shadow_tex();
 		//void unbind_shadow_tex();
 
-		void set_model_matrix(const glm::mat4& mat);
 		void set_view_matrix(const glm::mat4& mat);
 		void set_projection_matrix(const glm::mat4& mat);
+		void update_normal_matrix(const glm::mat3& mat);
 
-		void update_model_matrix(const glm::mat4& mat);
 
 		void set_directional_light(tools::DirectionalLight& light);
 
 		void bind_light();
 
-		void link_and_update_mv_matrices(glInit::GLProgram& program, const glm::mat4& model = glm::mat4());
+		void link_and_update_mv_matrices(const glInit::GLProgram& program);
 
-		void render_meshes(glInit::GLProgram& program);
+		void update(const glInit::GLProgram& program);
+
+		void render_entities(const glInit::GLProgram& program);
 
 		void unbind_light();
 
@@ -76,23 +76,15 @@ namespace tools
 	private:
 		std::shared_ptr<tools::Scene> _scene;
 
-		EntityRegistry _entityRegistry;
+		EntityRegistry _entities;
 		
 		tools::DirectionalLight _directionalLight;
 
 		glm::vec3 _gravity = { 0.0f, -0.1f, 0.0f };
 		
-		view_ptr_non_const<tools::BaseCamera> _camera;
+		tools::BaseCamera* _camera;
 		
 		//glUtil::ShadowMap _shadowMap;
-
-
-		struct Matrix
-		{
-			glm::mat4 model = glm::mat4(1.0f);
-			glm::mat4 view = glm::mat4(1.0f);
-			glm::mat4 projection = glm::mat4(1.0f);
-		} _matrix;
 	
 		bool _debug;
 	};

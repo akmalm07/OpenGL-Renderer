@@ -11,6 +11,11 @@ namespace glUtil
 	}
 
 
+	void Mesh::communicate_impl(glType::Entity entity)
+	{
+		_entityId = entity;
+	}
+
 	void Mesh::init(const MeshBundle& bundle)
 	{
 		_indexCount = bundle.indexCount;
@@ -144,7 +149,7 @@ namespace glUtil
 		_transform.scale = scale;
 	}
 
-	void Mesh::render()
+	void Mesh::render() const
 	{
 
 		glBindVertexArray(_VAO);

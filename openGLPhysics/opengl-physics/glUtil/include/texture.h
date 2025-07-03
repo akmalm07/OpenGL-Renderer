@@ -31,6 +31,8 @@ namespace glUtil
 
 		bool init(const std::filesystem::path& path, TextureUnit texUnit = TextureUnit::TEX0);
 
+		void communicate_impl(glType::Entity entity);
+
 		bool is_loaded() const;
 
 		void set_texture_loc(unsigned int location);
@@ -51,6 +53,8 @@ namespace glUtil
 
 		unsigned int _textureId;
 		int _height, _width, _bitDepth;
+
+		glType::Entity _entityId = 0;
 
 		bool _isLoaded = false;
 		

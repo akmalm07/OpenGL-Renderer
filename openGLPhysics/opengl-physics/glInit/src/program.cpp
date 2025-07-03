@@ -164,17 +164,17 @@ namespace glInit
 	}
 
 
-	void GLProgram::link_model_matrix(const glm::mat4& modelMatrix)
+	void GLProgram::link_model_matrix(const glm::mat4& modelMatrix) const
 	{
 		glUniformMatrix4fv(_uniformModel, 1, GL_FALSE, glm::value_ptr(modelMatrix));
 	}
 
-	void GLProgram::link_projection_matrix(const glm::mat4& projectionMatrix)
+	void GLProgram::link_projection_matrix(const glm::mat4& projectionMatrix) const
 	{
 		glUniformMatrix4fv(_uniformProjection, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 	}
 
-	void GLProgram::link_view_matrix(const glm::mat4& viewMatrix)
+	void GLProgram::link_view_matrix(const glm::mat4& viewMatrix) const
 	{
 		glUniformMatrix4fv(_uniformView, 1, GL_FALSE, glm::value_ptr(viewMatrix));
 

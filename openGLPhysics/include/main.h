@@ -24,9 +24,6 @@ namespace Renderer
 
 		World world = Program::create_world(program, window, true);
 
-	//	tools::ComponentRegistry<Mesh>& meshes = tools::ComponentRegistry<Mesh>::get_instance();
-		//tools::ComponentRegistry<PhysicsBodyBase>& phys = tools::ComponentRegistry<PhysicsBodyBase>::get_instance();
-
 		EntityRegistry reg;
 
 		Entity entity = reg.register_entity("Joe");
@@ -34,6 +31,7 @@ namespace Renderer
 		//PhysicsBodyBase physicsBody;
 		//phys.add_component(entity, physicsBody);
 
+		auto& mesh = tools::ComponentRegistry<Mesh>::get_instance();
 
 		auto msh = Program::create_demo_mesh();
 
@@ -45,8 +43,11 @@ namespace Renderer
 		//
 		//auto floor = Program::create_demo_floor_mesh();
 
-	/*	world.add_mesh(mesh);
-		world.add_mesh(floor);*/
+		auto ent = world.add_entity("Joe");
+		auto entFlr = world.add_entity("Floor");
+
+		mesh.add_component(ent, msh);
+		mesh.add_component(entFlr, floor);
 
 		world.bind_light();
 
@@ -69,12 +70,9 @@ namespace Renderer
 
 			//PRINT_MAT4("Model Matrix: ", meshes.get_component(entity).get_model_matrix())
 
-			world.link_and_update_mv_matrices(program, glm::mat4(1.0f));
+			world.update(program);
 
-
-			program.link_model_matrix(glm::mat4(1.0f));
-			msh.render();
-			floor.render();
+			
 
 
 			// phys.get_component(entity).update(0.016);
