@@ -165,6 +165,24 @@ namespace glUtil
 		glBindVertexArray(0);
 	}
 
+	glType::Entity Mesh::get_entity_id() const
+	{
+		return _entityId;
+	}
+
+	std::vector<glType::Vertex> Mesh::get_verticies() const
+	{
+		std::vector<glType::Vertex> vertices;
+		if (_VBO != 0)
+		{
+			glBindBuffer(GL_ARRAY_BUFFER, _VBO);
+			vertices.resize(_vertexCount);
+			glGetBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(glType::Vertex) * _vertexCount, vertices.data());
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+		}
+		return vertices;
+	}
+
 
 
 	void Mesh::clear()

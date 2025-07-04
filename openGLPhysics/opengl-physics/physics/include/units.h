@@ -139,6 +139,14 @@ namespace units
 	}
 
 
+	template <glm::length_t L, typename T, glm::qualifier Q>
+	glm::vec<L, T, Q> to_newtons(const glm::vec<L, T, Q>& vec)
+	{
+		auto scale = UnitScale<Units::Kilograms>::value() * UnitScale<Units::Meters>::value() / (UnitScale<Units::Seconds>::value() * UnitScale<Units::Seconds>::value());
+		return vec * static_cast<T>(scale);
+	}
+
+
 
 
 };

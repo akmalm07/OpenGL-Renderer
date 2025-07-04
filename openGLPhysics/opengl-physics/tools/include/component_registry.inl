@@ -1,15 +1,10 @@
 #pragma once
+
 #include "tools/include/component_registry.h"
-#include "physics/include/physics_body.h"
+
 
 namespace tools
 {
-
-	template<glType::ComponentType T>
-	inline void ComponentRegistry<T>::invite(const T& component)
-	{
-		component.visit(_components);
-	}
 
 	template<glType::ComponentType T>
 	inline ComponentRegistry<T>& ComponentRegistry<T>::get_instance()
@@ -18,20 +13,49 @@ namespace tools
 		return instance;
 	}
 
+
+	inline ComponentRegistry<physics::PhysicsBody>& ComponentRegistry<physics::PhysicsBody>::get_instance()
+	{
+		static ComponentRegistry instance;
+		return instance;
+	}
+
+
+
 	template<glType::ComponentType T>
 	inline void ComponentRegistry<T>::add_component(glType::Entity entity, T&& component)
 	{
 		auto ptr = std::make_unique<T>(component);
-		T* raw_ptr = ptr.get();
+		T* rawPtr = ptr.get();
 
 		_componentsVec.emplace_back(std::move(ptr));
-		_components.emplace(entity, raw_ptr);
+		_components.emplace(entity, rawPtr);
 
-		raw_ptr->communicate(entity);
+		rawPtr->communicate(entity);
 	}
 
+	inline void ComponentRegistry<physics::PhysicsBody>::add_component(glType::Entity entity, physics::PhysicsBody&& component)
+	{
+		auto ptr = std::make_unique<physics::PhysicsBody>(std::move(component));
+		physics::PhysicsBody* rawPtr = ptr.get();
+
+		this->_componentsVec.emplace_back(std::move(ptr));
+		this->_components.emplace(entity, rawPtr);
+
+		_physicsManager.register_body(*rawPtr);
+
+		rawPtr->communicate_impl(entity);
+	}
+
+
+	inline physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>& ComponentRegistry<physics::PhysicsBody>::get_physics_manager()
+	{
+		return _physicsManager;
+	}
+
+
 	template<glType::ComponentType T>
-	inline T& ComponentRegistry<T>::get_component(glType::Entity entity)
+	inline T& ComponentRegistryBase<T>::get_component(glType::Entity entity)
 	{
 		auto it = _components.find(entity);
 		if (it != _components.end())
@@ -42,7 +66,7 @@ namespace tools
 	}
 
 	template<glType::ComponentType T>
-	inline T* ComponentRegistry<T>::get_component_or_null(glType::Entity entity) const
+	inline T* ComponentRegistryBase<T>::get_component_or_null(glType::Entity entity) const
 	{
 		auto it = _components.find(entity);
 		if (it != _components.end())
@@ -53,31 +77,31 @@ namespace tools
 	}
 
 	template<glType::ComponentType T>
-	inline std::vector<std::unique_ptr<T>>& ComponentRegistry<T>::get_entities_vec()
+	inline std::vector<std::unique_ptr<T>>& ComponentRegistryBase<T>::get_entities_vec()
 	{
 		return _componentsVec;
 	}
 
 	template<glType::ComponentType T>
-	inline const std::vector<std::unique_ptr<T>>& ComponentRegistry<T>::get_entities_vec() const
+	inline const std::vector<std::unique_ptr<T>>& ComponentRegistryBase<T>::get_entities_vec() const
 	{
 		return _componentsVec;
 	}
 
 	template<glType::ComponentType T>
-	inline std::unordered_map<glType::Entity, T*>& ComponentRegistry<T>::get_entities()
+	inline std::unordered_map<glType::Entity, T*>& ComponentRegistryBase<T>::get_entities()
 	{
 		return _components;
 	}
 
 	template<glType::ComponentType T>
-	inline const std::unordered_map<glType::Entity, T*>& ComponentRegistry<T>::get_entities() const
+	inline const std::unordered_map<glType::Entity, T*>& ComponentRegistryBase<T>::get_entities() const
 	{
 		return _components;
 	}
 
 	template<glType::ComponentType T>
-	inline const T& ComponentRegistry<T>::get_component(glType::Entity entity) const
+	inline const T& ComponentRegistryBase<T>::get_component(glType::Entity entity) const
 	{
 		auto it = _components.find(entity);
 		if (it != _components.end())
@@ -88,22 +112,17 @@ namespace tools
 	}
 
 	template<glType::ComponentType T>
-	inline const T& ComponentRegistry<T>::get_or_add_component(glType::Entity entity, const T& component) const
+	inline T& ComponentRegistryBase<T>::get_or_add_component(glType::Entity entity, const T& component)
 	{
-		auto it = _components.find(entity);
-		if (it != _components.end())
-		{
-			return *it->second;
-		}
-		else
-		{
-			_components.emplace(entity, component);
-			return *_components[entity];
-		}
+		auto ptr = std::make_unique<T>(component);
+		T* rawPtr = ptr.get();
+		_componentsVec.push_back(std::move(ptr));
+		_components[entity] = rawPtr;
+		return *rawPtr;
 	}
 
 	template<glType::ComponentType T>
-	inline void ComponentRegistry<T>::remove_component(glType::Entity entity)
+	inline void ComponentRegistryBase<T>::remove_component(glType::Entity entity)
 	{
 		auto it = _components.find(entity);
 		if (it != _components.end())

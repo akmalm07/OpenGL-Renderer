@@ -20,6 +20,8 @@ namespace physics
 
 		std::unique_ptr<BoundTypeBase> clone() const override;
 
+		glType::BoundType get_bound_type() const override final;
+
 		void init(const glm::vec3& center, float radius);
 
 		float get_radius() const;

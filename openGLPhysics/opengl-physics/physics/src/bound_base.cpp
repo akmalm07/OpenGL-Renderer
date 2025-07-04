@@ -2,6 +2,7 @@
 #include "physics/include/bound_base.h"
 #include "physics/include/aabb.h"
 #include "physics/include/obb.h"
+#include "glUtil/include/mesh.h"
 
 #include "physics/include/sphere_bound.h"
 
@@ -309,9 +310,20 @@ namespace physics
 		return (_max.x - _min.x) * (_max.y - _min.y) * (_max.z - _min.z);
 	}
 
-	glm::vec3 AABB::get_half_extent() const
+	bool BoundTypeBase::is_touching(BoundTypeBase* other)
 	{
-		return _halfExtent;
+		switch (other->get_bound_type())
+		{
+		case glType::BoundType::AABB:
+			return is_touching(*static_cast<AABB*>(other));
+			break;
+		case glType::BoundType::OBB:
+			return is_touching(*static_cast<OBB*>(other));
+			break;
+		case glType::BoundType::Sphere:
+			return is_touching(*static_cast<SphereBound*>(other));
+			break;
+		}
 	}
 
 	float BoundTypeBase::project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const
@@ -376,6 +388,16 @@ namespace physics
 		}
 
 		return { minVec, maxVec };
+	}
+
+	MinMax get_min_max_of_mesh(const glUtil::Mesh& mesh, glUtil::FullStride fullStride, glUtil::PosStride posStride)
+	{
+		auto vert = mesh.get_verticies();
+		if (vert.empty())
+		{
+			return { glm::vec3(0.0f), glm::vec3(0.0f) };
+		}
+		return get_min_max_from_vertices(vert, fullStride, posStride);
 	}
 
 } // namespace physics

@@ -375,19 +375,20 @@ namespace tools {
 			);
 		}
 
-		std::function<void()> mouseFuncs = [this]() -> bool
+		std::function<void()> mouseFuncs = [this]()
 			{
-				return _camera->event_key(_deltaTime, -_mouseChangeX, -_mouseChangeY);
+				_camera->event_key(_deltaTime, -_mouseChangeX, -_mouseChangeY);
 			};
+		
 		register_callback<MouseMoveInput>(
 			MouseMoveInput(MouseChange::MoveXY),
 			mouseFuncs,
 			"MouseMove"
 		);
 
-		std::function<void()> scrollFunc = [this]() -> bool
+		std::function<void()> scrollFunc = [this]()
 			{
-				return _camera->event_scroll(_scrollOffsetY);
+				_camera->event_scroll(_scrollOffsetY);
 			};
 
 		register_callback<MouseScrollInput>(

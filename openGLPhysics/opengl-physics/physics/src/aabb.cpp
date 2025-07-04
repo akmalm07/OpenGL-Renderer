@@ -25,6 +25,11 @@ namespace physics
 	{
 		return std::make_unique<AABB>(*this);
 	}
+
+	glType::BoundType AABB::get_bound_type() const
+	{
+		return glType::BoundType::AABB;
+	}
 	
 
 	bool AABB::is_touching(const AABB& other) const
@@ -43,6 +48,11 @@ namespace physics
 		return BoundTypeBase::sphere_check(other, *this);
 	}
 
+	glm::vec3 AABB::get_half_extent() const
+	{
+		return _halfExtent;
+	}
+
 	glm::vec3 AABB::get_min() const
 	{
 		return _min;
@@ -51,11 +61,6 @@ namespace physics
 	glm::vec3 AABB::get_max() const
 	{
 		return _max;
-	}
-
-	MinMax AABB::get_min_max() const
-	{
-		return { _min, _max };
 	}
 
 	AABB::~AABB() = default;

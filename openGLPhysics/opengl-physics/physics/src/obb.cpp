@@ -34,6 +34,11 @@ namespace physics
 		return std::make_unique<OBB>(*this);
 	}
 
+	glType::BoundType OBB::get_bound_type() const
+	{
+		return glType::BoundType::OBB;
+	}
+
 	glm::vec3 OBB::get_rotation() const 
 	{ 
 		return _xyzRotation; 

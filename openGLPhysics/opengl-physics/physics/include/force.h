@@ -2,8 +2,6 @@
 
 #include "config.h"
 
-#include "physics/include/acceleration.h"
-
 #include "physics/include/force_input.h"
 
 #include "physics/include/units.h"

@@ -40,9 +40,9 @@ namespace tools
 
 		bool is_moving();
 
-		bool event_key(Direction dir, float deltaTime) override;
-		bool event_key(float deltaTime, float xMove, float yMove) override;
-		bool event_scroll(float yOffset) override;
+		void event_key(Direction dir, float deltaTime) override;
+		void event_key(float deltaTime, float xMove, float yMove) override;
+		void event_scroll(float yOffset) override;
 
 		void on_scroll(double yOffset);
 

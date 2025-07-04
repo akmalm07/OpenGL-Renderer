@@ -15,6 +15,7 @@
 #include "physics/include/obb.h"
 #include "physics/include/sphere_bound.h"
 #include "physics/include/force.h"
+#include "physics/include/physics_manager.h"
 
 //#include "glUtil/include/shadow_map.h"
 
@@ -22,7 +23,7 @@
 namespace tools
 {
 
-	class World //NEW!!
+	class World 
 	{
 	public:
 		World() = default;
@@ -44,13 +45,9 @@ namespace tools
 		glm::mat4 get_view_matrix() const;
 		glm::mat4 get_projection_matrix() const;
 
-		//void bind_shadow_tex();
-		//void unbind_shadow_tex();
-
 		void set_view_matrix(const glm::mat4& mat);
 		void set_projection_matrix(const glm::mat4& mat);
 		void update_normal_matrix(const glm::mat3& mat);
-
 
 		void set_directional_light(tools::DirectionalLight& light);
 
@@ -68,13 +65,10 @@ namespace tools
 
 		glm::vec3 get_acc_due_to_gravity() const;
 		
-		//void add_scene(std::shared_ptr<tools::Scene> scene);
 
 		~World();
 
-		//void run_shadow_pass();
 	private:
-		//std::shared_ptr<tools::Scene> _scene;
 
 		EntityRegistry _entities;
 		
@@ -84,9 +78,18 @@ namespace tools
 		
 		tools::BaseCamera* _camera;
 		
-		//glUtil::ShadowMap _shadowMap;
 	
 		bool _debug;
 	};
 
 }
+
+
+
+//Soon to be added ...
+	//void bind_shadow_tex();
+	//void unbind_shadow_tex();
+	//void add_scene(std::shared_ptr<tools::Scene> scene);
+	//void run_shadow_pass();
+	//std::shared_ptr<tools::Scene> _scene;
+	//glUtil::ShadowMap _shadowMap;

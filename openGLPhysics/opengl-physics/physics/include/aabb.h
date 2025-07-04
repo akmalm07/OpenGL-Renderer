@@ -23,6 +23,8 @@ namespace physics
 
 		std::unique_ptr<BoundTypeBase> clone() const override;
 
+		glType::BoundType get_bound_type() const override final;
+
 		void move_reletive_to_dist(const glm::vec3& dist);
 
 		void change(const glm::vec3& offset);
@@ -47,8 +49,6 @@ namespace physics
 		glm::vec3 get_half_extent() const;
 
 		virtual std::array <glm::vec3, 8> get_corners() const;
-
-		MinMax get_min_max() const;
 
 		~AABB();
 

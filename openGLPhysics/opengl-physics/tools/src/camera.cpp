@@ -179,13 +179,12 @@ namespace tools
 	}
 
 
-	bool Camera::event_key(Direction dir, float deltaTime)
+	void Camera::event_key(Direction dir, float deltaTime)
 	{
 		update(dir, deltaTime);
-		return true;
 	}
 
-	bool Camera::event_key(float deltaTime, float xMove, float yMove)
+	void Camera::event_key(float deltaTime, float xMove, float yMove)
 	{
 		if (xMove != 0)
 		{
@@ -198,14 +197,11 @@ namespace tools
 
 		update_view_matrix();
 
-		//PRINT_VEC3("Rotation: ", _rotation);
-		return true;
 	}
 
-	bool Camera::event_scroll(float yOffset)
+	void Camera::event_scroll(float yOffset)
 	{
 		on_scroll(yOffset);
-		return true;
 	}
 
 

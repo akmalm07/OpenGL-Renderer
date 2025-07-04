@@ -130,15 +130,14 @@ namespace tools
 	}
 
 
-	bool QuaternionCamera::event_key(Direction dir, float deltaTime)
+	void QuaternionCamera::event_key(Direction dir, float deltaTime)
 	{
 		move_and_turn_dir(dir, deltaTime);
 		update_view_matrix();
-		return true;
 	}
 
 
-	bool QuaternionCamera::event_key(float deltaTime, float xMove, float yMove)
+	void QuaternionCamera::event_key(float deltaTime, float xMove, float yMove)
 	{
 		if (xMove != 0)
 		{
@@ -149,13 +148,11 @@ namespace tools
 			pitch(deltaTime, yMove);
 		}
 		update_view_matrix();
-		return true;
 	}
 
-	bool QuaternionCamera::event_scroll(float yOffset)
+	void QuaternionCamera::event_scroll(float yOffset)
 	{
 		on_scroll(yOffset);
-		return true	;
 	}
 
 	void QuaternionCamera::on_scroll(double yOffset)

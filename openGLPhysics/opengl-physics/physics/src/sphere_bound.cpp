@@ -20,6 +20,11 @@ namespace physics
 		return std::make_unique<SphereBound>(*this);
 	}
 
+	glType::BoundType SphereBound::get_bound_type() const
+	{
+		return glType::BoundType::Sphere;
+	}
+
 	void SphereBound::init(const glm::vec3& center, float radius)
 	{
 		_min = center - glm::vec3(radius);

@@ -20,7 +20,6 @@ namespace Renderer
 
 		World world = Program::create_world(program, window, true);
 
-
 		auto& mesh = tools::ComponentRegistry<Mesh>::get_instance();
 		
 		auto& phys = tools::ComponentRegistry<PhysicsBody>::get_instance();
@@ -28,7 +27,7 @@ namespace Renderer
 		
 		auto msh = Program::create_demo_mesh();
 
-		auto physBody = Program::create_demo_physics_body();
+		auto physBody = Program::create_demo_physics_body(msh);
 
 		auto floor = Program::create_demo_floor_mesh();
 

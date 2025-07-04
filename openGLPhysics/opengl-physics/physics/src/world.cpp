@@ -1,7 +1,9 @@
 #include "headers.h"
 
-#include "physics\include\world.h"
-#include "tools\include\key_usage_registry.h"
+#include "physics/include/world.h"
+
+#include "physics/include/physics_manager.h"
+
 
 namespace tools
 {
@@ -10,8 +12,6 @@ namespace tools
 	{
 
 		tools::DirectionalLightBundle dirLightBundle;
-		//dirLightBundle.direction = glm::normalize(glm::vec3(0.5f, 1.0f, 1.0f));
-		dirLightBundle.color = glm::vec3(1.0f);
 
 		_directionalLight = tools::DirectionalLight(dirLightBundle, program.get_id(), debug);
 
@@ -20,7 +20,7 @@ namespace tools
 		_directionalLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
 
 		_directionalLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
-		
+
 		window.world_visitor(*this); // Camera is set here
 
 		_debug = debug;
@@ -31,15 +31,6 @@ namespace tools
 		}
 	}
 
-	//void World::add_scene(std::shared_ptr<tools::Scene> scene)
-	//{
-	//	_scene = scene;
-	//	
-	//	if (_debug)
-	//	{
-	//		std::cout << "Scene added to World." << std::endl;
-	//	}
-	//}
 
 	glm::mat4 World::get_view_matrix() const
 	{
@@ -51,16 +42,6 @@ namespace tools
 		return _camera->get_projection();
 	}
 
-	//void World::bind_shadow_tex()
-	//{
-	//	_shadowMap.bind_shadow_tex();
-
-	//}
-
-	//void World::unbind_shadow_tex()
-	//{
-	//	_shadowMap.unbind_shadow_tex();
-	//}
 
 	void World::set_view_matrix(const glm::mat4& mat)
 	{
@@ -109,10 +90,6 @@ namespace tools
 		render_entities(program, deltaTime);
 	}
 
-	//void World::run_shadow_pass()
-	//{
-	//	_shadowMap.run_shadow_map_pass(_meshes);
-	//}
 
 	void World::render_entities(const glInit::GLProgram& program, float deltaTime)
 	{
@@ -201,7 +178,7 @@ namespace tools
 
 
 
-//Untested Code that belongs in the ctor of the World(glInit::GLProgram& program, tools::Window& window, bool debug)
+//Soon to be integrated
 
 		//glUtil::ShadowMapBundle shadowMapBundle;
 		//
@@ -223,3 +200,26 @@ namespace tools
 		//_shadowMap.init(shadowMapBundle, true);
 		//
 		//_shadowMap.set_shadow_map_loc(program.add_uniform("tShadowMap"));
+		//void World::run_shadow_pass()
+		//{
+		//	_shadowMap.run_shadow_map_pass(_meshes);
+		//}
+			//void World::add_scene(std::shared_ptr<tools::Scene> scene)
+		//{
+		//	_scene = scene;
+		//	
+		//	if (_debug)
+		//	{
+		//		std::cout << "Scene added to World." << std::endl;
+		//	}
+		//}
+		//void World::bind_shadow_tex()
+		//{
+		//	_shadowMap.bind_shadow_tex();
+
+		//}
+
+		//void World::unbind_shadow_tex()
+		//{
+		//	_shadowMap.unbind_shadow_tex();
+		//}

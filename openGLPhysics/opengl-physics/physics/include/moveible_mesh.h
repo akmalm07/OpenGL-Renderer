@@ -6,8 +6,6 @@
 #include "glUtil/include/mesh_bundle.h"
 #include "glUtil/include/mesh.h"
 
-#include "physics/include/acceleration.h"
-#include "physics/include/volocity.h"
 
 
 namespace physics
@@ -133,8 +131,6 @@ namespace physics
 		~MoveibleMesh();
 
 	private:
-		
-		Acceleration _acceleration = glm::vec3(0.0f, 0.0f, 0.0f);
 		
 		glm::vec3 _positionRelativeToStart = glm::vec3(0.0f, 0.0f, 0.0f);
 

@@ -1,6 +1,6 @@
 #include "headers.h"
 #include "physics/include/physics_body.h"
-#include "physics/include/spatial_partioning.h"
+#include "physics/include/physics_manager.h"
 #include "tools/include/component_registry.h"
 #include "physics/include/aabb.h"
 #include "physics/include/obb.h"
@@ -49,8 +49,7 @@ namespace physics
 
 		_addedForce = (_netForce != glm::vec3(0.0f));
 
-		Measurible _massInv;
-
+		_collisionCallback = bundle.collisionFunc;
 	}
 
 	PhysicsBody::PhysicsBody(const PhysicsBody& other)
@@ -112,15 +111,41 @@ namespace physics
 		return _volocity;
 	}
 
+	void PhysicsBody::set_volocity(const glm::vec3& val)
+	{
+		_volocity = val;
+		if (_volocity == glm::vec3(0.0f))
+		{
+			_addedForce = false;
+		}
+		else
+		{
+			_addedForce = true;
+		}
+	}
+
+	glm::vec3 PhysicsBody::get_momentum() const
+	{
+		return _volocity * static_cast<float>(1.0 / _massInv);
+	}
+
 	void PhysicsBody::add_force(const Force& val)
 	{
 		_netForce += val;
-		_addedForce = true;
+
+		if (_netForce == glm::vec3(0.0f))
+		{
+			_addedForce = false;
+		}
+		else
+		{
+			_addedForce = true;
+		}
 	}
 
 	bool PhysicsBody::is_colliding(const PhysicsBody& other) const
 	{
-		return false;
+		return _boundType->is_touching(other._boundType.get());
 	}
 
 	glm::vec3 PhysicsBody::get_position() const
@@ -162,10 +187,28 @@ namespace physics
 
 	}
 
+	void PhysicsBody::collision_response_callback(glType::Entity otherEntity)
+	{
+		if (_collisionCallback)
+		{
+			_collisionCallback(otherEntity);
+		}
+	}
+
 	glType::Entity PhysicsBody::get_entity_id() const
 
 	{
 		return _entityId;
+	}
+
+	bool PhysicsBody::is_gravity_affected() const
+	{
+		return _gravityAffected;
+	}
+
+	bool PhysicsBody::has_force() const
+	{
+		return _addedForce;
 	}
 
 

@@ -33,6 +33,11 @@ namespace glUtil
 		void init(const MeshBundle& bundle);
 
 		void render() const;
+
+		glType::Entity get_entity_id() const;
+
+		//[[deprecated("This function is slow. Avoid using in performance-critical code.")]]
+		std::vector<glType::Vertex> get_verticies() const;
 	
 		void change_position(const glm::vec3& pos);
 

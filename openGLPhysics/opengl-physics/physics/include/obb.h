@@ -30,6 +30,8 @@ namespace physics
 
 		std::unique_ptr<BoundTypeBase> clone() const override;
 
+		glType::BoundType get_bound_type() const override final;
+
 		glm::vec3 get_rotation() const;
 
 		glm::vec3 get_rotation_degree() const;

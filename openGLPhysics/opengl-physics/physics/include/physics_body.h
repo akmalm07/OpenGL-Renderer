@@ -17,10 +17,10 @@
 namespace physics
 {
 
-	class SpatialPartioningBase;
+	class PhysicsManagerBase;
 
 	template<size_t T>
-	class SpatialPartioning;
+	class PhysicsManager;
 
 
 
@@ -43,6 +43,10 @@ namespace physics
 
 		glm::vec3 get_volocity() const;
 
+		void set_volocity(const glm::vec3& val);
+
+		glm::vec3 get_momentum() const;
+
 		template<ForceType T>
 		void add_external_force(const GlobalForce<T>& val);
 
@@ -62,15 +66,21 @@ namespace physics
 
 		void update(float dt);
 
+		void collision_response_callback(glType::Entity otherEntity);
+
 		glType::Entity get_entity_id() const;
 
 		template<ForceType T>
 		ForceCalcInput<T> determine_input_for_force();
 
 		template<size_t T>
-		void add_to_partioner(SpatialPartioning<T>& partioner);
+		void add_to_partioner(PhysicsManager<T>& partioner);
 
-	private:
+		bool is_gravity_affected() const;
+
+		bool has_force() const;
+
+	protected:
 		std::unique_ptr<BoundTypeBase> _boundType;
 
 		glUtil::Mesh* _mesh; 
@@ -86,6 +96,8 @@ namespace physics
 		bool _gravityAffected = false;
 
 		Measurible _massInv;
+
+		std::function<void(glType::Entity)> _collisionCallback;
 
 		glType::Entity _entityId;
 	};
@@ -139,71 +151,10 @@ namespace physics
 	}
 
 	template<size_t T>
-	inline void PhysicsBody::add_to_partioner(SpatialPartioning<T>& partioner)
+	inline void PhysicsBody::add_to_partioner(PhysicsManager<T>& partioner)
 	{
-		partioner.register_body(this);
+		partioner.register_body(*this);
 	}
 
 }
 
-
-
-
-//struct MassComponent
-//{
-//protected:
-//	Measurible _mass; 
-//};
-
-//struct AABBComponent
-//{
-//protected:
-//	AABB _aabb; // Axis-Aligned Bounding Box
-//};
-
-//struct VelocityComponent
-//{
-//protected:
-//	Volocity _volocity; // Represents the velocity of the body
-//};
-
-//struct ForceComponent
-//{
-//protected:
-//	Acceleration _force; // Represents the force acting on the body
-//};
-
-//struct Empty
-//{
-//};
-
-
-/*
-* Get Current Vol
-* Add Force
-* IsColliding
-* Spatial Position
-* Add Collision Callback(PhysicsBody)
-*  - GeneralReation
-
-
-*/
-
-
-//template<tools::PhysBodyFeatures Features>
-//class PhysicsBody : 
-//	public glType::Component<PhysicsBody<Features>>,
-//	
-//	public std::conditional_t<has(Features, tools::PhysBodyFeatures::AABB), AABBComponent, Empty>,
-//	public std::conditional_t<has(Features, tools::PhysBodyFeatures::Volocity), VelocityComponent, Empty>,
-//	public std::conditional_t<has(Features, tools::PhysBodyFeatures::Force), ForceComponent, Empty>,
-//	public std::conditional_t<has(Features, tools::PhysBodyFeatures::Mass), MassComponent, Empty>
-//{
-//public:
-//	PhysicsBody() = default;
-
-
-
-//private:
-//	tools::view_ptr_mutable<glUtil::Mesh> _mesh;
-//};

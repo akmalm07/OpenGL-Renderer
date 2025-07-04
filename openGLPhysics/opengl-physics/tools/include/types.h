@@ -10,6 +10,9 @@ constexpr size_t SIZET(T x) {
 
 constexpr size_t MAX_NUM_OF_ENTITIES = 5000;
 
+constexpr size_t NUM_OF_SPATIAL_PARTIONING_ARENAS = 100;
+
+
 template<typename T>
 constexpr unsigned int UINT32(T x) {
 	return static_cast<uint32_t>(x);
@@ -115,6 +118,11 @@ namespace glType
 		void communicate(Entity entity) // requires HasCommunicateImpl<T> In Construction
 		{
 			static_cast<T*>(this)->communicate_impl(entity);
+		}
+
+		glType::Entity entity_id() const
+		{
+			return static_cast<const T*>(this)->get_entity_id();
 		}
 
 

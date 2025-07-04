@@ -90,6 +90,11 @@ namespace glUtil
         _textureLocation = location;
     }
 
+    glType::Entity Texture::get_entity_id() const
+    {
+        return _entityId;
+    }
+
     void Texture::bind()
     {
         

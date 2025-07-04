@@ -30,9 +30,9 @@ namespace tools
 
 		glm::mat4 get_projection() const;
 
-		virtual bool event_key(Direction dir, float deltaTime) = 0;
-		virtual bool event_key(float deltaTime, float xMove, float yMove) = 0;
-		virtual bool event_scroll(float yOffset) = 0;
+		virtual void event_key(Direction dir, float deltaTime) = 0;
+		virtual void event_key(float deltaTime, float xMove, float yMove) = 0;
+		virtual void event_scroll(float yOffset) = 0;
 
 	protected:
 

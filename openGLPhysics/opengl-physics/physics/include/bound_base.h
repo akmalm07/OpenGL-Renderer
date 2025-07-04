@@ -2,6 +2,12 @@
 
 #include "config.h"
 
+#include "tools/include/stride.h"
+
+namespace glUtil
+{
+	class Mesh;
+}
 
 namespace physics
 {
@@ -14,9 +20,7 @@ namespace physics
 
 	class OBB;
 
-
 	class AABB;
-
 
 	class SphereBound;
 
@@ -24,9 +28,9 @@ namespace physics
 	class BoundTypeBase
 	{
 	public:
-		virtual ~BoundTypeBase() = default;
-
 		virtual std::unique_ptr<BoundTypeBase> clone() const = 0;
+
+		virtual glType::BoundType get_bound_type() const = 0;
 
 		MinMax get_min_max() const;
 
@@ -34,12 +38,15 @@ namespace physics
 
 		float get_volume() const;
 
+		bool is_touching(BoundTypeBase* other);
+
 		virtual bool is_touching(const SphereBound& other) const = 0;
 
 		virtual bool is_touching(const AABB& other) const = 0;
 
 		virtual bool is_touching(const OBB& other) const = 0;
 
+		virtual ~BoundTypeBase() = default;
 
 	protected:
 		bool is_touching(const AABB& a, const AABB& b) const;
@@ -90,4 +97,9 @@ namespace physics
 		glm::vec3 _max;
 	};
 
+
+	MinMax get_min_max_from_vertices(const std::vector<glType::Vertex>& verts, glUtil::FullStride fullStride, glUtil::PosStride posStride);
+
+
+	MinMax get_min_max_of_mesh(const glUtil::Mesh& mesh, glUtil::FullStride fullStride = glUtil::FullStride::STRIDE_6D, glUtil::PosStride posStride = glUtil::PosStride::STRIDE_3D);
 }

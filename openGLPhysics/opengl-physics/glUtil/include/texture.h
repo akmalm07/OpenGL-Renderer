@@ -42,6 +42,8 @@ namespace glUtil
 
 		void set_texture_loc(unsigned int location);
 
+		glType::Entity get_entity_id() const;
+
 		void bind();
 		
 		void unbind();

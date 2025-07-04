@@ -31,9 +31,9 @@ namespace Program
 
 	tools::Window create_window(int width = 800, int height = 600, const std::string& title = "OpenGL", const std::optional<tools::CameraBundlePerspective>& camBundle = std::nullopt);
 
-	physics::PhysicsBody create_demo_physics_body();
+	physics::PhysicsBody create_demo_physics_body(const glUtil::Mesh& mesh);
 	
-	physics::PhysicsBody create_demo_physics_body_floor();
+	physics::PhysicsBody create_demo_physics_body_floor(const glUtil::Mesh& mesh);
 
 
 
