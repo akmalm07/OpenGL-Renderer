@@ -219,47 +219,19 @@ namespace Program
 		return tools::Window(width, height, title, true, camBundle.value(), tools::CameraType::Quaternion);
 	}
 
-
-	/*
-
-	tools::DirectionalLight create_directional_light(const tools::Camera& cam, glInit::GLProgram& program, const glm::vec3& direction, const glm::vec3& color)
+	physics::PhysicsBody create_demo_physics_body()
 	{
-		tools::DirectionalLightBundle dirLightBundle;
-		dirLightBundle.direction = direction;
-		dirLightBundle.color = color;
+		physics::PhysicsBodyBundleAABB bundle;
+		bundle.min = glm::vec3(-0.5f, -0.5f, -0.5f);
+		bundle.max = glm::vec3(0.5f, 0.5f, 0.5f);
+		bundle.mass = 1.0f;
+		bundle.gravityAffected = true;
+		bundle.initalForce = physics::Force(glm::vec3(0.0f, -9.81f, 0.0f)); 
 
-
-		tools::DirectionalLight dirLight(dirLightBundle, program.get_id(), true);
-
-		dirLight.set_cam_pos_loc(program.add_uniform("uCameraPos"));
-
-		//dirLight.set_normal_mat_loc(program.add_uniform("uNormalMatrix"));
-
-		return dirLight;
+		return physics::PhysicsBody(bundle);
 	}
 
-
-	Engine::Engine()
-	{
-		_window.create_window(1000, 1000, "OpenGL", true, true);
-		_window.set_escape_button(tools::Keys::Esc);
-
-		_camera = Program::create_camera_persp(_window);
-
-		_program = Program::create_program();
-
-		//_demoMesh = Program::create_demo_mesh();
-
-		_matrix.projection = _camera.get_projection();
-
-		_matrix.view = _camera.get_view();
-
-		std::cout << "Matrix: " << sizeof(_matrix) << "\n";
-
-		_cameraUniform = Program::create_camera_uniform_buffer(_program, _matrix);
-
-	}
-
+/*
 	Engine::Engine(int width, int height, bool orthoOrPerspective, bool debug)
 	{
 

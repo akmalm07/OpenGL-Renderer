@@ -102,11 +102,11 @@ namespace tools
 		_directionalLight.link_camera_pos(_camera->get_position());
 	}
 
-	void World::update(const glInit::GLProgram& program)
+	void World::update(const glInit::GLProgram& program, float deltaTime)
 	{
 		link_and_update_mv_matrices(program);
 
-		render_entities(program);
+		render_entities(program, deltaTime);
 	}
 
 	//void World::run_shadow_pass()
@@ -114,16 +114,25 @@ namespace tools
 	//	_shadowMap.run_shadow_map_pass(_meshes);
 	//}
 
-	void World::render_entities(const glInit::GLProgram& program)
+	void World::render_entities(const glInit::GLProgram& program, float deltaTime)
 	{
 		const auto& meshes = ComponentRegistry<glUtil::Mesh>::get_instance();
 		const auto& texes = ComponentRegistry<glUtil::Texture>::get_instance();
+		const auto& physes = ComponentRegistry<physics::PhysicsBody>::get_instance();
+
+
 		//const auto& materials = ComponentRegistry<glUtil::Material>::get_instance();
 
 		for (const auto& entity : _entities.get_entities())
 		{
 			const auto msh = meshes.get_component_or_null(entity);
 			const auto tex = texes.get_component_or_null(entity);
+			const auto phys = physes.get_component_or_null(entity);
+
+			if (phys)
+			{
+				phys->update(deltaTime);
+			}
 
 			if (tex)
 			{

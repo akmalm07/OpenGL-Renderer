@@ -2,14 +2,87 @@
 #include "physics/include/physics_body.h"
 #include "physics/include/spatial_partioning.h"
 #include "tools/include/component_registry.h"
-#include "glUtil/include/mesh.h"
+#include "physics/include/aabb.h"
+#include "physics/include/obb.h"
+#include "physics/include/sphere_bound.h"
 
-
-
+#include <glm/gtx/vector_angle.hpp>
 
 
 namespace physics
 {
+	PhysicsBody::PhysicsBody(const PhysicsBodyBundleBase& bundle)
+	{
+		switch (bundle.bound_type())
+		{
+		case glType::BoundType::AABB:
+		{
+			const PhysicsBodyBundleAABB& aabbBundle = static_cast<const PhysicsBodyBundleAABB&>(bundle);
+			_boundType = std::make_unique<AABB>(aabbBundle.min, aabbBundle.max);
+			break;
+		}
+
+		case glType::BoundType::OBB:
+		{
+			const PhysicsBodyBundleOBB& obbBundle = static_cast<const PhysicsBodyBundleOBB&>(bundle);
+			_boundType = std::make_unique<OBB>(obbBundle.min, obbBundle.max, obbBundle.rotation);
+			break;
+		}
+
+		case glType::BoundType::Sphere:
+		{
+			const PhysicsBodyBundleSphere& sphere = static_cast<const PhysicsBodyBundleSphere&>(bundle);
+			_boundType = std::make_unique<SphereBound>(sphere.min, sphere.max, sphere.radius);
+			break;
+		}
+		}
+
+		_netForce = bundle.initalForce;
+
+		_massInv = 1.0f / bundle.mass; 
+
+		_acceleration = _netForce * static_cast<float>(_massInv);
+
+		_volocity = bundle.volocity;
+
+		_gravityAffected = bundle.gravityAffected;
+
+		_addedForce = (_netForce != glm::vec3(0.0f));
+
+		Measurible _massInv;
+
+	}
+
+	PhysicsBody::PhysicsBody(const PhysicsBody& other)
+	{
+		_boundType = other._boundType->clone();
+		_mesh = other._mesh;
+		_netForce = other._netForce;
+		_acceleration = other._acceleration;
+		_volocity = other._volocity;
+		_addedForce = other._addedForce;
+		_gravityAffected = other._gravityAffected;
+		_massInv = other._massInv;
+		_entityId = other._entityId;
+	}
+
+	PhysicsBody& PhysicsBody::operator=(const PhysicsBody& other)
+	{
+		if (this != &other)
+		{
+			_boundType = other._boundType->clone();
+			_mesh = other._mesh;
+			_netForce = other._netForce;
+			_acceleration = other._acceleration;
+			_volocity = other._volocity;
+			_addedForce = other._addedForce;
+			_gravityAffected = other._gravityAffected;
+			_massInv = other._massInv;
+			_entityId = other._entityId;
+		}
+		return *this;
+	}
+
 
 	void PhysicsBody::communicate_impl(glType::Entity entity)
 	{
@@ -17,6 +90,8 @@ namespace physics
 		auto& registered = registry.get_entities();
 
 		_entityId = entity;
+
+
 
 		auto it = registered.find(entity);
 

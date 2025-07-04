@@ -4,7 +4,7 @@
 
 #include "glUtil/include/mesh.h"
 
-#include "physics/include/aabb.h"
+#include "physics/include/bound_base.h"
 
 
 
@@ -19,18 +19,20 @@ namespace physics
 	};
 
 
-	class OBB : public AABB
+	class OBB : public BoundTypeBase
 	{
 	public:
 		OBB();
 
-		OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree);
+		OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation);
 
-		void init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree);
+		void init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation);
+
+		std::unique_ptr<BoundTypeBase> clone() const override;
 
 		glm::vec3 get_rotation() const;
 
-		float get_rotation_degree() const;
+		glm::vec3 get_rotation_degree() const;
 
 		glm::mat4 get_rotation_matrix() const;
 
@@ -38,17 +40,31 @@ namespace physics
 
 		glm::vec3 get_local_max() const;
 
+		glm::vec3 get_rotated_min() const;
+
+		glm::vec3 get_rotated_max() const;
+
 		glm::vec3 get_aabb_wrap_min() const;
 
 		glm::vec3 get_aabb_wrap_max() const;
 
+		bool is_touching(const AABB& other) const override final;
+
+		bool is_touching(const OBB& other) const override final;
+
+		bool is_touching(const SphereBound& other) const override final;
+
 		void move_reletive_to_dist(const glm::vec3& dist);
 
-		void change(const glm::vec3& offset);
+		void change(const glm::vec3& offset, const glm::vec3& rotation);
 
-		void change_x(float offset);
-		void change_y(float offset);
-		void change_z(float offset);
+		void change_x(float offset, float rotation);
+		void change_y(float offset, float rotation);
+		void change_z(float offset, float rotation);
+
+		void move(const glm::vec3& offset);
+
+		void rotate(const glm::vec3& rotation);
 
 		std::array <glm::vec3, 8> get_corners() const;
 
@@ -56,12 +72,13 @@ namespace physics
 
 	private:
 
-		float _rotationDeg = 0.0f;
 		glm::vec3 _xyzRotation = glm::vec3(0.0f);
 		glm::mat4 _rotationMat = glm::mat4(1.0f);
 
 		glm::vec3 _localMin = glm::vec3(0.0f);
 		glm::vec3 _localMax = glm::vec3(0.0f);
+
+		glm::vec3 _rotation = glm::vec3(0.0f);
 
 		glm::vec3 _halfExtent = glm::vec3(0.0f);
 
@@ -71,29 +88,6 @@ namespace physics
 		glm::vec3 get_extent() const;
 	};
 
-	/*
-	template<>
-	class _OBB<_PRECALC_COORDS::NO> : public _AABB<_PRECALC_COORDS::NO>, public OBB
-	{
-	public:
-		
-		_OBB();
-		_OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree);
-
-		~_OBB();
-	};
-	
-
-	template<> // To be TESTED ...
-	class _OBB<_PRECALC_COORDS::YES> : public _AABB<_PRECALC_COORDS::YES>, public OBB
-	{
-	public:
-		_OBB();
-		_OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation, float rotationDegree);
-
-		~_OBB();
-	};
-	*/
 
 
 	glm::vec3 project_onto_axis(const glm::vec3& vec);

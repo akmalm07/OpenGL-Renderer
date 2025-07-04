@@ -8,43 +8,43 @@
 namespace physics
 {
 
-	class Moveible
-	{
-	public:
+	//class Moveible
+	//{
+	//public:
 
-		Moveible() = default;
+	//	Moveible() = default;
 
-		Moveible(bool start);
+	//	Moveible(bool start);
 
-		Moveible(const tools::Timer& start);
+	//	Moveible(const tools::Timer& start);
 
-		void start_time();
+	//	void start_time();
 
-		double stop_time();
+	//	double stop_time();
 
-		void reset_time();
+	//	void reset_time();
 
-		virtual glm::vec3 get_distance() const = 0;
-		virtual glm::vec3 operator+(const glm::vec3& vec) = 0;
-		virtual void operator+=(const glm::vec3& vec) = 0;
-		virtual void operator=(const glm::vec3& vec) = 0;
-		virtual glm::vec3 operator*(const glm::vec3& vec) const = 0;
-		virtual glm::vec3 operator*(const float vec) const = 0;
-		virtual bool in_motion() const = 0;
+	//	virtual glm::vec3 get_distance() const = 0;
+	//	virtual glm::vec3 operator+(const glm::vec3& vec) = 0;
+	//	virtual void operator+=(const glm::vec3& vec) = 0;
+	//	virtual void operator=(const glm::vec3& vec) = 0;
+	//	virtual glm::vec3 operator*(const glm::vec3& vec) const = 0;
+	//	virtual glm::vec3 operator*(const float vec) const = 0;
+	//	virtual bool in_motion() const = 0;
 
-		float get_current_time() const;
-		
-		float get_current_time_ms() const;
+	//	float get_current_time() const;
+	//	
+	//	float get_current_time_ms() const;
 
-		tools::Timer get_timer() const;
+	//	tools::Timer get_timer() const;
 
 
-		virtual ~Moveible() = default;
+	//	virtual ~Moveible() = default;
 
-	protected:
+	//protected:
 
-		tools::Timer _timer;
-	};
+	//	tools::Timer _timer;
+	//};
 
 }
 

@@ -11,128 +11,128 @@
 
 namespace physics
 {
-	template <glType::BoundType T>
-	class Rigid;
+	//template <glType::BoundType T>
+	//class Rigid;
 
 
-	class RigidBody // Why this design? I want the _collisionCallback to be able to take both 
-		//an AABB and OBB version of the class and not have to worry about which one it is. 
-		// This way, I can just pass the base class to the callback and it will work for both types of meshes.
-	{
-	public:
+	//class RigidBody // Why this design? I want the _collisionCallback to be able to take both 
+	//	an AABB and OBB version of the class and not have to worry about which one it is. 
+	//	 This way, I can just pass the base class to the callback and it will work for both types of meshes.
+	//{
+	//public:
 
-		RigidBody();
+	//	RigidBody();
 
-		void check_collisions(const std::vector<RigidBody>& other);
+	//	void check_collisions(const std::vector<RigidBody>& other);
 
-		virtual bool is_touching(const RigidBody& other) const = 0;
+	//	virtual bool is_touching(const RigidBody& other) const = 0;
 
-		virtual bool is_touching(const AABB& other) const = 0;
+	//	virtual bool is_touching(const AABB& other) const = 0;
 
-		virtual bool is_touching(const OBB& other) const = 0;
-
-
-		//Currently TESTING
-		void set_collision_callback(std::function<void(const RigidBody& me, const RigidBody& other)>& callback);// EZ_FIND_ME_collision_response_feature
-
-		void check_collision(const RigidBody& other);
-
-		virtual void update(const RigidBody& other) = 0;
-
-		virtual void update(const std::vector<RigidBody>& other) = 0;
-
-		virtual OBB get_obb_cube() const;
-
-		virtual AABB get_aabb_cube() const;
-	
-	protected:
-
-		std::function<void(const RigidBody& me, const RigidBody& other)> _collisionCallback;	
-	};
-
-	template<>
-	class Rigid<glType::BoundType::OBB>;
-
-	template<>
-	class Rigid<glType::BoundType::AABB> : public RigidBody
-	{
-	public:
-		Rigid();
-
-		Rigid(bool debug);
-
-		Rigid(const RigidBundle& bundle, bool debug = false);
-
-		void init(const RigidBundle& bundle);
-
-		void set_aabb_cube(const AABB& box);
-
-		AABB get_cube() const;
-		
-		bool is_touching(const RigidBody& other) const override;
-
-		bool is_touching(const AABB& other) const override;
-
-		bool is_touching(const OBB& other) const override;
-
-		void update(const RigidBody& other) override;
-
-		void update(const std::vector<RigidBody>& other) override;
+	//	virtual bool is_touching(const OBB& other) const = 0;
 
 
-		virtual ~Rigid();
+	//	Currently TESTING
+	//	void set_collision_callback(std::function<void(const RigidBody& me, const RigidBody& other)>& callback);// EZ_FIND_ME_collision_response_feature
 
-	protected:
-		AABB _aabbCube;
+	//	void check_collision(const RigidBody& other);
 
-		bool _debug;
+	//	virtual void update(const RigidBody& other) = 0;
 
-	protected:
-		AABB get_aabb_cube() const override;
-		friend class Rigid <glType::BoundType::OBB>;
-	};
+	//	virtual void update(const std::vector<RigidBody>& other) = 0;
+
+	//	virtual OBB get_obb_cube() const;
+
+	//	virtual AABB get_aabb_cube() const;
+	//
+	//protected:
+
+	//	std::function<void(const RigidBody& me, const RigidBody& other)> _collisionCallback;	
+	//};
+
+	//template<>
+	//class Rigid<glType::BoundType::OBB>;
+
+	//template<>
+	//class Rigid<glType::BoundType::AABB> : public RigidBody
+	//{
+	//public:
+	//	Rigid();
+
+	//	Rigid(bool debug);
+
+	//	Rigid(const RigidBundle& bundle, bool debug = false);
+
+	//	void init(const RigidBundle& bundle);
+
+	//	void set_aabb_cube(const AABB& box);
+
+	//	AABB get_cube() const;
+	//	
+	//	bool is_touching(const RigidBody& other) const override;
+
+	//	bool is_touching(const AABB& other) const override;
+
+	//	bool is_touching(const OBB& other) const override;
+
+	//	void update(const RigidBody& other) override;
+
+	//	void update(const std::vector<RigidBody>& other) override;
 
 
-	template<>
-	class Rigid<glType::BoundType::OBB> : public RigidBody
-	{
-	public:
-		Rigid();
-		
-		Rigid(bool debug);
-		
-		Rigid(const RigidBundle& bundle, bool debug = false);
+	//	virtual ~Rigid();
 
-		void init(const RigidBundle& bundle);
+	//protected:
+	//	AABB _aabbCube;
 
-		void set_obb_cube(const OBB& cube);
+	//	bool _debug;
 
-		OBB get_cube() const;
+	//protected:
+	//	AABB get_aabb_cube() const override;
+	//	friend class Rigid <glType::BoundType::OBB>;
+	//};
 
-		bool is_touching(const RigidBody& other) const override;
 
-		bool is_touching(const AABB& other) const override;
+	//template<>
+	//class Rigid<glType::BoundType::OBB> : public RigidBody
+	//{
+	//public:
+	//	Rigid();
+	//	
+	//	Rigid(bool debug);
+	//	
+	//	Rigid(const RigidBundle& bundle, bool debug = false);
 
-		bool is_touching(const OBB& other) const override;
+	//	void init(const RigidBundle& bundle);
 
-		void update(const RigidBody& other) override;
+	//	void set_obb_cube(const OBB& cube);
 
-		void update(const std::vector<RigidBody>& other) override;
+	//	OBB get_cube() const;
 
-		virtual ~Rigid();
+	//	bool is_touching(const RigidBody& other) const override;
 
-	protected:
-		OBB _obbCube;
+	//	bool is_touching(const AABB& other) const override;
 
-		bool _debug;
+	//	bool is_touching(const OBB& other) const override;
 
-	protected:
-		OBB get_obb_cube() const override;
-		friend class Rigid<glType::BoundType::AABB>;
-	};
+	//	void update(const RigidBody& other) override;
 
-	using RigidBodyAABB = Rigid<glType::BoundType::AABB>;
-	using RigidBodyOBB = Rigid<glType::BoundType::OBB>;
+	//	void update(const std::vector<RigidBody>& other) override;
+
+	//	virtual ~Rigid();
+
+	//protected:
+	//	OBB _obbCube;
+
+	//	bool _debug;
+
+	//protected:
+	//	OBB get_obb_cube() const override;
+	//	friend class Rigid<glType::BoundType::AABB>;
+	//};
+
+	//using RigidBodyAABB = Rigid<glType::BoundType::AABB>;
+	//using RigidBodyOBB = Rigid<glType::BoundType::OBB>;
 
 
 }

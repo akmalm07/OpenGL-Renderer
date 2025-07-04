@@ -2,7 +2,7 @@
 
 #include "config.h"
 
-#include "physics/include/aabb.h"
+#include "physics/include/bound_base.h"
 
 
 
@@ -15,6 +15,10 @@ namespace physics
 		SphereBound() = default;
 
 		SphereBound(const glm::vec3& center, float radius);
+		
+		SphereBound(const glm::vec3& min,const glm::vec3& max, float radius);
+
+		std::unique_ptr<BoundTypeBase> clone() const override;
 
 		void init(const glm::vec3& center, float radius);
 

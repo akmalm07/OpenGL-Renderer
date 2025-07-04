@@ -2,29 +2,16 @@
 
 #include "config.h"
 
-#include "physics/include/aabb.h"
+#include "physics/include/bound_base.h"
 
-#include "physics/include/obb.h"
-
-#include "physics/include/acceleration.h"
-
-#include "physics/include/volocity.h"
+#include "physics/include/physics_bundles.h"
 
 #include "physics/include/force.h"
 
-#include "tools/include/features.h"
-
 #include "physics/include/units.h"
 
-#include "tools/include/compact_map.h"
+#include "glUtil/include/mesh.h"
 
-#include <glm/gtx/vector_angle.hpp>
-
-
-namespace glUtil
-{
-	class Mesh;
-}
 
 
 namespace physics
@@ -41,6 +28,17 @@ namespace physics
 	{
 	public:
 		
+
+		PhysicsBody() = default;
+
+		PhysicsBody(const PhysicsBodyBundleBase& bundle);
+
+		PhysicsBody(const PhysicsBody& other);
+		PhysicsBody& operator=(const PhysicsBody& other);
+
+		PhysicsBody(PhysicsBody&&) = default;
+		PhysicsBody& operator=(PhysicsBody&&) = default;
+
 		void communicate_impl(glType::Entity entity);
 
 		glm::vec3 get_volocity() const;
@@ -85,6 +83,8 @@ namespace physics
 
 		bool _addedForce = false;
 	
+		bool _gravityAffected = false;
+
 		Measurible _massInv;
 
 		glType::Entity _entityId;
@@ -93,6 +93,12 @@ namespace physics
 	template<ForceType T>
 	inline void PhysicsBody::add_external_force(const GlobalForce<T>& val)
 	{
+		if constexpr (T == ForceType::Gravity)
+		{
+			if (!_gravityAffected)
+				return;
+		}
+
 		_netForce += val.calc_local_force(determine_input_for_force<T>());
 		_addedForce = true;
 	}

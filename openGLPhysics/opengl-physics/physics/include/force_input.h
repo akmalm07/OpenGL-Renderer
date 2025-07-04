@@ -4,8 +4,6 @@
 #include "config.h"
 
 
-#include "tools/include/features.h"
-
 #include "physics/include/units.h"
 
 namespace physics

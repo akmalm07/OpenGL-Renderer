@@ -19,7 +19,7 @@ namespace tools
 	}
 
 	template<glType::ComponentType T>
-	inline void ComponentRegistry<T>::add_component(glType::Entity entity, const T& component)
+	inline void ComponentRegistry<T>::add_component(glType::Entity entity, T&& component)
 	{
 		auto ptr = std::make_unique<T>(component);
 		T* raw_ptr = ptr.get();

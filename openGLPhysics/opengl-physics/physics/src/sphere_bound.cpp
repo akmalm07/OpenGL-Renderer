@@ -9,6 +9,17 @@ namespace physics
 		init(center, radius);
 	}
 
+	SphereBound::SphereBound(const glm::vec3& min, const glm::vec3& max, float radius)
+	{
+		glm::vec3 center = (min + max) * 0.5f;
+		init(center, radius);
+	}
+
+	std::unique_ptr<BoundTypeBase> SphereBound::clone() const
+	{
+		return std::make_unique<SphereBound>(*this);
+	}
+
 	void SphereBound::init(const glm::vec3& center, float radius)
 	{
 		_min = center - glm::vec3(radius);

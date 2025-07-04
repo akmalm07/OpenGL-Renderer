@@ -58,9 +58,9 @@ namespace tools
 
 		void link_and_update_mv_matrices(const glInit::GLProgram& program);
 
-		void update(const glInit::GLProgram& program);
+		void update(const glInit::GLProgram& program, float deltaTime);
 
-		void render_entities(const glInit::GLProgram& program);
+		void render_entities(const glInit::GLProgram& program, float deltaTime);
 
 		void unbind_light();
 
