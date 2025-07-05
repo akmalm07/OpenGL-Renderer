@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "config.h"
 
-
+/*
 namespace Renderer
 {
 	void Run()
@@ -31,8 +31,6 @@ namespace Renderer
 		auto mshPhysBody = Program::create_demo_physics_body(mshBody);
 		
 		auto flrPhysBody = Program::create_demo_physics_body_floor(floorBody);
-
-
 
 
 		auto ent = world.add_entity("Joe");
@@ -72,3 +70,4 @@ namespace Renderer
 		std::cout << "Exiting application..." << std::endl;
 	}
 }
+*/

@@ -1,5 +1,5 @@
 project "OpenGLAPI"
-    kind "ConsoleApp"
+    kind "ConsoleApp" --"StaticLib" is nessesary for building on your system
     language "C++"
     cppdialect "C++latest"
     staticruntime "on"
