@@ -65,7 +65,7 @@ namespace physics
 
 		update_positions();
 
-		respond_to_collisions();
+		//respond_to_collisions();
 	}
 
 	template<size_t CellCount>
@@ -88,7 +88,7 @@ namespace physics
 			// Forward Scan
 			for (size_t j = initialVal; j < CellCount; j++)
 			{
-				totalCollectedVol += run_check_of_body_index(body, j, initialVal);
+				totalCollectedVol += run_check_of_body_index(body, j, i);
 				if (totalCollectedVol >= _participatingEntities.vol[i])
 				{
 					break;
@@ -103,7 +103,7 @@ namespace physics
 			// Backward Scan. Also checks for j == 0 to avoid underflow
 			for (size_t j = initialVal; j-- > 0;)
 			{
-				totalCollectedVol += run_check_of_body_index(body, j, initialVal);
+				totalCollectedVol += run_check_of_body_index(body, j, i);
 				if (totalCollectedVol >= _participatingEntities.vol[i])
 				{
 					break;
@@ -195,7 +195,7 @@ namespace physics
 
 
 	template<size_t CellCount>
-	inline float PhysicsManager<CellCount>::run_check_of_body_index(PhysicsBody* body, size_t index, size_t initalIndex)
+	inline float PhysicsManager<CellCount>::run_check_of_body_index(PhysicsBody* body, size_t index, size_t entityIndex)
 	{
 		const glm::vec3& cellMin = _cellMinBounds[index];
 		const glm::vec3& cellMax = _cellMaxBounds[index];
@@ -214,7 +214,7 @@ namespace physics
 				_cells[index].push_back(body->get_entity_id());
 			}
 
-			_participatingEntities.index[initalIndex] = index;
+			_participatingEntities.index[entityIndex] = index;
 
 			return get_vol_of_entity_in_cell(body, index);
 		}
@@ -227,7 +227,6 @@ namespace physics
 			_cells[index].erase(it);
 			return 0.0f;
 		}
-		
 
 	}
 

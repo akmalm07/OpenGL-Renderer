@@ -83,7 +83,7 @@ namespace physics
 	private:
 		void collision_response(physics::PhysicsBody* body, physics::PhysicsBody* other) const;
 
-		float run_check_of_body_index(physics::PhysicsBody* body, size_t index, size_t initalIndex);
+		float run_check_of_body_index(physics::PhysicsBody* body, size_t index, size_t entityIndex);
 
 		float get_vol_of_entity_in_cell(physics::PhysicsBody* body, size_t index) const;
 	};

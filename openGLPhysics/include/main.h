@@ -3,7 +3,7 @@
 #include "engine.h"
 #include "config.h"
 
-/*
+
 namespace Renderer
 {
 	void Run()
@@ -70,4 +70,3 @@ namespace Renderer
 		std::cout << "Exiting application..." << std::endl;
 	}
 }
-*/
