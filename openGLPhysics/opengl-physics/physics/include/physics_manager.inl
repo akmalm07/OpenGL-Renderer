@@ -4,16 +4,23 @@
 
 #include "physics/include/physics_body.h"
 
-#include "tools/include/component_registry.h"
 
 namespace physics
 {
+
+    template<size_t CellCount>
+    inline PhysicsManager<CellCount>::PhysicsManager(tools::ComponentRegistry<PhysicsBody>& physBodyComponentInstance)
+    : _physBodyComponentInstance(physBodyComponentInstance)
+    {
+    }
+
 	template<size_t CellCount>
-	PhysicsManager<CellCount>::PhysicsManager(const glm::vec3& minBound, const glm::vec3& maxBound)
+	PhysicsManager<CellCount>::PhysicsManager(tools::ComponentRegistry<PhysicsBody>& physBodyComponentInstance, const glm::vec3& minBound, const glm::vec3& maxBound)
 		: _cellWidth((maxBound.x - minBound.x) / CellCount),
-		_cellHeight((maxBound.y - minBound.y) / CellCount)
-	{
-		for (size_t i = 0; i < CellCount; ++i)
+		_cellHeight((maxBound.y - minBound.y) / CellCount),
+		_physBodyComponentInstance(physBodyComponentInstance)
+	 {
+		for (size_t i = 0; i < CellCount; i++)
 		{
 			_cellMinBounds[i] = glm::vec3(minBound.x + i * _cellWidth, minBound.y, minBound.z);
 			_cellMaxBounds[i] = glm::vec3(minBound.x + (i + 1) * _cellWidth, maxBound.y, maxBound.z);
@@ -29,14 +36,13 @@ namespace physics
 		
 		for (size_t i = 0; i < CellCount; i++)
 		{
-			const glm::vec2& cellMin = _cellMinBounds[i];
-			const glm::vec2& cellMax = _cellMaxBounds[i];
+			const glm::vec3& cellMin = _cellMinBounds[i];
+			const glm::vec3& cellMax = _cellMaxBounds[i];
 
-			bool intersects =
-				position.max.x >= cellMin.x && position.min.x <= cellMax.x &&
-				position.max.y >= cellMin.y && position.min.y <= cellMax.y;
 
-			if (intersects)
+			if (position.max.x >= cellMin.x && position.min.x <= cellMax.x &&
+				position.max.y >= cellMin.y && position.min.y <= cellMax.y &&
+				position.max.z >= cellMin.z && position.min.z <= cellMax.z)
 			{
 				_cells[i].push_back(body.get_entity_id());
 				
@@ -65,11 +71,10 @@ namespace physics
 	template<size_t CellCount>
 	inline void PhysicsManager<CellCount>::update_positions()
 	{
-		const auto& physBodyComponentInstance = tools::ComponentRegistry<PhysicsBody>::get_instance();
 
 		for (size_t i = 0; i < _participatingEntities.ents.size(); i++)
 		{
-			PhysicsBody* body = physBodyComponentInstance.get_component_or_null(_participatingEntities.ents[i]);
+			PhysicsBody* body = _physBodyComponentInstance.get_component_or_null(_participatingEntities.ents[i]);
 
 			if (!body || !body->has_force())
 			{
@@ -77,10 +82,10 @@ namespace physics
 			}
 
 
-			size_t initialVal = (_participatingEntities.index[i] == 0 ? 0 : _participatingEntities.index[i - 1]);
+			size_t initialVal = (_participatingEntities.index[i] == 0 ? 0 : _participatingEntities.index[i] - 1);
 			float totalCollectedVol = 0.0f;
 
-			//Forward Scan
+			// Forward Scan
 			for (size_t j = initialVal; j < CellCount; j++)
 			{
 				totalCollectedVol += run_check_of_body_index(body, j, initialVal);
@@ -110,10 +115,10 @@ namespace physics
 	template<size_t CellCount>
 	inline void PhysicsManager<CellCount>::respond_to_collisions()
 	{
-		const auto& physBodyComponentInstance = tools::ComponentRegistry<PhysicsBody>::get_instance();
 
-		for (size_t i = 0; i < _cells.size(); i++)
+		for (size_t i = 0; i < CellCount; i++)
 		{
+
 			if (_cells[i].empty() || _cells[i].size() == 1)
 			{
 				continue;
@@ -121,7 +126,7 @@ namespace physics
 
 			for (size_t j = 0; j < _cells[i].size(); j++)
 			{
-				PhysicsBody* physBody = physBodyComponentInstance.get_component_or_null(_cells[i][j]);
+				PhysicsBody* physBody = _physBodyComponentInstance.get_component_or_null(_cells[i][j]);
 
 				if (!physBody)
 				{
@@ -130,7 +135,7 @@ namespace physics
 
 				for (size_t k = j + 1; k < _cells[i].size(); k++) // O(n^2) time
 				{
-					PhysicsBody* other = physBodyComponentInstance.get_component_or_null(_cells[i][k]);
+					PhysicsBody* other = _physBodyComponentInstance.get_component_or_null(_cells[i][k]);
 					if (!other)
 					{
 						continue;
@@ -149,21 +154,29 @@ namespace physics
 	inline void PhysicsManager<CellCount>::collision_response(PhysicsBody* body, PhysicsBody* other) const
 	{
 
-		//Natural Elastic Collision Response
-
 		glm::vec3 v1 = body->get_volocity();
 		glm::vec3 v2 = other->get_volocity();
 
 		float mass1 = body->get_mass();
 		float mass2 = other->get_mass();
 
-		glm::vec3 normal = glm::normalize(other->get_position() - body->get_position()); // collision normal
+		float elasticity1 = body->get_elasticity();
+		float elasticity2 = other->get_elasticity();
+
+		float elasticity = (elasticity1 + elasticity2) * 0.5f;
+
+		glm::vec3 normal = glm::normalize(other->get_position() - body->get_position());
 
 		float volocity1norm = glm::dot(v1, normal);
 		float volocity2norm = glm::dot(v2, normal);
 
-		float volocity1normScale = (volocity1norm   * (mass1 - mass2) + 2 * mass2 * volocity2norm) / (mass1 + mass2);
-		float volocity2normScale = (volocity2norm * (mass2 - mass1) + 2 * mass1 * volocity1norm  ) / (mass1 + mass2);
+
+
+		if (volocity1norm - volocity2norm < 0.0f && (volocity1norm != 0.0f && volocity2norm != 0.0f))
+			return;
+
+		float volocity1normScale = ((volocity1norm * (mass1 - mass2) + 2.0f * mass2 * volocity2norm) / (mass1 + mass2)) * elasticity;
+		float volocity2normScale = ((volocity2norm * (mass2 - mass1) + 2.0f * mass1 * volocity1norm) / (mass1 + mass2)) * elasticity;
 
 		glm::vec3 volocity1normVec = normal * volocity1normScale;
 		glm::vec3 volocity2normVec = normal * volocity2normScale;
@@ -174,11 +187,9 @@ namespace physics
 		body->set_volocity(volocity1tan + volocity1normVec);
 		other->set_volocity(volocity2tan + volocity2normVec);
 
-
-		//User defined collision response callback
+		// User-defined callbacks
 		body->collision_response_callback(other->get_entity_id());
 		other->collision_response_callback(body->get_entity_id());
-
 	}
 
 
@@ -186,23 +197,17 @@ namespace physics
 	template<size_t CellCount>
 	inline float PhysicsManager<CellCount>::run_check_of_body_index(PhysicsBody* body, size_t index, size_t initalIndex)
 	{
-		const glm::vec2& cellMin = _cellMinBounds[index];
-		const glm::vec2& cellMax = _cellMaxBounds[index];
+		const glm::vec3& cellMin = _cellMinBounds[index];
+		const glm::vec3& cellMax = _cellMaxBounds[index];
 		
 		MinMax position = body->get_aabb();
 
-		bool intersects =
-			position.max.x >= cellMin.x && position.min.x <= cellMax.x &&
-			position.max.y >= cellMin.y && position.min.y <= cellMax.y;
-
 		auto it = std::find(_cells[index].begin(), _cells[index].end(), body->get_entity_id());
 		
-		if (it == _cells[index].end())
-		{
-			return 0.0f;
-		}
 		
-		if (intersects)
+		if (position.max.x >= cellMin.x && position.min.x <= cellMax.x &&
+			position.max.y >= cellMin.y && position.min.y <= cellMax.y &&
+			position.max.z >= cellMin.z && position.min.z <= cellMax.z)
 		{
 			if (it == _cells[index].end())
 			{
@@ -212,6 +217,10 @@ namespace physics
 			_participatingEntities.index[initalIndex] = index;
 
 			return get_vol_of_entity_in_cell(body, index);
+		}
+		else if (it == _cells[index].end())
+		{
+			return 0.0f;
 		}
 		else
 		{	

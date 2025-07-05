@@ -42,26 +42,8 @@ namespace physics
 	void SphereBound::move_reletive_to_dist(const glm::vec3& dist)
 	{
 		_center += dist;
-	}
-
-	void SphereBound::change(const glm::vec3& offset)
-	{
-		_center += offset;
-	}
-
-	void SphereBound::change_x(float offset)
-	{
-		_center.x += offset;
-	}
-
-	void SphereBound::change_y(float offset)
-	{
-		_center.y += offset;
-	}
-
-	void SphereBound::change_z(float offset)
-	{
-		_center.z += offset;
+		_min += dist;
+		_max += dist;
 	}
 
 	bool SphereBound::is_touching(const SphereBound& other) const

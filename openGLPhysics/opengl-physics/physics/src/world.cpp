@@ -88,6 +88,8 @@ namespace tools
 		link_and_update_mv_matrices(program);
 
 		render_entities(program, deltaTime);
+
+		ComponentRegistry<physics::PhysicsBody>::get_instance().update_physics_manager();
 	}
 
 

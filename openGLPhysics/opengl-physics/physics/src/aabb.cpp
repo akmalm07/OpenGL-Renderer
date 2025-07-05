@@ -6,8 +6,6 @@
 
 namespace physics
 {
-	AABB::AABB() = default;
-
 	AABB::AABB(const glm::vec3& min, const glm::vec3& max)
 	{
 		init(min, max);
@@ -66,13 +64,6 @@ namespace physics
 	AABB::~AABB() = default;
 
 
-	void AABB::change(const glm::vec3& val)
-	{
-		_min += val;
-		_max += val;
-		_center += val;
-	}
-
 	void AABB::move_reletive_to_dist(const glm::vec3& dist)
 	{
 		static glm::vec3 initalMin = _min;
@@ -85,26 +76,6 @@ namespace physics
 
 	} 
 
-	void AABB::change_x(float val)
-	{
-		_min.x += val;
-		_max.x += val;
-		_center.x += val;
-	}
-
-	void AABB::change_y(float val)
-	{
-		_min.y += val;
-		_max.y += val;
-		_center.y += val;
-	}
-
-	void AABB::change_z(float val)
-	{
-		_min.z += val;
-		_max.z += val;
-		_center.z += val;
-	}
 
 	void AABB::move(const glm::vec3& volocity, float deltaTime)
 	{

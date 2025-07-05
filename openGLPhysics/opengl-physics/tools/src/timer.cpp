@@ -64,10 +64,10 @@ namespace tools
 
 	double Timer::current_time_s() const
 	{
-		return static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - _timeStarted).count()) / 1000.0;
+		return current_time_ms() / 1000.0;
 	}
 
-	double Timer::reset(bool debug)
+	double Timer::reset_ms(bool debug)
 	{
 		if (_isStopped)
 		{
@@ -93,19 +93,29 @@ namespace tools
 		return milliseconds;
 	}
 
+	double Timer::reset_s(bool debug)
+	{
+		return reset_ms(debug) / 1000.0;
+	}
+
 	bool Timer::get_state() const
 	{
 		return _state;
 	}
 
-	double Timer::get_delta_time(bool debug)
+	double Timer::get_delta_time_ms(bool debug)
 	{
-		double time = reset(debug);
-		if (time < 0.01)
+		double time = reset_ms(debug);
+		if (time < 0.005)
 		{
-			time = 0.01;
+			time = 0.005;
 		}
 		return time;
+	}
+
+	double Timer::get_delta_time_s(bool debug)
+	{
+		return get_delta_time_ms(debug) / 1000.0;
 	}
 
 

@@ -13,8 +13,8 @@ namespace physics
 
 	void OBB::init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& rotationDegrees)
 	{
-		_localMin = min;
-		_localMax = max;
+		_min = min;
+		_max = max;
 		_center = (min + max) * 0.5f;
 		_halfExtent = (max - min) * 0.5f;
 
@@ -25,8 +25,8 @@ namespace physics
 		_rotationMat = glm::rotate(_rotationMat, glm::radians(rotationDegrees.z), glm::vec3(0, 0, 1));
 		_rotationMat = glm::translate(_rotationMat, -_center);
 
-		_min = glm::vec3(_rotationMat * glm::vec4(min, 1.0f));
-		_max = glm::vec3(_rotationMat * glm::vec4(max, 1.0f));
+		_localMin = glm::vec3(_rotationMat * glm::vec4(min, 1.0f));
+		_localMax = glm::vec3(_rotationMat * glm::vec4(max, 1.0f));
 	}
 
 	std::unique_ptr<BoundTypeBase> OBB::clone() const
@@ -54,30 +54,17 @@ namespace physics
 		return _rotationMat; 
 	}
 
-	glm::vec3 OBB::get_local_min() const 
-	{ 
-		return _localMin; 
-	}
-
-	glm::vec3 OBB::get_local_max() const 
-	{ 
-		return _localMax; 
-	}
-
-	glm::vec3 OBB::get_rotated_min() const
+	MinMax OBB::get_rotated_min_max() const
 	{
-		return _min;
+		return { _localMin, _localMax };
 	}
 
-	glm::vec3 OBB::get_aabb_wrap_min() const 
-	{ 
-		return _center - get_extent(); 
+
+	MinMax OBB::get_aabb_wrap_min_max() const
+	{
+		return {_center - get_extent(), _center + get_extent() };
 	}
 
-	glm::vec3 OBB::get_aabb_wrap_max() const 
-	{ 
-		return _center + get_extent(); 
-	}
 
 	bool OBB::is_touching(const AABB& other) const
 	{
@@ -119,8 +106,8 @@ namespace physics
 		_rotationMat = glm::rotate(_rotationMat, glm::radians(rotation.z), glm::vec3(0, 0, 1));
 		_rotationMat = glm::translate(_rotationMat, -_center);
 
-		_min = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
-		_max = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
+		_localMin = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
+		_localMax = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
 
 		_halfExtent = (_max - _min) * 0.5f;
 	}
@@ -137,8 +124,8 @@ namespace physics
 		_rotationMat = glm::rotate(_rotationMat, glm::radians(rotation), glm::vec3(1, 0, 0));
 		_rotationMat = glm::translate(_rotationMat, -_center);
 
-		_min = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
-		_max = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
+		_localMin = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
+		_localMax = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
 	
 		_halfExtent = (_max - _min) * 0.5f;
 	}
@@ -155,8 +142,8 @@ namespace physics
 		_rotationMat = glm::rotate(_rotationMat, glm::radians(rotation), glm::vec3(0, 1, 0));
 		_rotationMat = glm::translate(_rotationMat, -_center);
 
-		_min = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
-		_max = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
+		_localMin = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
+		_localMax = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
 
 		_halfExtent = (_max - _min) * 0.5f;
 	}
@@ -173,8 +160,8 @@ namespace physics
 		_rotationMat = glm::rotate(_rotationMat, glm::radians(rotation), glm::vec3(0, 0, 1));
 		_rotationMat = glm::translate(_rotationMat, -_center);
 
-		_min = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
-		_max = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
+		_localMin = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
+		_localMax = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
 
 		_halfExtent = (_max - _min) * 0.5f;
 	}
@@ -197,8 +184,8 @@ namespace physics
 		_rotationMat = glm::rotate(_rotationMat, glm::radians(rotation.z), glm::vec3(0, 0, 1));
 		_rotationMat = glm::translate(_rotationMat, -_center);
 		
-		_min = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
-		_max = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
+		_localMin = glm::vec3(_rotationMat * glm::vec4(_localMin, 1.0f));
+		_localMax = glm::vec3(_rotationMat * glm::vec4(_localMax, 1.0f));
 
 		_halfExtent = (_max - _min) * 0.5f;
 	}
@@ -227,6 +214,11 @@ namespace physics
 		return glm::abs(_rotationMat[0]) * _halfExtent.x +
 			glm::abs(_rotationMat[1]) * _halfExtent.y +
 			glm::abs(_rotationMat[2]) * _halfExtent.z;
+	}
+
+	void OBB::update_before_calc()
+	{
+
 	}
 
 	glm::vec3 projection(const glm::vec3& v, const glm::vec3& u)

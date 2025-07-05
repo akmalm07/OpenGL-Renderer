@@ -2,8 +2,6 @@
 
 #include "config.h"
 
-#include "physics/include/force.h"
-
 #include "physics/include/units.h"
 
 
@@ -19,6 +17,7 @@ namespace physics
 		glm::vec3 volocity = glm::vec3(0.0f);
 		float mass = 1.0f; 
 		bool gravityAffected = false;
+		float elasticity = 0.5f; 
 		glm::vec3 initalForce = glm::vec3(0.0f);
 
 		std::function<void(glType::Entity)> collisionFunc;

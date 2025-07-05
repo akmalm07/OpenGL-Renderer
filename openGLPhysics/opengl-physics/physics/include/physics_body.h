@@ -6,7 +6,7 @@
 
 #include "physics/include/physics_bundles.h"
 
-#include "physics/include/force.h"
+#include "physics/include/force_input.h"
 
 #include "physics/include/units.h"
 
@@ -22,13 +22,13 @@ namespace physics
 	template<size_t T>
 	class PhysicsManager;
 
-
+	template <ForceType T>
+	class GlobalForce;
 
 	class PhysicsBody : public glType::Component<PhysicsBody>
 	{
 	public:
 		
-
 		PhysicsBody() = default;
 
 		PhysicsBody(const PhysicsBodyBundleBase& bundle);
@@ -40,6 +40,8 @@ namespace physics
 		PhysicsBody& operator=(PhysicsBody&&) = default;
 
 		void communicate_impl(glType::Entity entity);
+
+		float get_elasticity() const;
 
 		glm::vec3 get_volocity() const;
 
@@ -73,9 +75,6 @@ namespace physics
 		template<ForceType T>
 		ForceCalcInput<T> determine_input_for_force();
 
-		template<size_t T>
-		void add_to_partioner(PhysicsManager<T>& partioner);
-
 		bool is_gravity_affected() const;
 
 		bool has_force() const;
@@ -88,14 +87,18 @@ namespace physics
 		Force _netForce;
 
 		glm::vec3 _acceleration;
-		
+
 		glm::vec3 _volocity;
+
+		glm::vec3 _prevPos;
+
+		float _elasticity = 0.5f; 
 
 		bool _addedForce = false;
 	
 		bool _gravityAffected = false;
 
-		Measurible _massInv;
+		units::Measurible _massInv;
 
 		std::function<void(glType::Entity)> _collisionCallback;
 
@@ -111,7 +114,8 @@ namespace physics
 				return;
 		}
 
-		_netForce += val.calc_local_force(determine_input_for_force<T>());
+		glm::vec3 added = val.calc_local_force(determine_input_for_force<T>());
+		_netForce += added;
 		_addedForce = true;
 	}
 
@@ -148,12 +152,6 @@ namespace physics
 
 
 		return input;
-	}
-
-	template<size_t T>
-	inline void PhysicsBody::add_to_partioner(PhysicsManager<T>& partioner)
-	{
-		partioner.register_body(*this);
 	}
 
 }

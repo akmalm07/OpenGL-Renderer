@@ -21,15 +21,17 @@ namespace Renderer
 		World world = Program::create_world(program, window, true);
 
 		auto& mesh = tools::ComponentRegistry<Mesh>::get_instance();
-		
 		auto& phys = tools::ComponentRegistry<PhysicsBody>::get_instance();
 
 		
-		auto msh = Program::create_demo_mesh();
+		auto mshBody = Program::create_demo_mesh();
 
-		auto physBody = Program::create_demo_physics_body(msh);
+		auto floorBody = Program::create_demo_floor_mesh();
 
-		auto floor = Program::create_demo_floor_mesh();
+		auto mshPhysBody = Program::create_demo_physics_body(mshBody);
+		
+		auto flrPhysBody = Program::create_demo_physics_body_floor(floorBody);
+
 
 
 
@@ -37,15 +39,19 @@ namespace Renderer
 		
 		auto entFlr = world.add_entity("Floor");
 
-		mesh.add_component(ent, std::move(msh));
+		mesh.add_component(ent, std::move(mshBody));
 		
-		mesh.add_component(entFlr, std::move(floor));
+		mesh.add_component(entFlr, std::move(floorBody));
 
-		phys.add_component(ent, std::move(physBody));
+		phys.add_component(ent, std::move(mshPhysBody));
+
+		phys.add_component(entFlr, std::move(flrPhysBody));
 
 		world.bind_light();
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+		phys.get_component(ent).set_volocity(glm::vec3(0.0f, 0.01f, 0.0f));
 
 		while (!window.get_should_close())
 		{
@@ -53,7 +59,7 @@ namespace Renderer
 			{
 				Program::clear_color();
 
-				world.update(program, window.get_delta_time());
+				world.update(program, window.get_delta_time_sec());
 
 				window.update();
 

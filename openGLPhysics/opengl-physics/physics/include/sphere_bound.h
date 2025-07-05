@@ -27,12 +27,6 @@ namespace physics
 		float get_radius() const;
 
 		void move_reletive_to_dist(const glm::vec3& dist);
-
-		void change(const glm::vec3& offset);
-
-		void change_x(float offset);
-		void change_y(float offset);
-		void change_z(float offset);
 		
 		bool is_touching(const SphereBound& other) const override final;
 

@@ -3,6 +3,13 @@
 
 #include "config.h"
 
+#include "physics/include/physics_body.h"
+
+namespace tools
+{
+	template<glType::ComponentType T>
+	class ComponentRegistry;
+}
 
 namespace physics
 {
@@ -34,14 +41,15 @@ namespace physics
 	class PhysicsManager : public PhysicsManagerBase
 	{
 	public:
-		PhysicsManager() = default;
+
+		PhysicsManager(tools::ComponentRegistry<physics::PhysicsBody>& physBodyComponentInstance);
 
 		PhysicsManager(const PhysicsManager&) = delete;
 		PhysicsManager& operator=(const PhysicsManager&) = delete;
 		PhysicsManager(PhysicsManager&&) noexcept = default;
 		PhysicsManager& operator=(PhysicsManager&&) noexcept = default;
 
-		PhysicsManager(const glm::vec3& minBound, const glm::vec3& maxBound);
+		PhysicsManager(tools::ComponentRegistry<PhysicsBody>& physBodyComponentInstance, const glm::vec3& minBound, const glm::vec3& maxBound);
 
 		void register_body(const PhysicsBody& body) override;
 		
@@ -70,6 +78,9 @@ namespace physics
 		} _participatingEntities;
 	private:
 
+		tools::ComponentRegistry<physics::PhysicsBody>& _physBodyComponentInstance;
+
+	private:
 		void collision_response(physics::PhysicsBody* body, physics::PhysicsBody* other) const;
 
 		float run_check_of_body_index(physics::PhysicsBody* body, size_t index, size_t initalIndex);

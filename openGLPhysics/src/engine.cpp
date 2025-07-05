@@ -39,17 +39,20 @@ namespace Program
 
 	tools::Window create_window(int width, int height, const std::string& title, const std::optional<tools::CameraBundlePerspective>& camBundle)
 	{
+		using namespace units;
+
 		if (!camBundle.has_value())
 		{
 			tools::CameraBundlePerspective defaultCamBundle;
 			defaultCamBundle.nearZ = 0.1f;
-			defaultCamBundle.farZ = 100.0f;
-			defaultCamBundle.speed = 0.03f;
-			defaultCamBundle.turnSpeed = 0.03f;
-			defaultCamBundle.position = glm::vec3(0.0f, 0.0f, 0.0f);
+			defaultCamBundle.farZ = 150.0f;
+			defaultCamBundle.speed = 30.0_meters_per_sec;
+			defaultCamBundle.turnSpeed = 30.0_meters_per_sec;
+			defaultCamBundle.position = to_meters(glm::vec3(-10.0f, 10.0f, 0.0f));
 			defaultCamBundle.front = glm::vec3(0.0f, 0.0f, -1.0f);
 			defaultCamBundle.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
-			defaultCamBundle.fov = 45.0f;
+			defaultCamBundle.startPYR = glm::vec3(0.0f, -90.0f, 0.0f); 
+			defaultCamBundle.fov = 45.0_degrees;
 			defaultCamBundle.aspectRatio = static_cast<float>(width) / static_cast<float>(height);
 			
 			return tools::Window(width, height, title, true, defaultCamBundle, tools::CameraType::Quaternion);
@@ -67,7 +70,8 @@ namespace Program
 		bundle.max = minMax.max;
 		bundle.mass = 1.0f;
 		bundle.gravityAffected = true;
-		bundle.initalForce = physics::Force(glm::vec3(0.0f, -0.00001f, 0.0f)); 
+		bundle.elasticity = 0.5f; 
+		bundle.initalForce = units::to_newtons(physics::Force(glm::vec3(0.01f, 0.0f, 0.0f)));
 
 		return physics::PhysicsBody(bundle);
 	}
@@ -80,8 +84,9 @@ namespace Program
 
 		bundle.min = minMax.min;
 		bundle.max = minMax.max;
-		bundle.mass = 1.0f;
+		bundle.mass = 10000000.0f;
 		bundle.gravityAffected = false;
+		bundle.elasticity = 0.0f; 
 		bundle.initalForce = physics::Force(0.0f);
 
 		return physics::PhysicsBody(bundle);

@@ -126,10 +126,10 @@ namespace tools
 
 		void reset_delta_time();
 
-		double get_delta_time() const;
+		float get_delta_time_sec();
 		
-		const double& get_delta_time_ref();
-
+		float get_delta_time_ms();
+		
 		~Window();
 
 	protected:
@@ -151,8 +151,6 @@ namespace tools
 		int _bufferWidth = 0, _bufferHeight = 0;
 
 		tools::Timer _timer; 
-
-		double _deltaTime = 0.0; 
 
 		std::string _name = "";
 

@@ -24,11 +24,15 @@ namespace tools
 
 		double current_time_s() const;
 
-		double reset(bool debug = false);
+		double reset_ms(bool debug = false);
+		
+		double reset_s(bool debug = false);
 
 		bool get_state() const;
 
-		double get_delta_time(bool debug);
+		double get_delta_time_ms(bool debug = false);
+		
+		double get_delta_time_s(bool debug = false);
 
 		~Timer();
 

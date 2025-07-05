@@ -100,7 +100,6 @@ namespace tools {
 		_aspectRatio = other._aspectRatio;
 
 		_timer = std::move(other._timer); 
-		_deltaTime = other._deltaTime; 
 		_name = std::move(other._name);
 		_updated = other._updated; 
 
@@ -126,7 +125,6 @@ namespace tools {
 			_aspectRatio = other._aspectRatio;
 
 			_timer = std::move(other._timer);
-			_deltaTime = other._deltaTime;
 			_name = std::move(other._name);
 			_updated = other._updated;
 
@@ -194,17 +192,17 @@ namespace tools {
 
 	void Window::reset_delta_time()
 	{
-		_deltaTime = _timer.get_delta_time(false);
+		_timer.get_delta_time_ms();
 	}
 
-	double Window::get_delta_time() const
+	float Window::get_delta_time_sec()
 	{
-		return _deltaTime;
+		return _timer.get_delta_time_s();
 	}
 
-	const double& Window::get_delta_time_ref()
+	float Window::get_delta_time_ms() 
 	{
-		return _deltaTime;
+		return _timer.get_delta_time_ms();
 	}
 
 	bool Window::create_window(const std::string& name, bool disableCursor)
@@ -365,7 +363,7 @@ namespace tools {
 		{
 			keyMoveFuncs[i] = [this, dir = dirs[i]]() -> void
 				{
-					_camera->event_key(dir, _deltaTime);
+					_camera->event_key(dir, _timer.current_time_s());
 				};
 
 			register_callback<KeyCombInputOne>(
@@ -377,7 +375,7 @@ namespace tools {
 
 		std::function<void()> mouseFuncs = [this]()
 			{
-				_camera->event_key(_deltaTime, -_mouseChangeX, -_mouseChangeY);
+				_camera->event_key(_timer.current_time_s(), -_mouseChangeX, -_mouseChangeY);
 			};
 		
 		register_callback<MouseMoveInput>(

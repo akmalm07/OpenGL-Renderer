@@ -15,7 +15,7 @@ namespace physics
 	class AABB : public BoundTypeBase
 	{
 	public:
-		AABB();
+		AABB() = default;
 
 		AABB(const glm::vec3& min, const glm::vec3& max);
 
@@ -26,12 +26,6 @@ namespace physics
 		glType::BoundType get_bound_type() const override final;
 
 		void move_reletive_to_dist(const glm::vec3& dist);
-
-		void change(const glm::vec3& offset);
-	
-		void change_x(float offset);
-		void change_y(float offset);
-		void change_z(float offset);
 
 		void move(const glm::vec3& volocity, float deltaTime);
 

@@ -34,6 +34,14 @@ namespace physics
 
 		MinMax get_min_max() const;
 
+		void change(const glm::vec3& val);
+
+		void change_x(float offset);
+		
+		void change_y(float offset);
+
+		void change_z(float offset);
+
 		glm::vec3 get_center() const;
 
 		float get_volume() const;

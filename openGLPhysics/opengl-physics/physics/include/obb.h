@@ -38,17 +38,9 @@ namespace physics
 
 		glm::mat4 get_rotation_matrix() const;
 
-		glm::vec3 get_local_min() const;
+		MinMax get_rotated_min_max() const;
 
-		glm::vec3 get_local_max() const;
-
-		glm::vec3 get_rotated_min() const;
-
-		glm::vec3 get_rotated_max() const;
-
-		glm::vec3 get_aabb_wrap_min() const;
-
-		glm::vec3 get_aabb_wrap_max() const;
+		MinMax get_aabb_wrap_min_max() const;
 
 		bool is_touching(const AABB& other) const override final;
 
@@ -63,6 +55,8 @@ namespace physics
 		void change_x(float offset, float rotation);
 		void change_y(float offset, float rotation);
 		void change_z(float offset, float rotation);
+
+
 
 		void move(const glm::vec3& offset);
 
@@ -88,11 +82,13 @@ namespace physics
 
 	private:
 		glm::vec3 get_extent() const;
+
+		void update_before_calc();
 	};
 
 
 
-	glm::vec3 project_onto_axis(const glm::vec3& vec);
+	glm::vec3 project_onto_axis(const glm::vec3& vec, Axis axis);
 
 	glm::vec3 projection(const glm::vec3& v, const glm::vec3& u);
 

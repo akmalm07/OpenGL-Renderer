@@ -262,11 +262,12 @@ namespace glInit
 			return;
 		}
 
-		glEnable(GL_DEBUG_OUTPUT);
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback(opengl_debug_callback, nullptr);
-
-
+		glDisable(GL_DEBUG_OUTPUT);
+		if (_debugMode)
+		{
+			glEnable(GL_DEBUG_OUTPUT);
+			glDebugMessageCallback(opengl_debug_callback, nullptr);
+		}
 
 		linking_uniforms();
 	}

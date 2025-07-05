@@ -6,6 +6,8 @@
 
 #include "physics/include/physics_body.h"
 
+#include "physics/include/force.h"
+
 
 
 namespace tools
@@ -78,13 +80,21 @@ namespace tools
 
 		void add_component(glType::Entity entity, physics::PhysicsBody&& component);
 
-		physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>& get_physics_manager();
+		physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>* get_physics_manager();
+
+		void update_physics_manager();
 
 	private:
-		ComponentRegistry() : 
-			_physicsManager(physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>(glm::vec3(-100.0f), glm::vec3(100.0f)));
-		
-		physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS> _physicsManager;
+		ComponentRegistry() = default;
+
+
+		void add_to_physics_manager(physics::PhysicsBody* component);
+
+	private:
+
+		std::unique_ptr<physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>> _physicsManager;
+
+		physics::GlobalForce<physics::ForceType::Gravity> _defaultGravityForce;
 
 		using ComponentRegistryBase<physics::PhysicsBody>::_components;
 

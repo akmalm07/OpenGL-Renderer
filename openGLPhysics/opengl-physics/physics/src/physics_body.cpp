@@ -45,9 +45,13 @@ namespace physics
 
 		_volocity = bundle.volocity;
 
+		_prevPos = glm::vec3(0.0f);
+
 		_gravityAffected = bundle.gravityAffected;
 
 		_addedForce = (_netForce != glm::vec3(0.0f));
+
+		_elasticity = glm::clamp(bundle.elasticity, 0.0f, 1.0f);
 
 		_collisionCallback = bundle.collisionFunc;
 	}
@@ -63,6 +67,7 @@ namespace physics
 		_gravityAffected = other._gravityAffected;
 		_massInv = other._massInv;
 		_entityId = other._entityId;
+		_collisionCallback = other._collisionCallback;
 	}
 
 	PhysicsBody& PhysicsBody::operator=(const PhysicsBody& other)
@@ -78,6 +83,7 @@ namespace physics
 			_gravityAffected = other._gravityAffected;
 			_massInv = other._massInv;
 			_entityId = other._entityId;
+			_collisionCallback = other._collisionCallback;
 		}
 		return *this;
 	}
@@ -106,6 +112,11 @@ namespace physics
 		}
 	}
 
+	float PhysicsBody::get_elasticity() const
+	{
+		return _elasticity;
+	}
+
 	glm::vec3 PhysicsBody::get_volocity() const
 	{
 		return _volocity;
@@ -128,6 +139,7 @@ namespace physics
 	{
 		return _volocity * static_cast<float>(1.0 / _massInv);
 	}
+
 
 	void PhysicsBody::add_force(const Force& val)
 	{
@@ -177,13 +189,36 @@ namespace physics
 	{
 		if (_addedForce)
 		{
-			_addedForce = false;
 			_acceleration = _netForce * FLOAT(_massInv);
 		}
 
 		_volocity += _acceleration * dt;
 
+		_prevPos = _mesh->_transform.position;
+
 		_mesh->_transform.position += _volocity;
+
+		switch (_boundType->get_bound_type())
+		{
+		case glType::BoundType::AABB:
+		case glType::BoundType::Sphere:
+		{
+			_boundType->change(_mesh->_transform.position - _prevPos);
+		}
+			break;
+		case glType::BoundType::OBB:
+		{
+			static_cast<OBB*>(_boundType.get())->move(_mesh->_transform.position - _prevPos);
+		}
+		break;
+		}
+
+		if (glm::length(_volocity) < 0.01f)
+		{
+			_volocity = glm::vec3(0.0f);
+			_acceleration = glm::vec3(0.0f);
+			_addedForce = false;
+		}
 
 	}
 

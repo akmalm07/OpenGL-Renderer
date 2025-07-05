@@ -1,6 +1,6 @@
 #pragma once
 
-#include "tools/include/component_registry.h"
+#include "tools/include/component_registry.h"// Certualr Dependency
 
 
 namespace tools
@@ -38,19 +38,39 @@ namespace tools
 	{
 		auto ptr = std::make_unique<physics::PhysicsBody>(std::move(component));
 		physics::PhysicsBody* rawPtr = ptr.get();
+		
+		//ptr->add_external_force<physics::ForceType::Gravity>(_defaultGravityForce); // Default gravity force
+
+		rawPtr->communicate_impl(entity);
 
 		this->_componentsVec.emplace_back(std::move(ptr));
 		this->_components.emplace(entity, rawPtr);
 
-		_physicsManager.register_body(*rawPtr);
 
-		rawPtr->communicate_impl(entity);
+		add_to_physics_manager(rawPtr);
 	}
 
 
-	inline physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>& ComponentRegistry<physics::PhysicsBody>::get_physics_manager()
+	inline physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>* ComponentRegistry<physics::PhysicsBody>::get_physics_manager()
 	{
-		return _physicsManager;
+		return _physicsManager.get();
+	}
+
+	inline void ComponentRegistry<physics::PhysicsBody>::update_physics_manager()
+	{
+		if (_physicsManager)
+		{
+			_physicsManager->update();
+		}
+	}
+
+	inline void ComponentRegistry<physics::PhysicsBody>::add_to_physics_manager(physics::PhysicsBody* component)
+	{
+		if (!_physicsManager)
+		{
+			_physicsManager = std::make_unique<physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>>(*this, glm::vec3(-50.0f), glm::vec3(50.0f));
+		}
+		_physicsManager->register_body(*component);
 	}
 
 

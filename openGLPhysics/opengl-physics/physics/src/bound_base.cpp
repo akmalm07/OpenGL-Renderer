@@ -15,12 +15,39 @@ namespace physics
 		return { _min, _max };
 	}
 
+	void BoundTypeBase::change(const glm::vec3& val)
+	{
+		_min += val;
+		_max += val;
+		_center += val;
+	}
+	void BoundTypeBase::change_x(float val)
+	{
+		_min.x += val;
+		_max.x += val;
+		_center.x += val;
+	}
+
+	void BoundTypeBase::change_y(float val)
+	{
+		_min.y += val;
+		_max.y += val;
+		_center.y += val;
+	}
+
+	void BoundTypeBase::change_z(float val)
+	{
+		_min.z += val;
+		_max.z += val;
+		_center.z += val;
+	}
+
 	bool BoundTypeBase::is_touching(const AABB& a, const AABB& b) const
 	{
-		return !(
-			a._max.x < b._min.x || a._min.x > b._max.x ||
-			a._max.y < b._min.y || a._min.y > b._max.y ||
-			a._max.z < b._min.z || a._min.z > b._max.z);
+		return (
+			a._max.x >= b._min.x && a._min.x <= b._max.x &&
+			a._max.y >= b._min.y && a._min.y <= b._max.y &&
+			a._max.z >= b._min.z && a._min.z <= b._max.z);
 	}
 
 
@@ -224,29 +251,18 @@ namespace physics
 
 	bool BoundTypeBase::aabb_cast_check(const OBB& a, const AABB& b) const
 	{
-		const glm::vec3& aMin = a.get_aabb_wrap_min();
-		const glm::vec3& aMax = a.get_aabb_wrap_max();
-
-		const glm::vec3& bMin = b.get_min();
-		const glm::vec3& bMax = b.get_max();
-
-		return (aMin.x <= bMax.x && aMax.x >= bMin.x) &&
-			(aMin.y <= bMax.y && aMax.y >= bMin.y) &&
-			(aMin.z <= bMax.z && aMax.z >= bMin.z);
+		return (a._min.x <= b._max.x && a._max.x >= b._min.x) &&
+			(a._min.y <= b._max.y && a._max.y >= b._min.y) &&
+			(a._min.z <= b._max.z && a._max.z >= b._min.z);
 	}
 
 
 	bool BoundTypeBase::aabb_cast_check(const OBB& a, const OBB& b) const
 	{
-		const glm::vec3& aMin = a.get_aabb_wrap_min();
-		const glm::vec3& aMax = a.get_aabb_wrap_max();
 
-		const glm::vec3& bMin = b.get_aabb_wrap_min();
-		const glm::vec3& bMax = b.get_aabb_wrap_max();
-
-		return (aMin.x <= bMax.x && aMax.x >= bMin.x) &&
-			(aMin.y <= bMax.y && aMax.y >= bMin.y) &&
-			(aMin.z <= bMax.z && aMax.z >= bMin.z);
+		return (a._min.x <= b._max.x && a._max.x >= b._min.x) &&
+			(a._min.y <= b._max.y && a._max.y >= b._min.y) &&
+			(a._min.z <= b._max.z && a._max.z >= b._min.z);
 	}
 
 
