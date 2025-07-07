@@ -42,91 +42,109 @@ namespace physics
 		_center.z += val;
 	}
 
-	bool BoundTypeBase::is_touching(const AABB& a, const AABB& b) const
+	TouchingData BoundTypeBase::is_touching(const AABB& a, const AABB& b) const
 	{
-		return (
-			a._max.x >= b._min.x && a._min.x <= b._max.x &&
+		if (a._max.x >= b._min.x && a._min.x <= b._max.x &&
 			a._max.y >= b._min.y && a._min.y <= b._max.y &&
-			a._max.z >= b._min.z && a._min.z <= b._max.z);
+			a._max.z >= b._min.z && a._min.z <= b._max.z)
+		{
+
+			return { true, (glm::max(a._min, b._min) + glm::min(a._max, b._max)) * 0.5f };
+		}
+		return { false };
 	}
 
 
 
-	bool BoundTypeBase::is_touching(const OBB& a, const OBB& b) const
+	TouchingData BoundTypeBase::is_touching(const OBB& a, const OBB& b) const
 	{
-		if (BoundTypeBase::sphere_check(a, b) || BoundTypeBase::aabb_cast_check(b, a))
+		if (BoundTypeBase::sphere_check(a, b) && BoundTypeBase::aabb_cast_check(b, a).result)
 		{
 			return full_sat_check(a, b);
 		}
 		else
 		{
-			return false;
+			return { false };
 		}
 	}
 
 
-	bool BoundTypeBase::is_touching(const AABB& a, const OBB& b) const
+	TouchingData BoundTypeBase::is_touching(const AABB& a, const OBB& b) const
 	{
-		if (BoundTypeBase::sphere_check(a, b) || BoundTypeBase::partial_sat_check(b, a))
+		if (BoundTypeBase::sphere_check(a, b) && BoundTypeBase::partial_sat_check(b, a).result)
 		{
 			return full_sat_check(b, a);
 		}
 		else
 		{
-			return false;
+			return { false };
 		}
 	}
 
 
 	bool BoundTypeBase::sphere_check(const AABB& a, const AABB& b) const
 	{
-		return	glm::length(a._center - b._center) < // Distance
-			(
-				glm::length(0.5f * (a._max - a._min) + // radiusA
-					glm::length(0.5f * (b._max - b._min))) // radiusB
-				);
+		return (glm::length(a._center - b._center) <
+			(glm::length(0.5f * (a._max - a._min)) +
+				glm::length(0.5f * (b._max - b._min))));
 	}
-
 
 	bool BoundTypeBase::sphere_check(const OBB& a, const OBB& b) const
 	{
-		return	glm::length(a._center - b._center) < // Distance
-			(
-				glm::length(0.5f * (a._max - a._min) + // radiusA
-					glm::length(0.5f * (b._max - b._min))) // radiusB
-				);
+		return (glm::length(a._center - b._center) <
+			(glm::length(0.5f * (a._max - a._min)) +
+				glm::length(0.5f * (b._max - b._min))));
 	}
-
 
 	bool BoundTypeBase::sphere_check(const AABB& a, const OBB& b) const
 	{
-		return	glm::length(a._center - b._center) < // Distance
-			(
-				glm::length(0.5f * (a._max - a._min) + // radiusA
-					glm::length(0.5f * (b._max - b._min))) // radiusB
-				);
+		return (glm::length(a._center - b._center) <
+			(glm::length(0.5f * (a._max - a._min)) +
+				glm::length(0.5f * (b._max - b._min))));
 	}
 
-	bool BoundTypeBase::sphere_check(const SphereBound& a, const SphereBound& b) const
+
+	TouchingData BoundTypeBase::sphere_check(const SphereBound& a, const SphereBound& b) const
 	{
-		return glm::length(a._center - b._center) < // Distance
-			(a._radius + b._radius); // radiusA + radiusB
+		if (glm::length(a._center - b._center) < (a._radius + b._radius))
+		{
+			return { true, a._center + glm::normalize(b._center - a._center) * a._radius };
+		}
+		return { false };
 	}
 
-	bool BoundTypeBase::sphere_check(const SphereBound& a, const AABB& b) const
+
+	TouchingData BoundTypeBase::sphere_check(const SphereBound& a, const AABB& b) const
 	{
-		return glm::length(a._center - b._center) < // Distance
-			(a._radius + glm::length(0.5f * (b._max - b._min))); // radiusA + radiusB
+		if (glm::length(a._center - b._center) <
+			(a._radius + glm::length(0.5f * (b._max - b._min))))
+		{
+			return { true, glm::clamp(a._center, b._min, b._max) };
+		}
+		return { false };
 	}
 
-	bool BoundTypeBase::sphere_check(const SphereBound& a, const OBB& b) const
+	TouchingData BoundTypeBase::sphere_check(const SphereBound& a, const OBB& b) const
 	{
-		return glm::length(a._center - b._center) < // Distance
-			(a._radius + glm::length(0.5f * (b._max - b._min))); // radiusA + radiusB
+		glm::vec3 local = glm::transpose(b._rotationMat) * glm::vec4(a._center - b._center, 0.0f);
+	
+		glm::vec3 closestPointLocal = glm::clamp(local, -b._halfExtent, b._halfExtent);
+		
+		glm::vec3 closestPoint = b._center + glm::mat3(b._rotationMat) * closestPointLocal;
+		
+		float distance = glm::length(a._center - closestPoint);
+		
+		if (distance < a._radius)
+		{
+			return { true, closestPoint };
+		}
+		return { false };
 	}
 
 
-	bool BoundTypeBase::full_sat_check(const OBB& a, const OBB& b) const
+
+
+	TouchingData BoundTypeBase::full_sat_check(const OBB& a, const OBB& b) const
 	{
 		glm::vec3 centerDiff = b._center - a._center;
 
@@ -167,7 +185,7 @@ namespace physics
 
 				if (lengthSquared > 0.0001f)
 				{
-					testAxes[axisCount++] = cross;
+					testAxes[axisCount++] = glm::normalize(cross);
 				}
 			}
 		}
@@ -185,14 +203,32 @@ namespace physics
 			float distance = std::abs(glm::dot(centerDiff, axis));
 
 			if (distance > projA + projB)
-				return false;
+				return { false };
 		}
 
-		return true;
+		glm::vec3 pointOnA = a._center;
+
+		for (int i = 0; i < 3; i++)
+		{
+			float dist = glm::dot(b._center - a._center, axisA[i]);
+			dist = glm::clamp(dist, -aHalfExtent[i], aHalfExtent[i]);
+			pointOnA += axisA[i] * dist;
+		}
+
+		glm::vec3 pointOnB = b._center;
+
+		for (int i = 0; i < 3; i++)
+		{
+			float dist = glm::dot(a._center - b._center, axisB[i]);
+			dist = glm::clamp(dist, -bHalfExtent[i], bHalfExtent[i]);
+			pointOnB += axisB[i] * dist;
+		}
+
+		return { true, 0.5f * (pointOnA + pointOnB) };
 	}
 
 
-	bool BoundTypeBase::full_sat_check(const OBB& a, const AABB& b) const
+	TouchingData BoundTypeBase::full_sat_check(const OBB& a, const AABB& b) const
 	{
 		glm::vec3 centerDiff = b._center - a._center;
 
@@ -231,44 +267,61 @@ namespace physics
 			}
 		}
 
-		const glm::vec3 aHalf = a._halfExtent;
-		const glm::vec3 bHalf = b._halfExtent;
 
 		for (int i = 0; i < axisCount; i++)
 		{
 			const glm::vec3& axis = testAxes[i];
-			float projA = project_extent_along_axis(axisA, aHalf, axis);
-			float projB = project_extent_along_axis(axisB, bHalf, axis);
+			float projA = project_extent_along_axis(axisA, a._halfExtent, axis);
+			float projB = project_extent_along_axis(axisB, b._halfExtent, axis);
 			float distance = std::abs(glm::dot(centerDiff, axis));
 
 			if (distance > projA + projB)
-				return false;
+				return { false };
 		}
 
-		return true;
+		glm::vec3 pointOnA = a._center;
+
+		for (int i = 0; i < 3; i++)
+		{
+			float dist = glm::dot(b._center - a._center, axisA[i]);
+			dist = glm::clamp(dist, -a._halfExtent[i], a._halfExtent[i]);
+			pointOnA += axisA[i] * dist;
+		}
+
+		glm::vec3 pointOnB = glm::clamp(a._center, b._center - b._halfExtent, b._center + b._halfExtent);
+
+
+		return { true, 0.5f * (pointOnA + pointOnB) };
 	}
 
 
-	bool BoundTypeBase::aabb_cast_check(const OBB& a, const AABB& b) const
+	TouchingData BoundTypeBase::aabb_cast_check(const OBB& a, const AABB& b) const
 	{
-		return (a._min.x <= b._max.x && a._max.x >= b._min.x) &&
-			(a._min.y <= b._max.y && a._max.y >= b._min.y) &&
-			(a._min.z <= b._max.z && a._max.z >= b._min.z);
+		if (a._max.x >= b._min.x && a._min.x <= b._max.x &&
+			a._max.y >= b._min.y && a._min.y <= b._max.y &&
+			a._max.z >= b._min.z && a._min.z <= b._max.z)
+		{
+			return { true, (glm::max(a._min, b._min) + glm::min(a._max, b._max)) * 0.5f };
+		}
+		return { false };
+		}
+
+
+	TouchingData BoundTypeBase::aabb_cast_check(const OBB& a, const OBB& b) const
+	{
+
+		if (a._max.x >= b._min.x && a._min.x <= b._max.x &&
+			a._max.y >= b._min.y && a._min.y <= b._max.y &&
+			a._max.z >= b._min.z && a._min.z <= b._max.z)
+		{
+			return { true, (glm::max(a._min, b._min) + glm::min(a._max, b._max)) * 0.5f };
+		}
+		return { false };
 	}
 
 
-	bool BoundTypeBase::aabb_cast_check(const OBB& a, const OBB& b) const
+	TouchingData BoundTypeBase::partial_sat_check(const OBB& a, const AABB& b) const
 	{
-
-		return (a._min.x <= b._max.x && a._max.x >= b._min.x) &&
-			(a._min.y <= b._max.y && a._max.y >= b._min.y) &&
-			(a._min.z <= b._max.z && a._max.z >= b._min.z);
-	}
-
-
-	bool BoundTypeBase::partial_sat_check(const OBB& a, const AABB& b) const
-	{
-
 		glm::vec3 centerDiff = b._center - a._center;
 
 		std::array<glm::vec3, 3> axisA = {
@@ -287,14 +340,10 @@ namespace physics
 		int axisCount = 0;
 
 		for (int i = 0; i < 3; i++)
-		{
 			testAxes[axisCount++] = axisA[i];
-		}
 
 		for (int i = 0; i < 3; i++)
-		{
 			testAxes[axisCount++] = axisB[i];
-		}
 
 		glm::vec3 aHalfExtent = a._halfExtent;
 		glm::vec3 bHalfExtent = b._halfExtent;
@@ -309,11 +358,21 @@ namespace physics
 			float distance = std::abs(glm::dot(centerDiff, axis));
 
 			if (distance > projA + projB)
-				return false;
+				return { false };  // No collision
 		}
 
-		return true;
+		glm::vec3 pointOnA = a._center;
 
+		for (int i = 0; i < 3; i++)
+		{
+			float dist = glm::dot(b._center - a._center, axisA[i]);
+			dist = glm::clamp(dist, -a._halfExtent[i], a._halfExtent[i]);
+			pointOnA += axisA[i] * dist;
+		}
+
+		glm::vec3 pointOnB = glm::clamp(a._center, b._center - b._halfExtent, b._center + b._halfExtent);
+
+		return { true, 0.5f * (pointOnA + pointOnB) };
 	}
 
 	glm::vec3 BoundTypeBase::get_center() const
@@ -326,7 +385,7 @@ namespace physics
 		return (_max.x - _min.x) * (_max.y - _min.y) * (_max.z - _min.z);
 	}
 
-	bool BoundTypeBase::is_touching(BoundTypeBase* other)
+	TouchingData BoundTypeBase::is_touching(BoundTypeBase* other)
 	{
 		switch (other->get_bound_type())
 		{
@@ -338,6 +397,9 @@ namespace physics
 			break;
 		case glType::BoundType::Sphere:
 			return is_touching(*static_cast<SphereBound*>(other));
+			break;
+		default:
+			return { false };
 			break;
 		}
 	}
@@ -362,6 +424,55 @@ namespace physics
 			std::abs(glm::dot(axes[2], axis)) * halfExtent.z;
 	}
 
+
+	glm::vec3 find_center_of_mass(std::vector<glType::Vertex> verts, glUtil::FullStride fullStride, glUtil::PosStride posStride)
+	{
+		if (verts.empty())
+		{
+			return glm::vec3(0.0f);
+		}
+		std::vector<glm::vec3> vertices;
+		for (size_t i = 0; i < verts.size(); i += static_cast<size_t>(fullStride))
+		{
+			glm::vec3 vertex;
+			vertex.x = verts[i];
+			vertex.y = verts[i + 1];
+			if (posStride == glUtil::PosStride::STRIDE_3D)
+			{
+				vertex.z = verts[i + 2];
+			}
+			else if (posStride == glUtil::PosStride::STRIDE_2D)
+			{
+				vertex.z = 0.0f;
+			}
+			vertices.push_back(vertex);
+		}
+		glm::vec3 centerOfMass(0.0f);
+		for (const auto& vertex : vertices)
+		{
+			centerOfMass += vertex;
+		}
+		centerOfMass /= vertices.size();
+		return centerOfMass;
+	}
+
+	glm::vec3 find_center_of_mass(std::vector<glm::vec3> verts)
+	{
+		if (verts.empty())
+		{
+			return glm::vec3(0.0f);
+		}
+		
+		glm::vec3 centerOfMass(0.0f);
+	
+		for (const auto& vertex : verts)
+		{
+			centerOfMass += vertex;
+		}
+		centerOfMass /= verts.size();
+
+		return centerOfMass;
+	}
 
 	MinMax get_min_max_from_vertices(const std::vector<glType::Vertex>& verts, glUtil::FullStride fullStride, glUtil::PosStride posStride)
 	{

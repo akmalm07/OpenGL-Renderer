@@ -81,7 +81,7 @@ namespace physics
 		tools::ComponentRegistry<physics::PhysicsBody>& _physBodyComponentInstance;
 
 	private:
-		void collision_response(physics::PhysicsBody* body, physics::PhysicsBody* other) const;
+		void collision_response(physics::PhysicsBody* body, physics::PhysicsBody* other, const glm::vec3& collisionPoint) const;
 
 		float run_check_of_body_index(physics::PhysicsBody* body, size_t index, size_t entityIndex);
 

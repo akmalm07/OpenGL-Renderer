@@ -47,9 +47,9 @@ namespace Renderer
 
 		world.bind_light();
 
-		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		//phys.get_component(ent).add_volocity(glm::vec3(0.3, 0, 0));
 
-		phys.get_component(ent).set_volocity(glm::vec3(0.0f, 0.01f, 0.0f));
+		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 		while (!window.get_should_close())
 		{

@@ -34,11 +34,11 @@ namespace physics
 		glm::vec3 get_min() const;
 		glm::vec3 get_max() const;
 
-		bool is_touching(const AABB& other) const override final;
+		TouchingData is_touching(const AABB& other) const override final;
 
-		bool is_touching(const OBB& other) const override final;
+		TouchingData is_touching(const OBB& other) const override final;
 
-		bool is_touching(const SphereBound& other) const override final;
+		TouchingData is_touching(const SphereBound& other) const override final;
 
 		glm::vec3 get_half_extent() const;
 

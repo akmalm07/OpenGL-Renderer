@@ -20,7 +20,7 @@ namespace physics
 	class GlobalForce <ForceType::Gravity> 
 	{
 	public:
-		GlobalForce(const glm::vec3& gravity = glm::vec3(0.0, -9.81, 0.0));
+		GlobalForce(const glm::vec3& gravity = glm::vec3(0.0f, -9.0f, 0.0f));
 		Force calc_local_force(const ForceCalcInput<ForceType::Gravity>& in) const;
 	private:
 		glm::vec3 acc;

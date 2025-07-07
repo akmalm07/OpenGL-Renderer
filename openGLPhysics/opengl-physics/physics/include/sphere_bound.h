@@ -28,11 +28,11 @@ namespace physics
 
 		void move_reletive_to_dist(const glm::vec3& dist);
 		
-		bool is_touching(const SphereBound& other) const override final;
+		TouchingData is_touching(const SphereBound& other) const override final;
 
-		bool is_touching(const AABB& other) const override final;
+		TouchingData is_touching(const AABB& other) const override final;
 
-		bool is_touching(const OBB& other) const override final;
+		TouchingData is_touching(const OBB& other) const override final;
 
 	private:
 		float _radius{ 1.0f };

@@ -47,6 +47,8 @@ namespace physics
 
 		_prevPos = glm::vec3(0.0f);
 
+		_centerOfMass = bundle.centerOfMass;
+
 		_gravityAffected = bundle.gravityAffected;
 
 		_addedForce = (_netForce != glm::vec3(0.0f));
@@ -122,6 +124,24 @@ namespace physics
 		return _volocity;
 	}
 
+	glm::vec3 PhysicsBody::get_center_of_mass() const
+	{
+		return _centerOfMass;
+	}
+
+	void PhysicsBody::add_volocity(const glm::vec3& val)
+	{
+		_volocity += val;
+		if (_volocity == glm::vec3(0.0f))
+		{
+			_addedForce = false;
+		}
+		else
+		{
+			_addedForce = true;
+		}
+	}
+
 	void PhysicsBody::set_volocity(const glm::vec3& val)
 	{
 		_volocity = val;
@@ -143,6 +163,7 @@ namespace physics
 
 	void PhysicsBody::add_force(const Force& val)
 	{
+		_appliedForces.emplace_back(val);
 		_netForce += val;
 
 		if (_netForce == glm::vec3(0.0f))
@@ -151,11 +172,12 @@ namespace physics
 		}
 		else
 		{
+			_acceleration = _netForce * FLOAT(_massInv);
 			_addedForce = true;
 		}
 	}
 
-	bool PhysicsBody::is_colliding(const PhysicsBody& other) const
+	TouchingData PhysicsBody::is_colliding(const PhysicsBody& other) const
 	{
 		return _boundType->is_touching(other._boundType.get());
 	}
@@ -180,6 +202,30 @@ namespace physics
 		return _boundType->get_volume();
 	}
 
+	void PhysicsBody::set_force(const glm::vec3& force)
+	{
+		_netForce = force;
+		if (_netForce == glm::vec3(0.0f))
+		{
+			_addedForce = false;
+		}
+		else
+		{
+			_addedForce = true;
+			_acceleration = _netForce * FLOAT(_massInv);
+		}
+	}
+
+	float PhysicsBody::get_inverse_mass() const
+	{
+		return _massInv;
+	}
+
+	BoundTypeBase* PhysicsBody::get_bound_type() const
+	{
+		return _boundType.get();
+	}
+
 	void PhysicsBody::set_position(const glm::vec3& pos)
 	{
 		_mesh->set_position(pos);
@@ -189,14 +235,25 @@ namespace physics
 	{
 		if (_addedForce)
 		{
+			_netForce = apply_forces();
 			_acceleration = _netForce * FLOAT(_massInv);
 		}
 
 		_volocity += _acceleration * dt;
 
+		if (_addedForce && glm::length(_volocity) < 0.01f)
+		{
+			_volocity = glm::vec3(0.0f);
+			_acceleration = glm::vec3(0.0f);
+			_addedForce = false;
+		}
+
 		_prevPos = _mesh->_transform.position;
 
-		_mesh->_transform.position += _volocity;
+		_mesh->_transform.position += _volocity * dt;
+
+		_centerOfMass += _volocity * dt;
+
 
 		switch (_boundType->get_bound_type())
 		{
@@ -213,13 +270,13 @@ namespace physics
 		break;
 		}
 
-		if (glm::length(_volocity) < 0.01f)
-		{
-			_volocity = glm::vec3(0.0f);
-			_acceleration = glm::vec3(0.0f);
-			_addedForce = false;
-		}
 
+
+	}
+
+	void PhysicsBody::move_position(const glm::vec3& dist)
+	{
+		_mesh->_transform.position += dist;
 	}
 
 	void PhysicsBody::collision_response_callback(glType::Entity otherEntity)
@@ -246,6 +303,16 @@ namespace physics
 		return _addedForce;
 	}
 
+	glm::vec3 PhysicsBody::apply_forces() const
+	{
+		glm::vec3 netForce = glm::vec3(0.0f);
+		for (const auto& force : _appliedForces)
+		{
+			netForce += force;
+		}
+
+		return netForce;
+	}
 
 
 }

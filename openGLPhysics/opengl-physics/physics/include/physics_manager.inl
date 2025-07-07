@@ -4,6 +4,9 @@
 
 #include "physics/include/physics_body.h"
 
+#include "physics/include/bound_base.h"
+
+
 
 namespace physics
 {
@@ -65,7 +68,7 @@ namespace physics
 
 		update_positions();
 
-		//respond_to_collisions();
+		respond_to_collisions();
 	}
 
 	template<size_t CellCount>
@@ -140,9 +143,10 @@ namespace physics
 					{
 						continue;
 					}
-					if (physBody->is_colliding(*other))
+					TouchingData data = physBody->is_colliding(*other);
+					if (data.result)
 					{
-						collision_response(physBody, other);
+						collision_response(physBody, other, data.collisionPoint.value_or(glm::vec3(0.0f)));
 					}
 				}
 			}
@@ -151,47 +155,78 @@ namespace physics
 
 
 	template<size_t CellCount>
-	inline void PhysicsManager<CellCount>::collision_response(PhysicsBody* body, PhysicsBody* other) const
+	inline void PhysicsManager<CellCount>::collision_response(PhysicsBody* body, PhysicsBody* other, const glm::vec3& collisionPoint) const
 	{
+		
 
-		glm::vec3 v1 = body->get_volocity();
-		glm::vec3 v2 = other->get_volocity();
+		glm::vec3 normal = glm::normalize(collisionPoint - body->get_center_of_mass());
 
-		float mass1 = body->get_mass();
-		float mass2 = other->get_mass();
+		PRINT_VEC3("Collision normal: ", normal);
 
-		float elasticity1 = body->get_elasticity();
-		float elasticity2 = other->get_elasticity();
+		glm::vec3 relativeVelocity = other->get_volocity() - body->get_volocity();
+		float velocityAlongNormal = glm::dot(relativeVelocity, normal);
 
-		float elasticity = (elasticity1 + elasticity2) * 0.5f;
-
-		glm::vec3 normal = glm::normalize(other->get_position() - body->get_position());
-
-		float volocity1norm = glm::dot(v1, normal);
-		float volocity2norm = glm::dot(v2, normal);
-
-
-
-		if (volocity1norm - volocity2norm < 0.0f && (volocity1norm != 0.0f && volocity2norm != 0.0f))
+		// Skip if objects are moving apart
+		if (velocityAlongNormal > 0.0f)
 			return;
 
-		float volocity1normScale = ((volocity1norm * (mass1 - mass2) + 2.0f * mass2 * volocity2norm) / (mass1 + mass2)) * elasticity;
-		float volocity2normScale = ((volocity2norm * (mass2 - mass1) + 2.0f * mass1 * volocity1norm) / (mass1 + mass2)) * elasticity;
+		float restitution = std::min(body->get_elasticity(), other->get_elasticity()); // For elasticity
 
-		glm::vec3 volocity1normVec = normal * volocity1normScale;
-		glm::vec3 volocity2normVec = normal * volocity2normScale;
+		// Calculate impulse scalar
+		float invMassA = body->get_inverse_mass();
+		float invMassB = other->get_inverse_mass();
+		float impulseMagnitude = -(1.0f + restitution) * velocityAlongNormal / (invMassA + invMassB);
 
-		glm::vec3 volocity1tan = v1 - normal * volocity1norm;
-		glm::vec3 volocity2tan = v2 - normal * volocity2norm;
+		glm::vec3 impulse = impulseMagnitude * normal;
 
-		body->set_volocity(volocity1tan + volocity1normVec);
-		other->set_volocity(volocity2tan + volocity2normVec);
+		// Apply impulse
+
+		body-> add_volocity(-invMassA * impulse);
+		other->add_volocity(invMassB * impulse);
 
 		// User-defined callbacks
 		body->collision_response_callback(other->get_entity_id());
 		other->collision_response_callback(body->get_entity_id());
 	}
 
+	//{
+	//	std::cout << "Collision detected between entities: " << body->get_entity_id() << " and " << other->get_entity_id() << std::endl;
+
+
+	//	glm::vec3 relativeVelocity = other->get_volocity() - body->get_volocity();
+	//	glm::vec3 normal = glm::normalize(relativeVelocity);
+
+	//	float velocityAlongNormal = glm::dot(relativeVelocity, normal);
+
+	//	// Skip if objects are moving apart
+	//	if (velocityAlongNormal > 0.0f)
+	//		return;
+
+	//	float restitution = std::min(body->get_elasticity(), other->get_elasticity()); // For elasticity
+
+	//	if (std::abs(velocityAlongNormal) < 0.1f)
+	//		restitution = 0.0f;
+
+	//	// Calculate impulse scalar
+	//	float impulseMagnitude = -(1.0f + restitution) * velocityAlongNormal / (body->get_inverse_mass() + other->get_inverse_mass());
+
+	//	glm::vec3 impulse = impulseMagnitude * normal;
+
+	//	// Apply impulse
+	//	body->set_volocity(body->get_volocity() - body->get_inverse_mass() * impulse);
+	//	other->set_volocity(other->get_volocity() + other->get_inverse_mass() * impulse);
+
+
+	//	if (glm::length(body->get_volocity()) < 0.01f)
+	//		body->set_volocity(glm::vec3(0.0f));
+
+	//	if (glm::length(other->get_volocity()) < 0.01f)
+	//		other->set_volocity(glm::vec3(0.0f));
+
+	//	// User-defined callbacks
+	//	body->collision_response_callback(other->get_entity_id());
+	//	other->collision_response_callback(body->get_entity_id());
+	//}
 
 
 	template<size_t CellCount>

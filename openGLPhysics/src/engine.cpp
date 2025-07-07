@@ -48,7 +48,7 @@ namespace Program
 			defaultCamBundle.farZ = 150.0f;
 			defaultCamBundle.speed = 30.0_meters_per_sec;
 			defaultCamBundle.turnSpeed = 30.0_meters_per_sec;
-			defaultCamBundle.position = to_meters(glm::vec3(-10.0f, 10.0f, 0.0f));
+			defaultCamBundle.position = to_meters(glm::vec3(0.0f, 1.0f, 0.0f));
 			defaultCamBundle.front = glm::vec3(0.0f, 0.0f, -1.0f);
 			defaultCamBundle.worldUp = glm::vec3(0.0f, 1.0f, 0.0f);
 			defaultCamBundle.startPYR = glm::vec3(0.0f, -90.0f, 0.0f); 
@@ -71,7 +71,10 @@ namespace Program
 		bundle.mass = 1.0f;
 		bundle.gravityAffected = true;
 		bundle.elasticity = 0.5f; 
-		bundle.initalForce = units::to_newtons(physics::Force(glm::vec3(0.01f, 0.0f, 0.0f)));
+
+		//bundle.rotation = glm::vec3(0.0f, 0.0f, 0.0f); 
+		bundle.initalForce = units::to_newtons(physics::Force(glm::vec3(0.0f, 0.0f, 0.0f)));
+		bundle.centerOfMass = physics::find_center_of_mass(mesh.get_verticies(), glUtil::FullStride::STRIDE_6D, glUtil::PosStride::STRIDE_3D);
 
 		return physics::PhysicsBody(bundle);
 	}
@@ -84,9 +87,10 @@ namespace Program
 
 		bundle.min = minMax.min;
 		bundle.max = minMax.max;
-		bundle.mass = 10000000.0f;
+		bundle.mass = std::numeric_limits<float>::max();
+
 		bundle.gravityAffected = false;
-		bundle.elasticity = 0.0f; 
+		bundle.elasticity = 0.8f; 
 		bundle.initalForce = physics::Force(0.0f);
 
 		return physics::PhysicsBody(bundle);

@@ -24,6 +24,12 @@ namespace physics
 
 	class SphereBound;
 
+	struct TouchingData
+	{
+		bool result = false;
+		std::optional<glm::vec3> collisionPoint;
+	};
+
 
 	class BoundTypeBase
 	{
@@ -46,22 +52,22 @@ namespace physics
 
 		float get_volume() const;
 
-		bool is_touching(BoundTypeBase* other);
+		TouchingData is_touching(BoundTypeBase* other);
 
-		virtual bool is_touching(const SphereBound& other) const = 0;
+		virtual TouchingData is_touching(const SphereBound& other) const = 0;
 
-		virtual bool is_touching(const AABB& other) const = 0;
+		virtual TouchingData is_touching(const AABB& other) const = 0;
 
-		virtual bool is_touching(const OBB& other) const = 0;
+		virtual TouchingData is_touching(const OBB& other) const = 0;
 
 		virtual ~BoundTypeBase() = default;
 
 	protected:
-		bool is_touching(const AABB& a, const AABB& b) const;
+		TouchingData is_touching(const AABB& a, const AABB& b) const;
 
-		bool is_touching(const OBB& a, const OBB& b) const;
+		TouchingData is_touching(const OBB& a, const OBB& b) const;
 
-		bool is_touching(const AABB& a, const OBB& b) const;
+		TouchingData is_touching(const AABB& a, const OBB& b) const;
 
 
 
@@ -72,26 +78,26 @@ namespace physics
 		bool sphere_check(const AABB& a, const OBB& b) const;
 
 
-		bool sphere_check(const SphereBound& a, const SphereBound& b) const;
+		TouchingData sphere_check(const SphereBound& a, const SphereBound& b) const;
 
-		bool sphere_check(const SphereBound& a, const AABB& b) const;
+		TouchingData sphere_check(const SphereBound& a, const AABB& b) const;
 
-		bool sphere_check(const SphereBound& a, const OBB& b) const;
-
-
-
-		bool full_sat_check(const OBB& a, const OBB& b) const;
-
-		bool full_sat_check(const OBB& a, const AABB& b) const;
+		TouchingData sphere_check(const SphereBound& a, const OBB& b) const;
 
 
 
-		bool aabb_cast_check(const OBB& a, const AABB& b) const;
+		TouchingData full_sat_check(const OBB& a, const OBB& b) const;
 
-		bool aabb_cast_check(const OBB& a, const OBB& b) const;
+		TouchingData full_sat_check(const OBB& a, const AABB& b) const;
 
 
-		bool partial_sat_check(const OBB& a, const AABB& b) const;
+
+		TouchingData aabb_cast_check(const OBB& a, const AABB& b) const;
+
+		TouchingData aabb_cast_check(const OBB& a, const OBB& b) const;
+
+
+		TouchingData partial_sat_check(const OBB& a, const AABB& b) const;
 
 		float project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const;
 
@@ -106,6 +112,10 @@ namespace physics
 	};
 
 
+	glm::vec3 find_center_of_mass(std::vector<glType::Vertex> verts, glUtil::FullStride fullStride, glUtil::PosStride posStride);
+
+	glm::vec3 find_center_of_mass(std::vector <glm::vec3> verts);
+	
 	MinMax get_min_max_from_vertices(const std::vector<glType::Vertex>& verts, glUtil::FullStride fullStride, glUtil::PosStride posStride);
 
 

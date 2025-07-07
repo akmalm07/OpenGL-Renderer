@@ -394,7 +394,7 @@ namespace tools
 	{
 		glUtil::MeshBundle bundle;
 		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
-		auto floorVerts = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 30.0f);
+		auto floorVerts = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 60.0f);
 		auto floorIndices = tools::create_floor_indices();
 		bundle.pVertices = floorVerts.data();
 		bundle.pIndices = floorIndices.data();

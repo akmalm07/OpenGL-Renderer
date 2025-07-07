@@ -30,18 +30,18 @@ namespace physics
 	}
 	
 
-	bool AABB::is_touching(const AABB& other) const
+	TouchingData AABB::is_touching(const AABB& other) const
 	{
 		return BoundTypeBase::is_touching(*this, other);
 	}
 
 
-	bool AABB::is_touching(const OBB& other) const
+	TouchingData AABB::is_touching(const OBB& other) const
 	{
 		return BoundTypeBase::is_touching(*this, other);
 	}
 
-	bool AABB::is_touching(const SphereBound& other) const
+	TouchingData AABB::is_touching(const SphereBound& other) const
 	{
 		return BoundTypeBase::sphere_check(other, *this);
 	}

@@ -20,6 +20,8 @@ namespace physics
 		float elasticity = 0.5f; 
 		glm::vec3 initalForce = glm::vec3(0.0f);
 
+		glm::vec3 centerOfMass = glm::vec3(0.0f); 
+
 		std::function<void(glType::Entity)> collisionFunc;
 
 		PhysicsBodyBundleBase()

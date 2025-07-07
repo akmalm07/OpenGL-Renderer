@@ -19,7 +19,7 @@ namespace physics
 	};
 
 
-	class OBB : public BoundTypeBase
+	class OBB : public BoundTypeBase // Local min and max are the rotated min and max values of the OBB, not the original min and max.
 	{
 	public:
 		OBB();
@@ -28,7 +28,7 @@ namespace physics
 
 		void init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation);
 
-		std::unique_ptr<BoundTypeBase> clone() const override;
+		std::unique_ptr<BoundTypeBase> clone() const override final;
 
 		glType::BoundType get_bound_type() const override final;
 
@@ -42,21 +42,17 @@ namespace physics
 
 		MinMax get_aabb_wrap_min_max() const;
 
-		bool is_touching(const AABB& other) const override final;
+		TouchingData is_touching(const AABB& other) const override final;
 
-		bool is_touching(const OBB& other) const override final;
+		TouchingData is_touching(const OBB& other) const override final;
 
-		bool is_touching(const SphereBound& other) const override final;
-
-		void move_reletive_to_dist(const glm::vec3& dist);
+		TouchingData is_touching(const SphereBound& other) const override final;
 
 		void change(const glm::vec3& offset, const glm::vec3& rotation);
 
 		void change_x(float offset, float rotation);
 		void change_y(float offset, float rotation);
 		void change_z(float offset, float rotation);
-
-
 
 		void move(const glm::vec3& offset);
 
@@ -70,9 +66,6 @@ namespace physics
 
 		glm::vec3 _xyzRotation = glm::vec3(0.0f);
 		glm::mat4 _rotationMat = glm::mat4(1.0f);
-
-		glm::vec3 _localMin = glm::vec3(0.0f);
-		glm::vec3 _localMax = glm::vec3(0.0f);
 
 		glm::vec3 _rotation = glm::vec3(0.0f);
 

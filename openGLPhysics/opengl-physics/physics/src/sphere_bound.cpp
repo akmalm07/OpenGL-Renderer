@@ -46,17 +46,17 @@ namespace physics
 		_max += dist;
 	}
 
-	bool SphereBound::is_touching(const SphereBound& other) const
+	TouchingData SphereBound::is_touching(const SphereBound& other) const
 	{
 		return BoundTypeBase::sphere_check(other, *this);
 	}
 
-	bool SphereBound::is_touching(const AABB& other) const
+	TouchingData SphereBound::is_touching(const AABB& other) const
 	{
 		return BoundTypeBase::sphere_check(*this, other);
 	}
 
-	bool SphereBound::is_touching(const OBB& other) const
+	TouchingData SphereBound::is_touching(const OBB& other) const
 	{
 		return BoundTypeBase::sphere_check(*this, other);
 	}

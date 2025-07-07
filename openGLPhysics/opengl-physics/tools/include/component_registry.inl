@@ -39,7 +39,7 @@ namespace tools
 		auto ptr = std::make_unique<physics::PhysicsBody>(std::move(component));
 		physics::PhysicsBody* rawPtr = ptr.get();
 		
-		//ptr->add_external_force<physics::ForceType::Gravity>(_defaultGravityForce); // Default gravity force
+		ptr->add_world_force<physics::ForceType::Gravity>(_defaultGravityForce); // Default gravity force
 
 		rawPtr->communicate_impl(entity);
 

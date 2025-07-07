@@ -44,17 +44,22 @@ namespace physics
 		float get_elasticity() const;
 
 		glm::vec3 get_volocity() const;
+		
+		glm::vec3 get_center_of_mass() const;
+
+		void add_volocity(const glm::vec3& val);
 
 		void set_volocity(const glm::vec3& val);
+
 
 		glm::vec3 get_momentum() const;
 
 		template<ForceType T>
-		void add_external_force(const GlobalForce<T>& val);
+		void add_world_force(const GlobalForce<T>& val);
 
 		void add_force(const Force& val);
 
-		bool is_colliding(const PhysicsBody& other) const;
+		TouchingData is_colliding(const PhysicsBody& other) const;
 
 		glm::vec3 get_position() const;
 
@@ -64,9 +69,17 @@ namespace physics
 
 		float get_volume() const;
 
+		void set_force(const glm::vec3& force);
+
+		float get_inverse_mass() const;
+
+		BoundTypeBase* get_bound_type() const;
+
 		void set_position(const glm::vec3& pos);
 
 		void update(float dt);
+
+		void move_position(const glm::vec3& dist);
 
 		void collision_response_callback(glType::Entity otherEntity);
 
@@ -84,13 +97,17 @@ namespace physics
 
 		glUtil::Mesh* _mesh; 
 
-		Force _netForce;
-
 		glm::vec3 _acceleration;
+
+		glm::vec3 _netForce;
+
+		std::vector<glm::vec3> _appliedForces;
 
 		glm::vec3 _volocity;
 
 		glm::vec3 _prevPos;
+
+		glm::vec3 _centerOfMass;
 
 		float _elasticity = 0.5f; 
 
@@ -103,10 +120,13 @@ namespace physics
 		std::function<void(glType::Entity)> _collisionCallback;
 
 		glType::Entity _entityId;
+
+	protected:
+		glm::vec3 apply_forces() const;
 	};
 
 	template<ForceType T>
-	inline void PhysicsBody::add_external_force(const GlobalForce<T>& val)
+	inline void PhysicsBody::add_world_force(const GlobalForce<T>& val)
 	{
 		if constexpr (T == ForceType::Gravity)
 		{
@@ -114,9 +134,18 @@ namespace physics
 				return;
 		}
 
-		glm::vec3 added = val.calc_local_force(determine_input_for_force<T>());
-		_netForce += added;
-		_addedForce = true;
+		_appliedForces.emplace_back(val.calc_local_force(determine_input_for_force<T>()));
+		_netForce += _appliedForces.back();
+		
+		if (_netForce == glm::vec3(0.0f))
+		{
+			_addedForce = false;
+		}
+		else
+		{
+			_addedForce = true;
+			_acceleration = _netForce * FLOAT(_massInv);
+		}
 	}
 
 	template<ForceType T>
@@ -125,7 +154,7 @@ namespace physics
 		ForceCalcInput<T> input;
 		if constexpr (T == ForceType::Gravity)
 		{
-			input.mass = 1.0f / _massInv;
+			input.mass = 1.0f / FLOAT(_massInv);
 		}
 		else if constexpr (T == ForceType::Drag)
 		{
