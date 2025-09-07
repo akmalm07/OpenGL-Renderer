@@ -90,55 +90,10 @@ namespace Program
 		bundle.mass = std::numeric_limits<float>::max();
 
 		bundle.gravityAffected = false;
-		bundle.elasticity = 0.8f; 
+		bundle.elasticity = 0.1f; 
 		bundle.initalForce = physics::Force(0.0f);
 
 		return physics::PhysicsBody(bundle);
 	}
 
-/*
-	Engine::Engine(int width, int height, bool orthoOrPerspective, bool debug)
-	{
-
-		_window = Program::create_window(width, height);
-
-		_camera = (orthoOrPerspective ? Program::create_camera_persp(_window) : Program::create_camera_ortho(_window));
-
-		_program = Program::create_program();
-
-		_matrix.projection = _camera.get_projection();
-
-		_matrix.view = _camera.get_view();
-
-		_cameraUniform = Program::create_camera_uniform_buffer(_program, _matrix);
-
-		//_demoMesh = Program::create_demo_mesh();
-
-	}
-
-	void Engine::run()
-	{
-		while (!_window.get_should_close())
-		{
-			_window.reset_delta_time();
-
-			_window.poll_events();
-
-			Program::clear_color();
-
-			_program.bind();
-
-			_cameraUniform.bind();
-
-			_cameraUniform.update_data(_camera.get_view(), "view");
-
-			_demoMesh.render();
-
-			_window.swap_buffers();
-
-			_cameraUniform.unbind();
-		}
-	}
-
-	*/
 }

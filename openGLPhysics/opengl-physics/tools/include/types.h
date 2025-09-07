@@ -10,7 +10,7 @@ constexpr size_t SIZET(T x) {
 
 constexpr size_t MAX_NUM_OF_ENTITIES = 5000;
 
-constexpr size_t NUM_OF_SPATIAL_PARTIONING_ARENAS = 100;
+constexpr size_t NUM_OF_SPATIAL_PARTIONING_ARENAS = 10;
 
 
 template<typename T>

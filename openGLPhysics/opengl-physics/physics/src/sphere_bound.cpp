@@ -6,13 +6,14 @@ namespace physics
 
 	SphereBound::SphereBound(const glm::vec3& center, float radius)
 	{
-		init(center, radius);
+		_center = center;
+		_radius = radius;
 	}
 
 	SphereBound::SphereBound(const glm::vec3& min, const glm::vec3& max, float radius)
 	{
-		glm::vec3 center = (min + max) * 0.5f;
-		init(center, radius);
+		_center = (min + max) * 0.5f;
+		_radius = radius;
 	}
 
 	std::unique_ptr<BoundTypeBase> SphereBound::clone() const
@@ -20,18 +21,19 @@ namespace physics
 		return std::make_unique<SphereBound>(*this);
 	}
 
+	MinMax SphereBound::get_aabb_wrap() const
+	{
+		return { _center - glm::vec3(_radius), _center + glm::vec3(_radius) };
+	}
+
+	float SphereBound::get_volume() const
+	{
+		return (4.0f / 3.0f) * glm::pi<float>() * _radius * _radius * _radius;
+	}
+
 	glType::BoundType SphereBound::get_bound_type() const
 	{
 		return glType::BoundType::Sphere;
-	}
-
-	void SphereBound::init(const glm::vec3& center, float radius)
-	{
-		_min = center - glm::vec3(radius);
-		_max = center + glm::vec3(radius);
-
-		_center = center;
-		_radius = radius;
 	}
 
 	float SphereBound::get_radius() const
@@ -39,26 +41,31 @@ namespace physics
 		return _radius;
 	}
 
-	void SphereBound::move_reletive_to_dist(const glm::vec3& dist)
+
+
+	glm::vec3 SphereBound::get_center() const
 	{
-		_center += dist;
-		_min += dist;
-		_max += dist;
+		return _center;
 	}
 
-	TouchingData SphereBound::is_touching(const SphereBound& other) const
+	void SphereBound::move(const glm::vec3& offset)
 	{
-		return BoundTypeBase::sphere_check(other, *this);
+		_center += offset;
 	}
 
-	TouchingData SphereBound::is_touching(const AABB& other) const
+	CollisionPoint SphereBound::touching(const SphereBound& other) const
 	{
-		return BoundTypeBase::sphere_check(*this, other);
+		return CollisionChecker::sphere_check(other, *this);
 	}
 
-	TouchingData SphereBound::is_touching(const OBB& other) const
+	CollisionPoint SphereBound::touching(const AABB& other) const
 	{
-		return BoundTypeBase::sphere_check(*this, other);
+		return CollisionChecker::sphere_check(*this, other);
+	}
+
+	CollisionPoint SphereBound::touching(const OBB& other) const
+	{
+		return CollisionChecker::sphere_check(*this, other);
 	}
 
 }

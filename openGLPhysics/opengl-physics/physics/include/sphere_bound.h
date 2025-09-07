@@ -20,24 +20,29 @@ namespace physics
 
 		std::unique_ptr<BoundTypeBase> clone() const override;
 
+		MinMax get_aabb_wrap() const override final;
+
+		float get_volume() const override final;
+
 		glType::BoundType get_bound_type() const override final;
 
-		void init(const glm::vec3& center, float radius);
+		glm::vec3 get_center() const;
+
+		void move(const glm::vec3& offset) override final;
 
 		float get_radius() const;
-
-		void move_reletive_to_dist(const glm::vec3& dist);
 		
-		TouchingData is_touching(const SphereBound& other) const override final;
+		CollisionPoint touching(const SphereBound& other) const override final;
 
-		TouchingData is_touching(const AABB& other) const override final;
+		CollisionPoint touching(const AABB& other) const override final;
 
-		TouchingData is_touching(const OBB& other) const override final;
+		CollisionPoint touching(const OBB& other) const override final;
 
 	private:
-		float _radius{ 1.0f };
+		float _radius = 1.0f;
+		glm::vec3 _center = glm::vec3(0.0f);
 
-		friend class BoundTypeBase;
+		friend class CollisionChecker;
 	};
 
 

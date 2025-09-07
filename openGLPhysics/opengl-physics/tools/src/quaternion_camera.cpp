@@ -157,7 +157,7 @@ namespace tools
 
 	void QuaternionCamera::on_scroll(double yOffset)
 	{
-		if (_ortho)
+	/*	if (_ortho)
 		{
 			float zoomFactor = 1.0f + (float)yOffset * _zoomSpeed;
 			_projection = glm::ortho(-_aspectRatio * zoomFactor, _aspectRatio * zoomFactor, -zoomFactor, zoomFactor, _nearZ, _farZ);
@@ -166,7 +166,7 @@ namespace tools
 		{
 			_fov = glm::clamp(_fov - (float)yOffset * _zoomSpeed, 1.0f, 45.0f);
 			_projection = glm::perspective(glm::radians(_fov), _aspectRatio, _nearZ, _farZ);
-		}
+		}*/
 	}
 
 

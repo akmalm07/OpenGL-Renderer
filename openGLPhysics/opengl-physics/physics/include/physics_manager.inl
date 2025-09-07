@@ -33,7 +33,7 @@ namespace physics
 	template<size_t CellCount>
 	inline void PhysicsManager<CellCount>::register_body(const PhysicsBody& body)
 	{
-		MinMax position = body.get_aabb();
+		MinMax position = body.get_aabb_wrap();
 		
 		//bool firstTime = true;
 		
@@ -122,7 +122,7 @@ namespace physics
 		for (size_t i = 0; i < CellCount; i++)
 		{
 
-			if (_cells[i].empty() || _cells[i].size() == 1)
+			if (_cells[i].size() <= 1)
 			{
 				continue;
 			}
@@ -132,21 +132,20 @@ namespace physics
 				PhysicsBody* physBody = _physBodyComponentInstance.get_component_or_null(_cells[i][j]);
 
 				if (!physBody)
-				{
 					continue;
-				}
 
 				for (size_t k = j + 1; k < _cells[i].size(); k++) // O(n^2) time
 				{
 					PhysicsBody* other = _physBodyComponentInstance.get_component_or_null(_cells[i][k]);
+					
 					if (!other)
-					{
 						continue;
-					}
-					TouchingData data = physBody->is_colliding(*other);
-					if (data.result)
+
+					CollisionPoint data = physBody->is_colliding(*other);
+					
+					if (data.exists)
 					{
-						collision_response(physBody, other, data.collisionPoint.value_or(glm::vec3(0.0f)));
+						collision_response(physBody, other, data);
 					}
 				}
 			}
@@ -155,34 +154,51 @@ namespace physics
 
 
 	template<size_t CellCount>
-	inline void PhysicsManager<CellCount>::collision_response(PhysicsBody* body, PhysicsBody* other, const glm::vec3& collisionPoint) const
+	inline void PhysicsManager<CellCount>::collision_response(PhysicsBody* body, PhysicsBody* other, const CollisionPoint& collisionPoint) 
 	{
+
+		float totalMass = body->get_inverse_mass() + other->get_inverse_mass();
+		//// Separate them out using projection
 		
+		if (body->get_type() != PhysType::Floor)
+			body->set_position(body->get_position() - (collisionPoint.normal * collisionPoint.penetrationDepth * (body->get_inverse_mass() / totalMass)));
 
-		glm::vec3 normal = glm::normalize(collisionPoint - body->get_center_of_mass());
+		if (body->get_type() != PhysType::Floor)
+			other->set_position(other->get_position() - (collisionPoint.normal * collisionPoint.penetrationDepth * (other->get_inverse_mass() / totalMass)));
 
-		PRINT_VEC3("Collision normal: ", normal);
+		glm::vec3 relativePosA = collisionPoint.position - body->get_position();
+		glm::vec3 relativePosB = collisionPoint.position - other->get_position();
 
-		glm::vec3 relativeVelocity = other->get_volocity() - body->get_volocity();
-		float velocityAlongNormal = glm::dot(relativeVelocity, normal);
 
-		// Skip if objects are moving apart
-		if (velocityAlongNormal > 0.0f)
+		glm::vec3 angVelocityA = glm::cross(body->get_angular_volocity(), relativePosA);
+		glm::vec3 angVelocityB = glm::cross(other->get_angular_volocity(), relativePosB);
+
+		glm::vec3 totalVelocityA = body->get_volocity() + angVelocityA;
+		glm::vec3 totalVelocityB = other->get_volocity() + angVelocityB;
+		glm::vec3 totalRelativeVelocity = totalVelocityB - totalVelocityA;
+
+		float impulseForce = glm::dot(totalRelativeVelocity, collisionPoint.normal);
+
+		if (impulseForce > 0.0f) 
 			return;
 
-		float restitution = std::min(body->get_elasticity(), other->get_elasticity()); // For elasticity
+		float elasticity = std::min(body->get_elasticity(), other->get_elasticity());
 
-		// Calculate impulse scalar
-		float invMassA = body->get_inverse_mass();
-		float invMassB = other->get_inverse_mass();
-		float impulseMagnitude = -(1.0f + restitution) * velocityAlongNormal / (invMassA + invMassB);
+		glm::vec3 raCrossN = glm::cross(relativePosA, collisionPoint.normal);
+		glm::vec3 rbCrossN = glm::cross(relativePosB, collisionPoint.normal);
 
-		glm::vec3 impulse = impulseMagnitude * normal;
+		float invInertiaA = glm::dot(raCrossN, body->get_inverse_inertia_tensor() * raCrossN);
+		float invInertiaB = glm::dot(rbCrossN, other->get_inverse_inertia_tensor() * rbCrossN);
 
-		// Apply impulse
+		float denominator = body->get_inverse_mass() + other->get_inverse_mass() + invInertiaA + invInertiaB;
+		
+		float j = -(1.0f + elasticity) * impulseForce / denominator;
 
-		body-> add_volocity(-invMassA * impulse);
-		other->add_volocity(invMassB * impulse);
+		body->set_volocity(body->get_volocity() - (j * body->get_inverse_mass()) * collisionPoint.normal);
+		other->set_volocity(other->get_volocity() + (j * other->get_inverse_mass()) * collisionPoint.normal);
+
+		body->set_angular_volocity(body->get_angular_volocity() - body->get_inverse_inertia_tensor() * glm::cross(relativePosA, j * collisionPoint.normal));
+		other->set_angular_volocity(other->get_angular_volocity() + other->get_inverse_inertia_tensor() * glm::cross(relativePosB, j * collisionPoint.normal));
 
 		// User-defined callbacks
 		body->collision_response_callback(other->get_entity_id());
@@ -202,13 +218,13 @@ namespace physics
 	//	if (velocityAlongNormal > 0.0f)
 	//		return;
 
-	//	float restitution = std::min(body->get_elasticity(), other->get_elasticity()); // For elasticity
+	//	float elasticity = std::min(body->get_elasticity(), other->get_elasticity()); // For elasticity
 
 	//	if (std::abs(velocityAlongNormal) < 0.1f)
-	//		restitution = 0.0f;
+	//		elasticity = 0.0f;
 
 	//	// Calculate impulse scalar
-	//	float impulseMagnitude = -(1.0f + restitution) * velocityAlongNormal / (body->get_inverse_mass() + other->get_inverse_mass());
+	//	float impulseMagnitude = -(1.0f + elasticity) * velocityAlongNormal / (body->get_inverse_mass() + other->get_inverse_mass());
 
 	//	glm::vec3 impulse = impulseMagnitude * normal;
 
@@ -235,7 +251,7 @@ namespace physics
 		const glm::vec3& cellMin = _cellMinBounds[index];
 		const glm::vec3& cellMax = _cellMaxBounds[index];
 		
-		MinMax position = body->get_aabb();
+		MinMax position = body->get_aabb_wrap();
 
 		auto it = std::find(_cells[index].begin(), _cells[index].end(), body->get_entity_id());
 		
@@ -269,7 +285,7 @@ namespace physics
 	inline float PhysicsManager<CellCount>::get_vol_of_entity_in_cell(PhysicsBody* body, size_t index) const
 	{
 
-		MinMax aabb = body->get_aabb();
+		MinMax aabb = body->get_aabb_wrap();
 
 		glm::vec3 cellMin = _cellMinBounds[index];
 		glm::vec3 cellMax = _cellMaxBounds[index];

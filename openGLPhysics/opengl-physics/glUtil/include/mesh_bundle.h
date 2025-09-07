@@ -6,12 +6,6 @@
 
 namespace glUtil
 {
-	struct Transform
-	{
-		glm::vec3 position = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::quat rotation = glm::vec3(0.0f, 0.0f, 0.0f);
-		glm::vec3 scale = glm::vec3(1.0f, 1.0f, 1.0f);
-	};
 
 	struct MeshBundle
 	{
@@ -25,8 +19,6 @@ namespace glUtil
 		ArrayBufferLayout* pLayout2 = nullptr;
 		ArrayBufferLayout* pLayout3 = nullptr;
 		ArrayBufferLayout* pLayout4 = nullptr;
-
-		Transform transform;
 
 		size_t vertexCount = 0;
 		size_t indexCount = 0;

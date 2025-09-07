@@ -23,33 +23,63 @@ namespace tools
 
 
 	template<glType::ComponentType T>
+	inline T& ComponentRegistry<T>::add_and_get_component(glType::Entity entity, T&& component)
+	{
+		return *add_and_get_comp_shared(entity, std::forward<T>(component));
+	}
+
+	template<glType::ComponentType T>
+	inline std::shared_ptr<T> ComponentRegistry<T>::add_and_get_component_shared(glType::Entity entity, T&& component)
+	{
+		return add_and_get_comp_shared(entity, std::forward<T>(component));
+	}
+
+	template<glType::ComponentType T>
 	inline void ComponentRegistry<T>::add_component(glType::Entity entity, T&& component)
 	{
-		auto ptr = std::make_unique<T>(component);
-		T* rawPtr = ptr.get();
+		auto ptr = std::make_shared<T>(component); //TODO: Add Allocator
+		_componentsVec.emplace_back(ptr);
+		_components.emplace(entity, ptr);
+		ptr->communicate(entity);
+	}
 
-		_componentsVec.emplace_back(std::move(ptr));
-		_components.emplace(entity, rawPtr);
+	template<glType::ComponentType T>
+	inline std::shared_ptr<T> ComponentRegistry<T>::add_and_get_comp_shared(glType::Entity entity, T&& component)
+	{
+		auto ptr = std::make_shared<T>(component); //TODO: Add Allocator
 
-		rawPtr->communicate(entity);
+		_componentsVec.emplace_back(ptr);
+		_components.emplace(entity, ptr);
+
+		ptr->communicate(entity);
+
+		return ptr;
 	}
 
 	inline void ComponentRegistry<physics::PhysicsBody>::add_component(glType::Entity entity, physics::PhysicsBody&& component)
 	{
-		auto ptr = std::make_unique<physics::PhysicsBody>(std::move(component));
-		physics::PhysicsBody* rawPtr = ptr.get();
-		
-		ptr->add_world_force<physics::ForceType::Gravity>(_defaultGravityForce); // Default gravity force
+		auto ptr = std::make_shared<physics::PhysicsBody>(component); //TODO: Add Allocator
 
-		rawPtr->communicate_impl(entity);
+		_componentsVec.emplace_back(ptr);
+		_components.emplace(entity, ptr);
 
-		this->_componentsVec.emplace_back(std::move(ptr));
-		this->_components.emplace(entity, rawPtr);
+		ptr->add_world_force<physics::ForceType::Gravity>(_defaultGravityForce);
 
+		ptr->communicate_impl(entity);
 
-		add_to_physics_manager(rawPtr);
+		add_to_physics_manager(ptr);
 	}
 
+	inline std::shared_ptr<physics::PhysicsBody> ComponentRegistry<physics::PhysicsBody>::add_and_get_component_shared(glType::Entity entity, physics::PhysicsBody&& component)
+	{
+		return add_and_get_comp_shared(entity, std::forward<physics::PhysicsBody>(component));
+	}
+
+	inline physics::PhysicsBody& ComponentRegistry<physics::PhysicsBody>::add_and_get_component(glType::Entity entity, physics::PhysicsBody&& component)
+	{
+
+		return *add_and_get_comp_shared(entity, std::forward<physics::PhysicsBody>(component));
+	}
 
 	inline physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>* ComponentRegistry<physics::PhysicsBody>::get_physics_manager()
 	{
@@ -64,13 +94,30 @@ namespace tools
 		}
 	}
 
-	inline void ComponentRegistry<physics::PhysicsBody>::add_to_physics_manager(physics::PhysicsBody* component)
+	inline std::shared_ptr<physics::PhysicsBody> ComponentRegistry<physics::PhysicsBody>::add_and_get_comp_shared(glType::Entity entity, physics::PhysicsBody&& component)
+	{
+		auto ptr = std::make_shared<physics::PhysicsBody>(component); //TODO: Add Allocator
+
+		_componentsVec.emplace_back(ptr);
+		_components.emplace(entity, ptr);
+
+		ptr->add_world_force<physics::ForceType::Gravity>(_defaultGravityForce);
+
+		ptr->communicate_impl(entity);
+
+		add_to_physics_manager(ptr);
+	
+		return ptr;
+	}
+
+	inline void ComponentRegistry<physics::PhysicsBody>::add_to_physics_manager(const std::shared_ptr<physics::PhysicsBody>& component)
 	{
 		if (!_physicsManager)
 		{
-			_physicsManager = std::make_unique<physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>>(*this, glm::vec3(-50.0f), glm::vec3(50.0f));
+			_physicsManager = std::make_unique<physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>>(*this, glm::vec3(-10.0f), glm::vec3(10.0f));
 		}
-		_physicsManager->register_body(*component);
+		if (component)
+			_physicsManager->register_body(*component);
 	}
 
 
@@ -91,31 +138,31 @@ namespace tools
 		auto it = _components.find(entity);
 		if (it != _components.end())
 		{
-			return it->second;
+			return it->second.get();
 		}
 		return nullptr;
 	}
 
 	template<glType::ComponentType T>
-	inline std::vector<std::unique_ptr<T>>& ComponentRegistryBase<T>::get_entities_vec()
+	inline std::vector<std::shared_ptr<T>>& ComponentRegistryBase<T>::get_entities_vec()
 	{
 		return _componentsVec;
 	}
 
 	template<glType::ComponentType T>
-	inline const std::vector<std::unique_ptr<T>>& ComponentRegistryBase<T>::get_entities_vec() const
+	inline const std::vector<std::shared_ptr<T>>& ComponentRegistryBase<T>::get_entities_vec() const
 	{
 		return _componentsVec;
 	}
 
 	template<glType::ComponentType T>
-	inline std::unordered_map<glType::Entity, T*>& ComponentRegistryBase<T>::get_entities()
+	inline std::unordered_map<glType::Entity, std::shared_ptr<T>>& ComponentRegistryBase<T>::get_entities()
 	{
 		return _components;
 	}
 
 	template<glType::ComponentType T>
-	inline const std::unordered_map<glType::Entity, T*>& ComponentRegistryBase<T>::get_entities() const
+	inline const std::unordered_map<glType::Entity, std::shared_ptr<T>>& ComponentRegistryBase<T>::get_entities() const
 	{
 		return _components;
 	}
@@ -134,11 +181,13 @@ namespace tools
 	template<glType::ComponentType T>
 	inline T& ComponentRegistryBase<T>::get_or_add_component(glType::Entity entity, const T& component)
 	{
-		auto ptr = std::make_unique<T>(component);
-		T* rawPtr = ptr.get();
-		_componentsVec.push_back(std::move(ptr));
-		_components[entity] = rawPtr;
-		return *rawPtr;
+		auto it = _components.find(entity);
+		if (it != _components.end())
+		{
+			return add_and_get_component(entity, component);
+			
+		}
+		return *it;
 	}
 
 	template<glType::ComponentType T>

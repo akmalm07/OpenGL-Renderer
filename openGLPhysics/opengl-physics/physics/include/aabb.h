@@ -12,42 +12,43 @@ namespace physics
 {
 
 
-	class AABB : public BoundTypeBase
+	class AABB : public BoundTypeBase // Axis Aligned Bounding Box (Non rotatible)
 	{
 	public:
 		AABB() = default;
 
 		AABB(const glm::vec3& min, const glm::vec3& max);
 
-		void init(const glm::vec3& min, const glm::vec3& max);
-
 		std::unique_ptr<BoundTypeBase> clone() const override;
 
 		glType::BoundType get_bound_type() const override final;
 
-		void move_reletive_to_dist(const glm::vec3& dist);
+		MinMax get_aabb_wrap() const override final;
 
-		void move(const glm::vec3& volocity, float deltaTime);
+		float get_volume() const override final;
 
-		void move(const glm::vec3& volocityTimesDeltaTime);
+		glm::vec3 get_center() const;
 
-		glm::vec3 get_min() const;
-		glm::vec3 get_max() const;
+		MinMax get_min_max() const;
 
-		TouchingData is_touching(const AABB& other) const override final;
+		void move(const glm::vec3& offset) override final;
 
-		TouchingData is_touching(const OBB& other) const override final;
+		CollisionPoint touching(const AABB& other) const override final;
 
-		TouchingData is_touching(const SphereBound& other) const override final;
+		CollisionPoint touching(const OBB& other) const override final;
+
+		CollisionPoint touching(const SphereBound& other) const override final;
 
 		glm::vec3 get_half_extent() const;
-
-		virtual std::array <glm::vec3, 8> get_corners() const;
 
 		~AABB();
 
 	protected:
-		glm::vec3 _halfExtent;
+
+		friend class CollisionChecker;
+
+
+		MinMax _minMax;
 
 		friend class BoundTypeBase;
 

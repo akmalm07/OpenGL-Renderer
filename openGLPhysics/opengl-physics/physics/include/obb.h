@@ -19,64 +19,58 @@ namespace physics
 	};
 
 
-	class OBB : public BoundTypeBase // Local min and max are the rotated min and max values of the OBB, not the original min and max.
+	class OBB : public BoundTypeBase 
 	{
 	public:
 		OBB();
 
-		OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation);
+		OBB(const glm::vec3& min, const glm::vec3& max, const glm::vec3& degrees);
 
-		void init(const glm::vec3& min, const glm::vec3& max, const glm::vec3& xyzRotation);
+		OBB(const glm::vec3& center, float length, float width, float height, const glm::vec3& degrees);
 
 		std::unique_ptr<BoundTypeBase> clone() const override final;
 
+		MinMax get_aabb_wrap() const override final;
+
+		float get_volume() const override final;
+
 		glType::BoundType get_bound_type() const override final;
 
-		glm::vec3 get_rotation() const;
+		glm::mat3 get_rotation() const;
 
-		glm::vec3 get_rotation_degree() const;
-
-		glm::mat4 get_rotation_matrix() const;
-
-		MinMax get_rotated_min_max() const;
+		MinMax get_min_max() const;
 
 		MinMax get_aabb_wrap_min_max() const;
 
-		TouchingData is_touching(const AABB& other) const override final;
+		CollisionPoint touching(const AABB& other) const override final;
 
-		TouchingData is_touching(const OBB& other) const override final;
+		CollisionPoint touching(const OBB& other) const override final;
 
-		TouchingData is_touching(const SphereBound& other) const override final;
+		CollisionPoint touching(const SphereBound& other) const override final;
 
-		void change(const glm::vec3& offset, const glm::vec3& rotation);
+		void move(const glm::vec3& offset) override final;
 
-		void change_x(float offset, float rotation);
-		void change_y(float offset, float rotation);
-		void change_z(float offset, float rotation);
+		void full_move(const glm::vec3& offset, const glm::vec3& rotation);
 
-		void move(const glm::vec3& offset);
+		void set_pos(const glm::vec3& pos);
 
-		void rotate(const glm::vec3& rotation);
-
-		std::array <glm::vec3, 8> get_corners() const;
+		void rotate(const glm::vec3& deg);
 
 		virtual ~OBB();
 
-	private:
-
-		glm::vec3 _xyzRotation = glm::vec3(0.0f);
-		glm::mat4 _rotationMat = glm::mat4(1.0f);
-
-		glm::vec3 _rotation = glm::vec3(0.0f);
-
-		glm::vec3 _halfExtent = glm::vec3(0.0f);
-
-		friend class BoundTypeBase;
 
 	private:
-		glm::vec3 get_extent() const;
 
-		void update_before_calc();
+		glm::vec3 _center;
+
+		glm::vec3 _rotationDeg;
+
+		glm::vec3 _halfExtent = glm::vec3(1.0f);
+
+		glm::quat _orientation;
+
+		friend class CollisionChecker;
+
 	};
 
 

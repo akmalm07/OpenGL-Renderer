@@ -70,8 +70,8 @@ namespace physics
 		std::array<std::vector<glType::Entity>, CellCount> _cells;
 
 		// SoA design for participating entities
-		struct {
-
+		struct 
+		{
 			std::vector<glType::Entity> ents;
 			std::vector<size_t> index;
 			std::vector<float> vol;
@@ -81,7 +81,8 @@ namespace physics
 		tools::ComponentRegistry<physics::PhysicsBody>& _physBodyComponentInstance;
 
 	private:
-		void collision_response(physics::PhysicsBody* body, physics::PhysicsBody* other, const glm::vec3& collisionPoint) const;
+	public:
+		static void collision_response(physics::PhysicsBody* body, physics::PhysicsBody* other, const CollisionPoint& collisionPoint) ;
 
 		float run_check_of_body_index(physics::PhysicsBody* body, size_t index, size_t entityIndex);
 

@@ -8,16 +8,15 @@ namespace physics
 {
 	AABB::AABB(const glm::vec3& min, const glm::vec3& max)
 	{
-		init(min, max);
+		_minMax.min = min;
+		_minMax.max = max;
 	}
 
-	void AABB::init(const glm::vec3& min, const glm::vec3& max)
+	MinMax AABB::get_min_max() const
 	{
-		_min = glm::min(min, max);
-		_max = glm::max(min, max);
-		_center = (_min + _max) / 2.0f;
-		_halfExtent = (_max - _min) / 2.0f;
+		return _minMax;
 	}
+
 
 	std::unique_ptr<BoundTypeBase> AABB::clone() const
 	{
@@ -28,82 +27,52 @@ namespace physics
 	{
 		return glType::BoundType::AABB;
 	}
+
+	MinMax AABB::get_aabb_wrap() const
+	{
+		return _minMax;
+	}
+
+	float AABB::get_volume() const
+	{
+		return (_minMax.max.x - _minMax.min.x) * (_minMax.max.y - _minMax.min.y) * (_minMax.max.z - _minMax.min.z);
+	}
 	
 
-	TouchingData AABB::is_touching(const AABB& other) const
+	CollisionPoint AABB::touching(const AABB& other) const
 	{
-		return BoundTypeBase::is_touching(*this, other);
+		return CollisionChecker::aabb_check(*this, other);
 	}
 
 
-	TouchingData AABB::is_touching(const OBB& other) const
+	CollisionPoint AABB::touching(const OBB& other) const
 	{
-		return BoundTypeBase::is_touching(*this, other);
+		return CollisionChecker::partial_sat_check(other, *this);
 	}
 
-	TouchingData AABB::is_touching(const SphereBound& other) const
+	CollisionPoint AABB::touching(const SphereBound& other) const
 	{
-		return BoundTypeBase::sphere_check(other, *this);
+		return CollisionChecker::sphere_check(other, *this);
 	}
 
 	glm::vec3 AABB::get_half_extent() const
 	{
-		return _halfExtent;
+		return 0.5f * (_minMax.max - _minMax.min);
 	}
 
-	glm::vec3 AABB::get_min() const
-	{
-		return _min;
-	}
-
-	glm::vec3 AABB::get_max() const
-	{
-		return _max;
-	}
 
 	AABB::~AABB() = default;
 
 
-	void AABB::move_reletive_to_dist(const glm::vec3& dist)
+
+	void AABB::move(const glm::vec3& offset)
 	{
-		static glm::vec3 initalMin = _min;
-		static glm::vec3 initalMax = _max;
-		static glm::vec3 initalCenter = _center;
-
-		_min = initalMin + dist;
-		_max = initalMax + dist;
-		_center = initalCenter + dist;
-
-	} 
-
-
-	void AABB::move(const glm::vec3& volocity, float deltaTime)
-	{
-		glm::vec3 dist = volocity * deltaTime;
-		_min += dist;
-		_max += dist;
-		_center += dist;
+		_minMax += offset;
 	}
 
-	std::array<glm::vec3, 8> physics::AABB::get_corners() const
+	glm::vec3 AABB::get_center() const
 	{
-		return {
-			glm::vec3(_min.x, _min.y, _min.z),
-			glm::vec3(_max.x, _min.y, _min.z),
-			glm::vec3(_max.x, _max.y, _min.z),
-			glm::vec3(_min.x, _max.y, _min.z),
-			glm::vec3(_min.x, _min.y, _max.z),
-			glm::vec3(_max.x, _min.y, _max.z),
-			glm::vec3(_max.x, _max.y, _max.z),
-			glm::vec3(_min.x, _max.y, _max.z)
-		};
-	}
-
-	void AABB::move(const glm::vec3& volocityTimesDeltaTime)
-	{
-		_min += volocityTimesDeltaTime;
-		_max += volocityTimesDeltaTime;
-		_center += volocityTimesDeltaTime;
+		return 0.5f * (_minMax.min + _minMax.max);
 	}
 
 }

@@ -98,6 +98,7 @@ namespace tools
 		const auto& meshes = ComponentRegistry<glUtil::Mesh>::get_instance();
 		const auto& texes = ComponentRegistry<glUtil::Texture>::get_instance();
 		const auto& physes = ComponentRegistry<physics::PhysicsBody>::get_instance();
+		const auto& transes = ComponentRegistry<tools::Transform>::get_instance();
 
 
 		//const auto& materials = ComponentRegistry<glUtil::Material>::get_instance();
@@ -107,10 +108,18 @@ namespace tools
 			const auto msh = meshes.get_component_or_null(entity);
 			const auto tex = texes.get_component_or_null(entity);
 			const auto phys = physes.get_component_or_null(entity);
+			const auto trans = transes.get_component_or_null(entity);
 
 			if (phys)
 			{
 				phys->update(deltaTime);
+			}
+
+			if (trans)
+			{
+				glm::mat4 modelMatrix = trans->get_model_matrix();
+				program.link_model_matrix(modelMatrix);
+				_directionalLight.link_normal_mat(glm::inverse(glm::transpose(modelMatrix)));
 			}
 
 			if (tex)
@@ -120,9 +129,6 @@ namespace tools
 
 			if (msh)
 			{
-				glm::mat4 modelMatrix = msh->get_model_matrix();
-				program.link_model_matrix(modelMatrix);
-				_directionalLight.link_normal_mat(glm::inverse(glm::transpose(modelMatrix)));
 				msh->render();
 			}
 

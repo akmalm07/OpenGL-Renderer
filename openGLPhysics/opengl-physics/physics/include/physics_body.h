@@ -12,6 +12,8 @@
 
 #include "glUtil/include/mesh.h"
 
+#include "tools/include/transform.h"
+
 
 
 namespace physics
@@ -25,10 +27,17 @@ namespace physics
 	template <ForceType T>
 	class GlobalForce;
 
+	enum class PhysType
+	{
+		Reg,
+		Floor
+	};
+
 	class PhysicsBody : public glType::Component<PhysicsBody>
 	{
 	public:
 		
+
 		PhysicsBody() = default;
 
 		PhysicsBody(const PhysicsBodyBundleBase& bundle);
@@ -38,8 +47,16 @@ namespace physics
 
 		PhysicsBody(PhysicsBody&&) = default;
 		PhysicsBody& operator=(PhysicsBody&&) = default;
+		
+		virtual PhysType get_type() const;
 
 		void communicate_impl(glType::Entity entity);
+
+		void set_position(const glm::vec3& pos);
+
+		MinMax get_aabb_wrap() const;
+
+		glm::vec3 get_angular_volocity() const;
 
 		float get_elasticity() const;
 
@@ -51,6 +68,9 @@ namespace physics
 
 		void set_volocity(const glm::vec3& val);
 
+		void set_angular_volocity(const glm::vec3& val);
+
+		glm::mat3 get_inverse_inertia_tensor() const;
 
 		glm::vec3 get_momentum() const;
 
@@ -59,11 +79,9 @@ namespace physics
 
 		void add_force(const Force& val);
 
-		TouchingData is_colliding(const PhysicsBody& other) const;
+		CollisionPoint is_colliding(const PhysicsBody& other) const;
 
 		glm::vec3 get_position() const;
-
-		MinMax get_aabb() const;
 
 		float get_mass() const;
 
@@ -74,8 +92,6 @@ namespace physics
 		float get_inverse_mass() const;
 
 		BoundTypeBase* get_bound_type() const;
-
-		void set_position(const glm::vec3& pos);
 
 		void update(float dt);
 
@@ -95,9 +111,11 @@ namespace physics
 	protected:
 		std::unique_ptr<BoundTypeBase> _boundType;
 
-		glUtil::Mesh* _mesh; 
+		std::shared_ptr<tools::Transform> _transform;
 
 		glm::vec3 _acceleration;
+
+		glm::vec3 _angularVol;
 
 		glm::vec3 _netForce;
 
@@ -109,9 +127,9 @@ namespace physics
 
 		glm::vec3 _centerOfMass;
 
-		float _elasticity = 0.5f; 
+		glm::mat3 _inverseInertiaMat;
 
-		bool _addedForce = false;
+		float _elasticity = 0.5f; 
 	
 		bool _gravityAffected = false;
 
@@ -137,13 +155,8 @@ namespace physics
 		_appliedForces.emplace_back(val.calc_local_force(determine_input_for_force<T>()));
 		_netForce += _appliedForces.back();
 		
-		if (_netForce == glm::vec3(0.0f))
+		if (_netForce != glm::vec3(0.0f))
 		{
-			_addedForce = false;
-		}
-		else
-		{
-			_addedForce = true;
 			_acceleration = _netForce * FLOAT(_massInv);
 		}
 	}
@@ -162,7 +175,7 @@ namespace physics
 		}
 		else if constexpr (T == ForceType::Spring)
 		{
-			input.displacementPos = _mesh->_transform.position;
+			input.displacementPos = _transform->position;
 		}
 		else if constexpr (T == ForceType::Buoyancy)
 		{
@@ -182,6 +195,16 @@ namespace physics
 
 		return input;
 	}
+
+
+	class FloorPhysicsBody : public glType::Component<PhysicsBody>, public PhysicsBody
+	{
+		PhysType get_type() const override
+		{
+			return PhysType::Floor;
+		}
+
+	};
 
 }
 

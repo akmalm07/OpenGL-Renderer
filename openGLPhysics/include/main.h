@@ -21,7 +21,7 @@ namespace Renderer
 		World world = Program::create_world(program, window, true);
 
 		auto& mesh = tools::ComponentRegistry<Mesh>::get_instance();
-		auto& phys = tools::ComponentRegistry<PhysicsBody>::get_instance();
+		auto& phys = tools::ComponentRegistry<FloorPhysicsBody>::get_instance();
 
 		
 		auto mshBody = Program::create_demo_mesh();
@@ -47,9 +47,11 @@ namespace Renderer
 
 		world.bind_light();
 
-		//phys.get_component(ent).add_volocity(glm::vec3(0.3, 0, 0));
+		phys.get_component(ent).add_volocity(glm::vec3(10.0, 0, 0));
 
 		//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+
+
 
 		while (!window.get_should_close())
 		{

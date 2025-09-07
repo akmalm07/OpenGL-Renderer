@@ -277,18 +277,18 @@ namespace tools
 
 	void Camera::on_scroll(double yOffset)
 	{
-		if (_ortho) 
-		{
-			float zoomFactor = 1.0f + (yOffset * _zoomSpeed);
-			_projection = glm::ortho(-_aspect * zoomFactor, _aspect * zoomFactor, -zoomFactor, zoomFactor, _nearZ, _farZ);
-		}
-		else 
-		{
-			_fov -= yOffset * _zoomSpeed;
-			_fov = glm::clamp(_fov, 1.0f, 90.0f);
+		//if (_ortho) 
+		//{
+		//	float zoomFactor = 1.0f + (yOffset * _zoomSpeed);
+		//	_projection = glm::ortho(-_aspect * zoomFactor, _aspect * zoomFactor, -zoomFactor, zoomFactor, _nearZ, _farZ);
+		//}
+		//else 
+		//{
+		//	_fov -= yOffset * _zoomSpeed;
+		//	_fov = glm::clamp(_fov, 1.0f, 90.0f);
 
-			_projection = glm::perspective(glm::radians(_fov), _aspectRatio, _nearZ, _farZ);
-		}
+		//	_projection = glm::perspective(glm::radians(_fov), _aspectRatio, _nearZ, _farZ);
+		//}
 	}
 
 	Camera::~Camera() = default;

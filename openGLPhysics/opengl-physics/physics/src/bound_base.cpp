@@ -9,402 +9,253 @@
 namespace physics
 {
 
-
-	MinMax BoundTypeBase::get_min_max() const
+	CollisionPoint CollisionChecker::aabb_check(const AABB& a, const AABB& b)
 	{
-		return { _min, _max };
-	}
-
-	void BoundTypeBase::change(const glm::vec3& val)
-	{
-		_min += val;
-		_max += val;
-		_center += val;
-	}
-	void BoundTypeBase::change_x(float val)
-	{
-		_min.x += val;
-		_max.x += val;
-		_center.x += val;
-	}
-
-	void BoundTypeBase::change_y(float val)
-	{
-		_min.y += val;
-		_max.y += val;
-		_center.y += val;
-	}
-
-	void BoundTypeBase::change_z(float val)
-	{
-		_min.z += val;
-		_max.z += val;
-		_center.z += val;
-	}
-
-	TouchingData BoundTypeBase::is_touching(const AABB& a, const AABB& b) const
-	{
-		if (a._max.x >= b._min.x && a._min.x <= b._max.x &&
-			a._max.y >= b._min.y && a._min.y <= b._max.y &&
-			a._max.z >= b._min.z && a._min.z <= b._max.z)
+		if (a._minMax.max.x >= b._minMax.min.x && a._minMax.min.x <= b._minMax.max.x &&
+			a._minMax.max.y >= b._minMax.min.y && a._minMax.min.y <= b._minMax.max.y &&
+			a._minMax.max.z >= b._minMax.min.z && a._minMax.min.z <= b._minMax.max.z)
 		{
+			glm::vec3 overlap{
+				std::min(a._minMax.max.x, b._minMax.max.x) - std::max(a._minMax.min.x, b._minMax.min.x),
+				std::min(a._minMax.max.y, b._minMax.max.y) - std::max(a._minMax.min.y, b._minMax.min.y),
+				std::min(a._minMax.max.z, b._minMax.max.z) - std::max(a._minMax.min.z, b._minMax.min.z)
+			};
 
-			return { true, (glm::max(a._min, b._min) + glm::min(a._max, b._max)) * 0.5f };
+
+			int axis = (overlap.x < overlap.y) ? 0 : 1;
+			axis = (overlap[axis] < overlap.z) ? axis : 2;
+
+			glm::vec3 normal = glm::vec3(0.0f);
+			normal[axis] = ((a._minMax.min[axis] + a._minMax.max[axis] < b._minMax.min[axis] + b._minMax.max[axis]) ? -1.0f : 1.0f);
+
+
+			return { (glm::max(a._minMax.min, b._minMax.min) + glm::min(a._minMax.max, b._minMax.max)) * 0.5f,
+				normal,
+				overlap[axis] };
 		}
-		return { false };
+		return {};
 	}
 
 
-
-	TouchingData BoundTypeBase::is_touching(const OBB& a, const OBB& b) const
-	{
-		if (BoundTypeBase::sphere_check(a, b) && BoundTypeBase::aabb_cast_check(b, a).result)
-		{
-			return full_sat_check(a, b);
-		}
-		else
-		{
-			return { false };
-		}
-	}
-
-
-	TouchingData BoundTypeBase::is_touching(const AABB& a, const OBB& b) const
-	{
-		if (BoundTypeBase::sphere_check(a, b) && BoundTypeBase::partial_sat_check(b, a).result)
-		{
-			return full_sat_check(b, a);
-		}
-		else
-		{
-			return { false };
-		}
-	}
-
-
-	bool BoundTypeBase::sphere_check(const AABB& a, const AABB& b) const
-	{
-		return (glm::length(a._center - b._center) <
-			(glm::length(0.5f * (a._max - a._min)) +
-				glm::length(0.5f * (b._max - b._min))));
-	}
-
-	bool BoundTypeBase::sphere_check(const OBB& a, const OBB& b) const
-	{
-		return (glm::length(a._center - b._center) <
-			(glm::length(0.5f * (a._max - a._min)) +
-				glm::length(0.5f * (b._max - b._min))));
-	}
-
-	bool BoundTypeBase::sphere_check(const AABB& a, const OBB& b) const
-	{
-		return (glm::length(a._center - b._center) <
-			(glm::length(0.5f * (a._max - a._min)) +
-				glm::length(0.5f * (b._max - b._min))));
-	}
-
-
-	TouchingData BoundTypeBase::sphere_check(const SphereBound& a, const SphereBound& b) const
+	CollisionPoint CollisionChecker::sphere_check(const SphereBound& a, const SphereBound& b)
 	{
 		if (glm::length(a._center - b._center) < (a._radius + b._radius))
 		{
-			return { true, a._center + glm::normalize(b._center - a._center) * a._radius };
+			glm::vec3 direction = glm::normalize(b._center - a._center);
+			glm::vec3 contactPoint = a._center + direction * a._radius;
+			float penetrationDepth = (a._radius + b._radius) - glm::length(b._center - a._center);
+			return { contactPoint, direction, penetrationDepth };
 		}
-		return { false };
+		return {};
 	}
 
 
-	TouchingData BoundTypeBase::sphere_check(const SphereBound& a, const AABB& b) const
+	CollisionPoint CollisionChecker::sphere_check(const SphereBound& a, const AABB& b)
 	{
-		if (glm::length(a._center - b._center) <
-			(a._radius + glm::length(0.5f * (b._max - b._min))))
+		glm::vec3 closestPoint = glm::clamp(a._center, b._minMax.min, b._minMax.max);
+		glm::vec3 difference = a._center - closestPoint;
+		float distanceSquared = glm::dot(difference, difference);
+		if (distanceSquared < (a._radius * a._radius))
 		{
-			return { true, glm::clamp(a._center, b._min, b._max) };
+			float distance = glm::sqrt(distanceSquared);
+			glm::vec3 normal = (distance > 0.0001f) ? (difference / distance) : glm::vec3(1, 0, 0);
+			float penetrationDepth = a._radius - distance;
+			glm::vec3 contactPoint = closestPoint;
+			return { contactPoint, normal, penetrationDepth };
 		}
-		return { false };
+		return {};
 	}
 
-	TouchingData BoundTypeBase::sphere_check(const SphereBound& a, const OBB& b) const
+	CollisionPoint CollisionChecker::sphere_check(const SphereBound& a, const OBB& b)
 	{
-		glm::vec3 local = glm::transpose(b._rotationMat) * glm::vec4(a._center - b._center, 0.0f);
-	
-		glm::vec3 closestPointLocal = glm::clamp(local, -b._halfExtent, b._halfExtent);
-		
-		glm::vec3 closestPoint = b._center + glm::mat3(b._rotationMat) * closestPointLocal;
-		
-		float distance = glm::length(a._center - closestPoint);
-		
-		if (distance < a._radius)
+		glm::mat3 bRot = glm::toMat3(b._orientation);
+		glm::vec3 localCenter = glm::transpose(bRot) * (a._center - b._center);
+		glm::vec3 closestPoint = glm::clamp(localCenter, -b._halfExtent, b._halfExtent);
+		glm::vec3 difference = localCenter - closestPoint;
+		float distanceSquared = glm::dot(difference, difference);
+		if (distanceSquared < (a._radius * a._radius))
 		{
-			return { true, closestPoint };
+			float distance = glm::sqrt(distanceSquared);
+			glm::vec3 normalLocal = (distance > 0.0001f) ? (difference / distance) : glm::vec3(1, 0, 0);
+			glm::vec3 normalWorld = bRot * normalLocal;
+			float penetrationDepth = a._radius - distance;
+			glm::vec3 contactPoint = b._center + bRot * closestPoint;
+			return { contactPoint, normalWorld, penetrationDepth };
 		}
-		return { false };
+		return {};
 	}
 
 
 
 
-	TouchingData BoundTypeBase::full_sat_check(const OBB& a, const OBB& b) const
+
+
+	CollisionPoint CollisionChecker::full_sat_check(const OBB& a, const OBB& b)
 	{
 		glm::vec3 centerDiff = b._center - a._center;
 
-		glm::mat4 aRotationMat = a.get_rotation_matrix();
-		std::array<glm::vec3, 3> axisA = {
-			glm::vec3(aRotationMat[0]),
-			glm::vec3(aRotationMat[1]),
-			glm::vec3(aRotationMat[2])
-		};
-
-		glm::mat4 bRotationMat = b.get_rotation_matrix();
-		std::array<glm::vec3, 3> axisB = {
-			glm::vec3(bRotationMat[0]),
-			glm::vec3(bRotationMat[1]),
-			glm::vec3(bRotationMat[2])
-		};
+		glm::mat3 aRot = glm::toMat3(a._orientation);
+		glm::mat3 bRot = glm::toMat3(b._orientation);
 
 		std::array<glm::vec3, 15> testAxes;
-
 		int axisCount = 0;
 
-		for (int i = 0; i < 3; i++)
-		{
-			testAxes[axisCount++] = axisA[i];
-		}
+		for (int i = 0; i < 3; i++) 
+			testAxes[axisCount++] = aRot[i];
+
+		for (int i = 0; i < 3; i++) 
+			testAxes[axisCount++] = bRot[i];
 
 		for (int i = 0; i < 3; i++)
 		{
-			testAxes[axisCount++] = axisB[i];
-		}
-
-		for (const auto& axis1 : axisA)
-		{
-			for (const auto& axis2 : axisB)
+			for (int j = 0; j < 3; j++)
 			{
-				glm::vec3 cross = glm::cross(axis1, axis2);
-				float lengthSquared = glm::dot(cross, cross);
-
-				if (lengthSquared > 0.0001f)
-				{
+				glm::vec3 cross = glm::cross(aRot[i], bRot[j]);
+				if (glm::dot(cross, cross) > 0.0001f) // avoid near-zero axes
 					testAxes[axisCount++] = glm::normalize(cross);
-				}
 			}
 		}
 
-		glm::vec3 aHalfExtent = a._halfExtent;
-		glm::vec3 bHalfExtent = b._halfExtent;
+		float minPenetration = std::numeric_limits<float>::max();
+		glm::vec3 collisionNormal;
 
+		// SAT test
 		for (int i = 0; i < axisCount; i++)
 		{
 			const glm::vec3& axis = testAxes[i];
+			if (glm::length2(axis) < 0.00001f) 
+				continue; // skip degenerate axes
 
-			float projA = project_extent_along_axis(aRotationMat, aHalfExtent, axis);
-			float projB = project_extent_along_axis(bRotationMat, bHalfExtent, axis);
+			// Project both OBBs onto axis
+			auto project = [](const glm::vec3& center, const glm::mat3& rot, const glm::vec3& halfExtent, const glm::vec3& axis) {
+				float r = 0.0f;
+				for (int i = 0; i < 3; i++)
+					r += halfExtent[i] * std::abs(glm::dot(rot[i], axis));
+				float c = glm::dot(center, axis);
+				return std::make_pair(c - r, c + r);
+				};
 
-			float distance = std::abs(glm::dot(centerDiff, axis));
+			auto [minA, maxA] = project(a._center, aRot, a._halfExtent, axis);
+			auto [minB, maxB] = project(b._center, bRot, b._halfExtent, axis);
 
-			if (distance > projA + projB)
-				return { false };
-		}
-
-		glm::vec3 pointOnA = a._center;
-
-		for (int i = 0; i < 3; i++)
-		{
-			float dist = glm::dot(b._center - a._center, axisA[i]);
-			dist = glm::clamp(dist, -aHalfExtent[i], aHalfExtent[i]);
-			pointOnA += axisA[i] * dist;
-		}
-
-		glm::vec3 pointOnB = b._center;
-
-		for (int i = 0; i < 3; i++)
-		{
-			float dist = glm::dot(a._center - b._center, axisB[i]);
-			dist = glm::clamp(dist, -bHalfExtent[i], bHalfExtent[i]);
-			pointOnB += axisB[i] * dist;
-		}
-
-		return { true, 0.5f * (pointOnA + pointOnB) };
-	}
-
-
-	TouchingData BoundTypeBase::full_sat_check(const OBB& a, const AABB& b) const
-	{
-		glm::vec3 centerDiff = b._center - a._center;
-
-		std::array<glm::vec3, 3> axisA = {
-			glm::vec3(a.get_rotation_matrix()[0]),
-			glm::vec3(a.get_rotation_matrix()[1]),
-			glm::vec3(a.get_rotation_matrix()[2])
-		};
-
-		std::array<glm::vec3, 3> axisB = {
-			glm::vec3(1, 0, 0),
-			glm::vec3(0, 1, 0),
-			glm::vec3(0, 0, 1)
-		};
-
-		std::array<glm::vec3, 15> testAxes{};
-		int axisCount = 0;
-
-		for (int i = 0; i < 3; i++)
-			testAxes[axisCount++] = axisA[i];
-
-		for (int i = 0; i < 3; i++)
-			testAxes[axisCount++] = axisB[i];
-
-		for (const auto& axis1 : axisA)
-		{
-			for (const auto& axis2 : axisB)
+			float overlap = std::min(maxA, maxB) - std::max(minA, minB);
+			if (overlap <= 0.0f)
 			{
-				glm::vec3 cross = glm::cross(axis1, axis2);
-				float lengthSquared = glm::dot(cross, cross);
+				return {};
+			}
 
-				if (lengthSquared > 0.0001f)
-				{
-					testAxes[axisCount++] = glm::normalize(cross);
-				}
+			if (overlap < minPenetration)
+			{
+				minPenetration = overlap;
+				collisionNormal = axis;
+
+				if (glm::dot(centerDiff, collisionNormal) < 0.0f)
+					collisionNormal = -collisionNormal;
 			}
 		}
 
-
-		for (int i = 0; i < axisCount; i++)
-		{
-			const glm::vec3& axis = testAxes[i];
-			float projA = project_extent_along_axis(axisA, a._halfExtent, axis);
-			float projB = project_extent_along_axis(axisB, b._halfExtent, axis);
-			float distance = std::abs(glm::dot(centerDiff, axis));
-
-			if (distance > projA + projB)
-				return { false };
-		}
-
-		glm::vec3 pointOnA = a._center;
-
-		for (int i = 0; i < 3; i++)
-		{
-			float dist = glm::dot(b._center - a._center, axisA[i]);
-			dist = glm::clamp(dist, -a._halfExtent[i], a._halfExtent[i]);
-			pointOnA += axisA[i] * dist;
-		}
-
-		glm::vec3 pointOnB = glm::clamp(a._center, b._center - b._halfExtent, b._center + b._halfExtent);
-
-
-		return { true, 0.5f * (pointOnA + pointOnB) };
+		return { (a._center + b._center) * 0.5f, collisionNormal, minPenetration };
 	}
 
 
-	TouchingData BoundTypeBase::aabb_cast_check(const OBB& a, const AABB& b) const
-	{
-		if (a._max.x >= b._min.x && a._min.x <= b._max.x &&
-			a._max.y >= b._min.y && a._min.y <= b._max.y &&
-			a._max.z >= b._min.z && a._min.z <= b._max.z)
-		{
-			return { true, (glm::max(a._min, b._min) + glm::min(a._max, b._max)) * 0.5f };
-		}
-		return { false };
-		}
-
-
-	TouchingData BoundTypeBase::aabb_cast_check(const OBB& a, const OBB& b) const
+	CollisionPoint CollisionChecker::partial_sat_check(const OBB& obb, const AABB& aabb)
 	{
 
-		if (a._max.x >= b._min.x && a._min.x <= b._max.x &&
-			a._max.y >= b._min.y && a._min.y <= b._max.y &&
-			a._max.z >= b._min.z && a._min.z <= b._max.z)
-		{
-			return { true, (glm::max(a._min, b._min) + glm::min(a._max, b._max)) * 0.5f };
-		}
-		return { false };
-	}
+		glm::vec3 centerDiff = aabb.get_center() - obb._center;
 
+		glm::mat3 obbRot = glm::toMat3(obb._orientation);
+		std::array<glm::vec3, 3> obbAxes = { obbRot[0], obbRot[1], obbRot[2] };
 
-	TouchingData BoundTypeBase::partial_sat_check(const OBB& a, const AABB& b) const
-	{
-		glm::vec3 centerDiff = b._center - a._center;
+		std::array<glm::vec3, 3> aabbAxes = { glm::vec3(1,0,0), glm::vec3(0,1,0), glm::vec3(0,0,1) };
 
-		std::array<glm::vec3, 3> axisA = {
-			glm::vec3(a.get_rotation_matrix()[0]),
-			glm::vec3(a.get_rotation_matrix()[1]),
-			glm::vec3(a.get_rotation_matrix()[2])
-		};
-
-		std::array<glm::vec3, 3> axisB = {
-			glm::vec3(1, 0, 0),
-			glm::vec3(0, 1, 0),
-			glm::vec3(0, 0, 1)
-		};
-
-		std::array<glm::vec3, 6> testAxes;
+		std::array<glm::vec3, 15> testAxes;
 		int axisCount = 0;
 
-		for (int i = 0; i < 3; i++)
-			testAxes[axisCount++] = axisA[i];
+		for (int i = 0; i < 3; i++) 
+			testAxes[axisCount++] = obbAxes[i];
+
+		for (int i = 0; i < 3; i++) 
+			testAxes[axisCount++] = aabbAxes[i];
 
 		for (int i = 0; i < 3; i++)
-			testAxes[axisCount++] = axisB[i];
+		{
+			for (int j = 0; j < 3; j++)
+			{
+				glm::vec3 cross = glm::cross(obbAxes[i], aabbAxes[j]);
+				if (glm::dot(cross, cross) > 0.0001f)
+					testAxes[axisCount++] = glm::normalize(cross);
+			}
+		}
 
-		glm::vec3 aHalfExtent = a._halfExtent;
-		glm::vec3 bHalfExtent = b._halfExtent;
+		float minPenetration = std::numeric_limits<float>::max();
+		glm::vec3 collisionNormal;
+
+		auto projectOBB = [&](const glm::vec3& axis) {
+			float r = 0.0f;
+			for (int i = 0; i < 3; i++)
+				r += obb._halfExtent[i] * std::abs(glm::dot(obbAxes[i], axis));
+			float c = glm::dot(obb._center, axis);
+			return std::make_pair(c - r, c + r);
+			};
+
+		auto projectAABB = [&](const glm::vec3& axis) {
+			glm::vec3 half = aabb.get_half_extent();
+			glm::vec3 center = aabb.get_center();
+			float r = half.x * std::abs(glm::dot(glm::vec3(1, 0, 0), axis)) +
+				half.y * std::abs(glm::dot(glm::vec3(0, 1, 0), axis)) +
+				half.z * std::abs(glm::dot(glm::vec3(0, 0, 1), axis));
+			float c = glm::dot(center, axis);
+			return std::make_pair(c - r, c + r);
+			};
 
 		for (int i = 0; i < axisCount; i++)
 		{
 			const glm::vec3& axis = testAxes[i];
+			if (glm::length2(axis) < 0.00001f) 
+				continue;
 
-			float projA = project_extent_along_axis(axisA, aHalfExtent, axis);
-			float projB = project_extent_along_axis(axisB, bHalfExtent, axis);
+			auto [minO, maxO] = projectOBB(axis);
+			auto [minA, maxA] = projectAABB(axis);
 
-			float distance = std::abs(glm::dot(centerDiff, axis));
+			float overlap = std::min(maxO, maxA) - std::max(minO, minA);
+			if (overlap <= 0.0f)
+			{
+				return {};
+			}
 
-			if (distance > projA + projB)
-				return { false };  // No collision
+			if (overlap < minPenetration)
+			{
+				minPenetration = overlap;
+				collisionNormal = axis;
+				if (glm::dot(centerDiff, collisionNormal) < 0.0f)
+					collisionNormal = -collisionNormal;
+			}
 		}
 
-		glm::vec3 pointOnA = a._center;
-
-		for (int i = 0; i < 3; i++)
-		{
-			float dist = glm::dot(b._center - a._center, axisA[i]);
-			dist = glm::clamp(dist, -a._halfExtent[i], a._halfExtent[i]);
-			pointOnA += axisA[i] * dist;
-		}
-
-		glm::vec3 pointOnB = glm::clamp(a._center, b._center - b._halfExtent, b._center + b._halfExtent);
-
-		return { true, 0.5f * (pointOnA + pointOnB) };
+		return { (obb._center + aabb.get_center()) * 0.5f, collisionNormal, minPenetration };
 	}
 
-	glm::vec3 BoundTypeBase::get_center() const
-	{
-		return _center;
-	}
 
-	float BoundTypeBase::get_volume() const
-	{
-		return (_max.x - _min.x) * (_max.y - _min.y) * (_max.z - _min.z);
-	}
-
-	TouchingData BoundTypeBase::is_touching(BoundTypeBase* other)
+	CollisionPoint BoundTypeBase::touching(BoundTypeBase* other) const
 	{
 		switch (other->get_bound_type())
 		{
 		case glType::BoundType::AABB:
-			return is_touching(*static_cast<AABB*>(other));
+			return touching(*static_cast<AABB*>(other));
 			break;
 		case glType::BoundType::OBB:
-			return is_touching(*static_cast<OBB*>(other));
+			return touching(*static_cast<OBB*>(other));
 			break;
 		case glType::BoundType::Sphere:
-			return is_touching(*static_cast<SphereBound*>(other));
+			return touching(*static_cast<SphereBound*>(other));
 			break;
 		default:
-			return { false };
+			return {};
 			break;
 		}
 	}
 
-	float BoundTypeBase::project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const
+	float project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis)
 	{
 		std::array<glm::vec3, 3> _OBBAxes = {
 			rotationMat[0],
@@ -417,7 +268,7 @@ namespace physics
 			std::abs(glm::dot(_OBBAxes[2], axis)) * halfExtent.z;
 	}
 
-	float BoundTypeBase::project_extent_along_axis(const std::array<glm::vec3, 3>& axes, const glm::vec3& halfExtent, const glm::vec3& axis) const
+	float project_extent_along_axis(const std::array<glm::vec3, 3>& axes, const glm::vec3& halfExtent, const glm::vec3& axis)
 	{
 		return std::abs(glm::dot(axes[0], axis)) * halfExtent.x +
 			std::abs(glm::dot(axes[1], axis)) * halfExtent.y +

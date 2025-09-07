@@ -89,66 +89,6 @@ namespace glUtil
 
 	}
 
-	Transform Mesh::get_transform() const
-	{
-		return _transform;
-	}
-
-	glm::vec3 Mesh::get_position() const
-	{
-		return _transform.position;
-	}
-
-	glm::mat4 Mesh::get_model_matrix() const
-	{
-		glm::mat4 model(1.0f);
-		model = glm::translate(model, _transform.position);
-		//model = model * glm::toMat4(_transform.rotation);
-		model = glm::scale(model, _transform.scale);
-		return model;
-	}
-
-	void Mesh::change_position(const glm::vec3& pos)
-	{
-		_transform.position += pos;
-	}
-
-	void Mesh::set_position(const glm::vec3& pos)
-	{
-		_transform.position = pos;
-	}
-
-	void Mesh::change_rotation(const glm::quat& rotation)
-	{
-		_transform.rotation = _transform.rotation * rotation;
-	}
-
-	void Mesh::change_rotation(const glm::vec3& rotation)
-	{
-		_transform.rotation = _transform.rotation * glm::quat(rotation);
-	}
-
-
-	void Mesh::set_rotation(const glm::quat& rotation)
-	{
-		_transform.rotation = rotation;
-	}
-
-	void Mesh::set_rotation(const glm::vec3& rotation)
-	{
-		_transform.rotation = glm::quat(rotation);
-	}
-
-	void Mesh::change_scale(const glm::vec3& scale)
-	{
-		_transform.scale += scale;
-	}
-
-	void Mesh::set_scale(const glm::vec3& scale)
-	{
-		_transform.scale = scale;
-	}
-
 	void Mesh::render() const
 	{
 
@@ -342,26 +282,52 @@ namespace tools
 			6, 7, 3
 		};
 	}
-	std::vector<glType::Vertex> create_floor_vertices(const glm::vec3& color, const glm::vec3& position, glType::Vertex size)
-	{
-		std::vector<glType::Vertex> vertices = 
-		{
-			-size / 2.0f, position.y, size / 2.0f + position.z, color.r, color.g, color.b,
-			size / 2.0f + position.x, position.y, size / 2.0f + position.z, color.r, color.g, color.b,
-			size / 2.0f + position.x, position.y, -size / 2.0f + position.z, color.r, color.g, color.b,
-			-size / 2.0f + position.x, position.y, -size / 2.0f + position.z, color.r, color.g, color.b,
-		};
+	std::vector<glType::Vertex> create_floor_vertices(
+		const glm::vec3& color,
+		const glm::vec3& position,
+		glType::Vertex size,
+		float thickness = 0.1f
+	) {
+		float half = size / 2.0f;
 
+		float topY = position.y;
+		float botY = position.y - thickness;
+
+		std::vector<glType::Vertex> vertices =
+		{
+			// Top face
+			-half + position.x, topY,  half + position.z, color.r, color.g, color.b,
+			 half + position.x, topY,  half + position.z, color.r, color.g, color.b,
+			 half + position.x, topY, -half + position.z, color.r, color.g, color.b,
+			-half + position.x, topY, -half + position.z, color.r, color.g, color.b,
+
+			// Bottom face
+			-half + position.x, botY,  half + position.z, color.r, color.g, color.b,
+			 half + position.x, botY,  half + position.z, color.r, color.g, color.b,
+			 half + position.x, botY, -half + position.z, color.r, color.g, color.b,
+			-half + position.x, botY, -half + position.z, color.r, color.g, color.b,
+		};
 
 		return vertices;
 	}
 
 
+
 	std::vector<glType::Index> create_floor_indices()
 	{
 		return {
-		0, 1, 2, 
-		2, 3, 0 
+		// Top
+		0, 1, 2,  2, 3, 0,
+		// Bottom
+		4, 5, 6,  6, 7, 4,
+		// Front
+		0, 1, 5,  5, 4, 0,
+		// Back
+		2, 3, 7,  7, 6, 2,
+		// Left
+		0, 3, 7,  7, 4, 0,
+		// Right
+		1, 2, 6,  6, 5, 1
 		};
 		
 	}
@@ -371,7 +337,7 @@ namespace tools
 		glUtil::MeshBundle bundle;
 
 		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
-		auto cubeVerts = tools::create_cube_vertices(glm::vec3(1.0f), glm::vec3(0.0f, 8.0, 0.0f), 2.0f);
+		auto cubeVerts = tools::create_cube_vertices(glm::vec3(1.0f, 1.0f, 0.0f), glm::vec3(0.0f, 8.0, 0.0f), 2.0f);
 		auto cubeIndices = tools::create_cube_indices();
 
 		bundle.pVertices = cubeVerts.data();
@@ -394,7 +360,7 @@ namespace tools
 	{
 		glUtil::MeshBundle bundle;
 		bundle.fullStride = glUtil::FullStride::STRIDE_6D;
-		auto floorVerts = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 60.0f);
+		auto floorVerts = tools::create_floor_vertices(glm::vec3(1.0f), glm::vec3(0.0f, -3.0, 0.0f), 60.0f, 5.0f);
 		auto floorIndices = tools::create_floor_indices();
 		bundle.pVertices = floorVerts.data();
 		bundle.pIndices = floorIndices.data();

@@ -8,6 +8,7 @@
 #include "tools/include/window.h"
 #include "tools/include/entity_registry.h"
 #include "tools/include/component_registry.h"
+#include "tools/include/transform.h"
 
 #include "glUtil/include/mesh.h"
 #include "glUtil/include/texture.h"

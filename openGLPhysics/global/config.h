@@ -13,6 +13,7 @@
 #include <filesystem>
 #include <cmath>
 #include <numbers>
+#include <glm/gtc/quaternion.hpp> 
 
 #include <glm/glm.hpp>
 

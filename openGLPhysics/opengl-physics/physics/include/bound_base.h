@@ -15,6 +15,12 @@ namespace physics
 	{
 		glm::vec3 min;
 		glm::vec3 max;
+
+		void operator+=(const glm::vec3& val)
+		{
+			min += val;
+			max += val;
+		}
 	};
 
 
@@ -24,10 +30,18 @@ namespace physics
 
 	class SphereBound;
 
-	struct TouchingData
+	struct CollisionPoint
 	{
-		bool result = false;
-		std::optional<glm::vec3> collisionPoint;
+		glm::vec3 position;
+		glm::vec3 normal;
+		float penetrationDepth;
+
+		bool exists = false;
+
+		CollisionPoint() = default;
+		CollisionPoint(const glm::vec3& point, const glm::vec3& norm, float depth)
+			: position(point), normal(norm), penetrationDepth(depth), exists(true) {
+		}
 	};
 
 
@@ -38,78 +52,55 @@ namespace physics
 
 		virtual glType::BoundType get_bound_type() const = 0;
 
-		MinMax get_min_max() const;
+		virtual MinMax get_aabb_wrap() const = 0;
 
-		void change(const glm::vec3& val);
+		virtual float get_volume() const = 0;
 
-		void change_x(float offset);
-		
-		void change_y(float offset);
+		CollisionPoint touching(BoundTypeBase* other) const;
 
-		void change_z(float offset);
+		virtual void move(const glm::vec3& offset) = 0;
 
-		glm::vec3 get_center() const;
+		virtual CollisionPoint touching(const SphereBound& other) const = 0;
 
-		float get_volume() const;
+		virtual CollisionPoint touching(const AABB& other) const = 0;
 
-		TouchingData is_touching(BoundTypeBase* other);
-
-		virtual TouchingData is_touching(const SphereBound& other) const = 0;
-
-		virtual TouchingData is_touching(const AABB& other) const = 0;
-
-		virtual TouchingData is_touching(const OBB& other) const = 0;
+		virtual CollisionPoint touching(const OBB& other) const = 0;
 
 		virtual ~BoundTypeBase() = default;
-
-	protected:
-		TouchingData is_touching(const AABB& a, const AABB& b) const;
-
-		TouchingData is_touching(const OBB& a, const OBB& b) const;
-
-		TouchingData is_touching(const AABB& a, const OBB& b) const;
-
-
-
-		bool sphere_check(const AABB& a, const AABB& b) const;
-
-		bool sphere_check(const OBB& a, const OBB& b) const;
-
-		bool sphere_check(const AABB& a, const OBB& b) const;
-
-
-		TouchingData sphere_check(const SphereBound& a, const SphereBound& b) const;
-
-		TouchingData sphere_check(const SphereBound& a, const AABB& b) const;
-
-		TouchingData sphere_check(const SphereBound& a, const OBB& b) const;
-
-
-
-		TouchingData full_sat_check(const OBB& a, const OBB& b) const;
-
-		TouchingData full_sat_check(const OBB& a, const AABB& b) const;
-
-
-
-		TouchingData aabb_cast_check(const OBB& a, const AABB& b) const;
-
-		TouchingData aabb_cast_check(const OBB& a, const OBB& b) const;
-
-
-		TouchingData partial_sat_check(const OBB& a, const AABB& b) const;
-
-		float project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis) const;
-
-		float project_extent_along_axis(const std::array<glm::vec3, 3>& axes, const glm::vec3& halfExtent, const glm::vec3& axis) const;
-
-	protected:
-
-		glm::vec3 _center;
-
-		glm::vec3 _min;
-		glm::vec3 _max;
 	};
+
+
+	class CollisionChecker
+	{
+	private:
+
+		static CollisionPoint aabb_check(const AABB& a, const AABB& b);
+
+		static CollisionPoint sphere_check(const SphereBound& a, const SphereBound& b);
+
+		static CollisionPoint sphere_check(const SphereBound& a, const AABB& b);
+
+		static CollisionPoint sphere_check(const SphereBound& a, const OBB& b);
+
+
+		static CollisionPoint full_sat_check(const OBB& a, const OBB& b);
+
+		static CollisionPoint partial_sat_check(const OBB& a, const AABB& b);
+
+
+
+		friend class AABB;
+		friend class OBB;
+		friend class SphereBound;
+
+
+
+	};
+
+	float project_extent_along_axis(const glm::mat4& rotationMat, const glm::vec3& halfExtent, const glm::vec3& axis);
+
+	float project_extent_along_axis(const std::array<glm::vec3, 3>& axes, const glm::vec3& halfExtent, const glm::vec3& axis);
+
 
 
 	glm::vec3 find_center_of_mass(std::vector<glType::Vertex> verts, glUtil::FullStride fullStride, glUtil::PosStride posStride);

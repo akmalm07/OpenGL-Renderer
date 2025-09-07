@@ -11,7 +11,6 @@ namespace physics
 	class PhysicsBody;
 }
 
-
 namespace glUtil
 {
 
@@ -38,26 +37,8 @@ namespace glUtil
 
 		//[[deprecated("This function is slow. Avoid using in performance-critical code.")]]
 		std::vector<glType::Vertex> get_verticies() const;
-	
-		void change_position(const glm::vec3& pos);
-
-		void set_position(const glm::vec3& pos);
-
-		void change_rotation(const glm::quat& rotation);
-		void change_rotation(const glm::vec3& rotation);
-
-		void set_rotation(const glm::quat& rotation);
-		void set_rotation(const glm::vec3& rotation);
-
-		void change_scale(const glm::vec3& scale);
-
-		void set_scale(const glm::vec3& scale);
-
-		Transform get_transform() const;
 
 		glm::vec3 get_position() const;
-
-		glm::mat4 get_model_matrix() const;
 
 		void clear();
 
@@ -75,10 +56,6 @@ namespace glUtil
 
 		glType::Entity _entityId = 0;
 
-		Transform _transform;
-
-		friend class physics::PhysicsBody;
-
 	private:
 		void set_vertex_attribs(const ArrayBufferLayout& arrLayout, FullStride absoluteStride);
 
@@ -89,7 +66,7 @@ namespace glUtil
 namespace tools
 {
 
-	std::vector<glType::Vertex> create_circle_vertices(float radius, int segments, const glm::vec3& center, const glm::vec3& color);
+	std::vector<glType::Vertex> create_circle_vertices(glType::Vertex radius, int segments, const glm::vec3& center, const glm::vec3& color);
 
 	std::vector<glType::Index> create_circle_indices(int segments);
 
