@@ -20,11 +20,11 @@ namespace tools
 
 		DirectionalLight() = default;
 
-		DirectionalLight(unsigned int programID, bool debug);
+		DirectionalLight(unsigned int programID);
 
-		DirectionalLight(const glm::vec3& dir, const glm::vec3& col, unsigned int programID, bool debug);
+		DirectionalLight(const glm::vec3& dir, const glm::vec3& col, unsigned int programID);
 
-		DirectionalLight(const DirectionalLightBundle& dir, unsigned int programID, bool debug);
+		DirectionalLight(const DirectionalLightBundle& dir, unsigned int programID);
 
 		DirectionalLight(DirectionalLight&& other) noexcept = default;
 		DirectionalLight& operator=(DirectionalLight&& other) noexcept = default;

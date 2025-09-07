@@ -2,8 +2,9 @@
 
 #include "config.h"
 
-#include "tools\include\stride.h"
-#include "glUtil\include\mesh_bundle.h"
+#include "tools/include/stride.h"
+#include "glUtil/include/mesh_bundle.h"
+#include "tools/include/transform.h"
 
 
 namespace physics
@@ -33,6 +34,8 @@ namespace glUtil
 
 		void render() const;
 
+		glm::mat4 get_model_matrix() const;
+
 		glType::Entity get_entity_id() const;
 
 		//[[deprecated("This function is slow. Avoid using in performance-critical code.")]]
@@ -45,6 +48,8 @@ namespace glUtil
 		virtual ~Mesh();
 
 		private:
+
+		std::shared_ptr<tools::Transform> _transform;
 
 		unsigned int _VAO = 0, _VBO = 0, _IBO = 0;
 		size_t _indexCount = 0;

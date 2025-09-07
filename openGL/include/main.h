@@ -19,24 +19,23 @@ namespace Renderer
 
 		GLProgram program = Program::create_program();
 
-		EntityRegistry reg;
-
-		DirectionalLight dirLight;
+		World world = Program::create_world(program, window);
 
 		auto& mesh = tools::ComponentRegistry<Mesh>::get_instance();
+
 		auto mshBody = Program::create_demo_mesh();
 
 		auto floorBody = Program::create_demo_floor_mesh();
 
-		auto ent = reg.register_entity("Joe");
+		auto ent = world.add_entity("Joe");
 		
-		auto entFlr = reg.register_entity("Floor");
+		auto entFlr = world.add_entity("Floor");
 
 		mesh.add_component(ent, std::move(mshBody));
 		
 		mesh.add_component(entFlr, std::move(floorBody));
 
-		dirLight.bind();
+		world.bind_light();
 
 		while (!window.get_should_close())
 		{
@@ -44,7 +43,7 @@ namespace Renderer
 			{
 				Program::clear_color();
 
-				// Add Updaters Here
+				world.update(program, window.get_delta_time_sec());
 
 				window.update();
 
@@ -52,7 +51,7 @@ namespace Renderer
 			program.unbind();
 		}
 
-		dirLight.unbind();
+		world.unbind_light();
 
 		std::cout << "Exiting application..." << std::endl;
 	}

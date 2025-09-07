@@ -12,6 +12,7 @@
 #include "glUtil/include/mesh.h"
 #include "tools/include/component_registry.h"
 #include "tools/include/entity_registry.h"
+#include "tools/include/world.h"
 
 
 
@@ -24,6 +25,8 @@ namespace Program
 	glUtil::Mesh create_demo_mesh();
 
 	glUtil::Mesh create_demo_floor_mesh();
+
+	tools::World create_world(glInit::GLProgram& program, tools::Window& window);
 
 	void clear_color();
 

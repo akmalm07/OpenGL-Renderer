@@ -82,6 +82,8 @@ namespace tools
 
 		void set_movement_callbacks();
 
+		std::shared_ptr<BaseCamera> get_camera_shared() const;
+
 		bool is_key_active(Keys key, Action act) const;
 
 		std::string get_name() const;
@@ -133,7 +135,7 @@ namespace tools
 
 		WindowInputManager _inputManager;
 
-		std::unique_ptr<BaseCamera> _camera;
+		std::shared_ptr<BaseCamera> _camera;
 
 		//WindowT Vars
 		static bool _calledBufferSize;

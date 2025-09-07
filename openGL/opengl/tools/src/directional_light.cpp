@@ -185,31 +185,31 @@ namespace tools
 	}
 
 
-	DirectionalLight::DirectionalLight(unsigned int programID, bool debug)
+	DirectionalLight::DirectionalLight(unsigned int programID)
 	{
 		clamp_light_values();
-		_uniformBuffer = debug;
+		
 		_uniformBuffer.init(programID, "DirectionalLightData", 0, true);
 		update_uniform_buffer();
 	}
 
-	DirectionalLight::DirectionalLight(const glm::vec3& dir, const glm::vec3& col, unsigned int programID, bool debug)
+	DirectionalLight::DirectionalLight(const glm::vec3& dir, const glm::vec3& col, unsigned int programID)
 	{
 		_light.direction = dir;
 		_light.color = col;
 
 		clamp_light_values();
-		_uniformBuffer = debug;
+		
 		_uniformBuffer.init(programID, "DirectionalLightData", 0, true);
 		update_uniform_buffer();
 	}
 
-	DirectionalLight::DirectionalLight(const DirectionalLightBundle& dir, unsigned int programID, bool debug)
+	DirectionalLight::DirectionalLight(const DirectionalLightBundle& dir, unsigned int programID)
 	{
 		_light = dir;
 
 		clamp_light_values();
-		_uniformBuffer = debug;
+		
 		_uniformBuffer.init(programID, "DirectionalLightData", 0, true);
 		update_uniform_buffer();
 	}

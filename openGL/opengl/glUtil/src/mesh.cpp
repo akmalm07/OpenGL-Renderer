@@ -23,6 +23,15 @@ namespace glUtil
 
 		_indexed = (bundle.indexed || bundle.indexCount == 0 ? true : false);
 
+		if (bundle.pTransform)
+		{
+			_transform = std::make_shared<tools::Transform>(*bundle.pTransform);
+		}
+		else
+		{
+			_transform = std::make_shared<tools::Transform>();
+		}
+
 		glGenVertexArrays(1, &_VAO);
 		glBindVertexArray(_VAO);
 
@@ -108,6 +117,11 @@ namespace glUtil
 	glType::Entity Mesh::get_entity_id() const
 	{
 		return _entityId;
+	}
+
+	glm::mat4 Mesh::get_model_matrix() const
+	{
+		return _transform ? _transform->get_model_matrix() : glm::mat4(1.0f);
 	}
 
 	std::vector<glType::Vertex> Mesh::get_verticies() const
@@ -345,6 +359,10 @@ namespace tools
 		bundle.vertexCount = cubeVerts.size();
 		bundle.indexCount = cubeIndices.size();
 
+		Transform transform(glm::vec3(3.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+
+		bundle.pTransform = &transform;
+
 		bundle.indexed = true;
 
 		glUtil::ArrayBufferLayout buff1{ glUtil::StrideType::POS, glUtil::Stride::STRIDE_3D, 0 };
@@ -370,6 +388,10 @@ namespace tools
 		glUtil::ArrayBufferLayout buff2{ glUtil::StrideType::COL, glUtil::Stride::STRIDE_3D, 1 };
 		bundle.pLayout1 = &buff1;
 		bundle.pLayout2 = &buff2;
+
+		Transform transform(glm::vec3(3.0f, 10.0f, 0.0f), glm::vec3(0.0f), glm::vec3(1.0f));
+
+		bundle.pTransform = &transform;
 
 		return glUtil::Mesh(bundle);
 	}

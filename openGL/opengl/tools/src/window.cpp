@@ -35,11 +35,11 @@ namespace tools {
 
 		if (type == CameraType::Classic)
 		{
-			_camera = std::make_unique<Camera>(camBundle);
+			_camera = std::make_shared<Camera>(camBundle);
 		}
 		else if (type == CameraType::Quaternion)
 		{
-			_camera = std::make_unique<QuaternionCamera>(camBundle);
+			_camera = std::make_shared<QuaternionCamera>(camBundle);
 		}
 	}
 
@@ -49,11 +49,11 @@ namespace tools {
 		
 		if (type == CameraType::Classic)
 		{
-			_camera = std::make_unique<Camera>(camBundle);
+			_camera = std::make_shared<Camera>(camBundle);
 		}
 		else if (type == CameraType::Quaternion)
 		{
-			_camera = std::make_unique<QuaternionCamera>(camBundle);
+			_camera = std::make_shared<QuaternionCamera>(camBundle);
 		}
 
 		set_disable_cursor(true);
@@ -394,6 +394,11 @@ namespace tools {
 			"MouseScroll"
 		);
 
+	}
+
+	std::shared_ptr<BaseCamera> Window::get_camera_shared() const
+	{
+		return _camera;
 	}
 
 

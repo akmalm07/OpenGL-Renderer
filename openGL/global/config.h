@@ -37,3 +37,9 @@ namespace tools
 	using view_ptr_mutable = T* const;
 
 }
+
+#ifdef DEBUG
+constexpr bool DEBUG_MODE = true;
+#else
+constexpr bool DEBUG_MODE = false;
+#endif

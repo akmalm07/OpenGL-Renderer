@@ -25,6 +25,17 @@ namespace Program
 		return tools::construct_default_floor_mesh();
 	}
 
+	tools::World create_world(glInit::GLProgram& program, tools::Window& window)
+	{
+		return tools::World(program, window);
+	}
+
+	tools::DirectionalLight create_directional_light(unsigned int programID)
+	{
+
+		return tools::DirectionalLight();
+	}
+
 	void clear_color()
 	{
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);

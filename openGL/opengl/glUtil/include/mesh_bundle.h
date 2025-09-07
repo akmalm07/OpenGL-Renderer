@@ -3,6 +3,7 @@
 #include "config.h"
 #include "tools/include/stride.h"
 
+#include "tools/include/transform.h"
 
 namespace glUtil
 {
@@ -19,6 +20,8 @@ namespace glUtil
 		ArrayBufferLayout* pLayout2 = nullptr;
 		ArrayBufferLayout* pLayout3 = nullptr;
 		ArrayBufferLayout* pLayout4 = nullptr;
+
+		tools::Transform* pTransform = nullptr;
 
 		size_t vertexCount = 0;
 		size_t indexCount = 0;
