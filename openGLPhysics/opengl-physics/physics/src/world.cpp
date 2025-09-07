@@ -173,12 +173,6 @@ namespace tools
 		return _entities.get_entity(name);
 	}
 
-	glm::vec3 World::get_acc_due_to_gravity() const
-	{
-		return _gravity;
-	}
-
-
 	World::~World() = default;
 
 }

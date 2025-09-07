@@ -36,6 +36,7 @@ namespace physics
 			break;
 		}
 		}
+		_type = bundle.physType;
 
 		_netForce = bundle.initalForce;
 
@@ -67,6 +68,7 @@ namespace physics
 		_massInv = other._massInv;
 		_entityId = other._entityId;
 		_collisionCallback = other._collisionCallback;
+		_type = other._type;
 	}
 
 	PhysicsBody& PhysicsBody::operator=(const PhysicsBody& other)
@@ -82,14 +84,10 @@ namespace physics
 			_massInv = other._massInv;
 			_entityId = other._entityId;
 			_collisionCallback = other._collisionCallback;
+			_type = other._type;
+
 		}
 		return *this;
-	}
-
-
-	PhysType PhysicsBody::get_type() const
-	{
-		return PhysType::Reg;
 	}
 
 	void PhysicsBody::communicate_impl(glType::Entity entity)
@@ -106,6 +104,16 @@ namespace physics
 	MinMax PhysicsBody::get_aabb_wrap() const
 	{
 		return _boundType->get_aabb_wrap();
+	}
+
+	void PhysicsBody::set_is_touching_ground(bool val)
+	{
+		_isTouchingGround = val;
+	}
+
+	bool PhysicsBody::is_touching_ground() const
+	{
+		return _isTouchingGround;
 	}
 
 	glm::vec3 PhysicsBody::get_angular_volocity() const
@@ -132,6 +140,7 @@ namespace physics
 	void PhysicsBody::add_volocity(const glm::vec3& val)
 	{
 		_volocity += val;
+		_isTouchingGround = false;
 	}
 
 	void PhysicsBody::set_volocity(const glm::vec3& val)
@@ -213,22 +222,29 @@ namespace physics
 
 	void PhysicsBody::update(float dt)
 	{
-		if (_netForce != glm::vec3(0.0f))
+		if (!_isTouchingGround)
 		{
 			_netForce = apply_forces();
 			_acceleration = _netForce * FLOAT(_massInv);
+			_volocity += _acceleration * dt;
 		}
 		else
 		{
-			_acceleration = glm::vec3(0.0f);
+			glm::vec3 totalVol = _volocity * _elasticity; // Simple friction model
+			if (glm::length(totalVol) <= 1.0f)
+			{
+				_acceleration = glm::vec3(0.0f);
+				_volocity = glm::vec3(0.0f);
+				_isTouchingGround = true;
+				return;
+			}
+			else
+			{
+				_volocity = glm::vec3(totalVol.x, -totalVol.y, totalVol.z);
+				_isTouchingGround = false;
+			}
 		}
 
-		_volocity += _acceleration * dt;
-
-		if (glm::length(_volocity) < 0.01f)
-		{
-			_volocity = glm::vec3(0.0f);
-		}
 
 		_prevPos = _transform->position;
 
@@ -292,5 +308,10 @@ namespace physics
 		return netForce;
 	}
 
+
+	PhysType PhysicsBody::get_type() const
+	{
+		return _type;
+	}
 
 }

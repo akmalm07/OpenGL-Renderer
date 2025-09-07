@@ -27,12 +27,6 @@ namespace physics
 	template <ForceType T>
 	class GlobalForce;
 
-	enum class PhysType
-	{
-		Reg,
-		Floor
-	};
-
 	class PhysicsBody : public glType::Component<PhysicsBody>
 	{
 	public:
@@ -48,13 +42,17 @@ namespace physics
 		PhysicsBody(PhysicsBody&&) = default;
 		PhysicsBody& operator=(PhysicsBody&&) = default;
 		
-		virtual PhysType get_type() const;
+		PhysType get_type() const;
 
 		void communicate_impl(glType::Entity entity);
 
 		void set_position(const glm::vec3& pos);
 
 		MinMax get_aabb_wrap() const;
+
+		void set_is_touching_ground(bool val);
+
+		bool is_touching_ground() const;
 
 		glm::vec3 get_angular_volocity() const;
 
@@ -139,6 +137,10 @@ namespace physics
 
 		glType::Entity _entityId;
 
+		bool _isTouchingGround = false;
+
+		PhysType _type = PhysType::Reg;
+
 	protected:
 		glm::vec3 apply_forces() const;
 	};
@@ -196,15 +198,6 @@ namespace physics
 		return input;
 	}
 
-
-	class FloorPhysicsBody : public glType::Component<PhysicsBody>, public PhysicsBody
-	{
-		PhysType get_type() const override
-		{
-			return PhysType::Floor;
-		}
-
-	};
 
 }
 

@@ -62,10 +62,7 @@ namespace tools
 
 		void unbind_light();
 
-		void update_camera_pos(const glm::vec3& camPos);
-
-		glm::vec3 get_acc_due_to_gravity() const;
-		
+		void update_camera_pos(const glm::vec3& camPos);		
 
 		~World();
 
@@ -74,8 +71,6 @@ namespace tools
 		EntityRegistry _entities;
 		
 		tools::DirectionalLight _directionalLight;
-
-		glm::vec3 _gravity = { 0.0f, -0.1f, 0.0f };
 		
 		tools::BaseCamera* _camera;
 		

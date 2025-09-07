@@ -68,7 +68,7 @@ namespace Program
 
 		bundle.min = minMax.min;
 		bundle.max = minMax.max;
-		bundle.mass = 1.0f;
+		bundle.mass = 50.0f;
 		bundle.gravityAffected = true;
 		bundle.elasticity = 0.5f; 
 
@@ -88,6 +88,8 @@ namespace Program
 		bundle.min = minMax.min;
 		bundle.max = minMax.max;
 		bundle.mass = std::numeric_limits<float>::max();
+
+		bundle.physType = physics::PhysType::Floor;
 
 		bundle.gravityAffected = false;
 		bundle.elasticity = 0.1f; 

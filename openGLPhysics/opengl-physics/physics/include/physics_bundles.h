@@ -7,6 +7,13 @@
 
 namespace physics
 {
+
+	enum class PhysType
+	{
+		Reg,
+		Floor
+	};
+
     struct PhysicsBodyBundleBase
     {
     public:
@@ -21,6 +28,8 @@ namespace physics
 		glm::vec3 initalForce = glm::vec3(0.0f);
 
 		glm::vec3 centerOfMass = glm::vec3(0.0f); 
+
+		PhysType physType = PhysType::Reg;
 
 		std::function<void(glType::Entity)> collisionFunc;
 

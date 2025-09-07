@@ -154,17 +154,27 @@ namespace physics
 
 
 	template<size_t CellCount>
-	inline void PhysicsManager<CellCount>::collision_response(PhysicsBody* body, PhysicsBody* other, const CollisionPoint& collisionPoint) 
+	inline void PhysicsManager<CellCount>::collision_response(PhysicsBody* body, PhysicsBody* other, const CollisionPoint& collisionPoint) const 
 	{
 
-		float totalMass = body->get_inverse_mass() + other->get_inverse_mass();
 		//// Separate them out using projection
-		
-		if (body->get_type() != PhysType::Floor)
-			body->set_position(body->get_position() - (collisionPoint.normal * collisionPoint.penetrationDepth * (body->get_inverse_mass() / totalMass)));
+		float totalMass = body->get_inverse_mass() + other->get_inverse_mass();
 
-		if (body->get_type() != PhysType::Floor)
-			other->set_position(other->get_position() - (collisionPoint.normal * collisionPoint.penetrationDepth * (other->get_inverse_mass() / totalMass)));
+		if (body->get_type() == PhysType::Floor)
+		{	
+			other->set_is_touching_ground(true);
+			return;
+		}
+		else if (other->get_type() == PhysType::Floor)
+		{
+			body->set_is_touching_ground(true);
+			return;
+		}
+
+		
+		body->set_position(body->get_position() - (collisionPoint.normal * collisionPoint.penetrationDepth * (body->get_inverse_mass() / totalMass)));
+		other->set_position(other->get_position() - (collisionPoint.normal * collisionPoint.penetrationDepth * (other->get_inverse_mass() / totalMass)));
+		
 
 		glm::vec3 relativePosA = collisionPoint.position - body->get_position();
 		glm::vec3 relativePosB = collisionPoint.position - other->get_position();
