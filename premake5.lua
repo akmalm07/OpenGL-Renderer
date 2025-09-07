@@ -1,4 +1,4 @@
-workspace "OpenGL Physics Renderer"
+workspace "OpenGL Renderer"
     architecture "x64"
     startproject "VulkanAPI"
 
@@ -23,5 +23,5 @@ LibDir["ASSIMP"] = "../vendor/ASSIMP/lib"
 LibDir["ASSIMP_ZLIB"] = "../vendor/ASSIMP/ZLIB"
 
 
-group "OpenGLPhysics"
-    include "OpenGLPhysics/OpenGLPhysics.lua"
+group "OpenGL"
+    include "OpenGL/OpenGL.lua"

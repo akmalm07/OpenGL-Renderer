@@ -14,14 +14,6 @@ namespace tools
 	}
 
 
-	inline ComponentRegistry<physics::PhysicsBody>& ComponentRegistry<physics::PhysicsBody>::get_instance()
-	{
-		static ComponentRegistry instance;
-		return instance;
-	}
-
-
-
 	template<glType::ComponentType T>
 	inline T& ComponentRegistry<T>::add_and_get_component(glType::Entity entity, T&& component)
 	{
@@ -54,70 +46,6 @@ namespace tools
 		ptr->communicate(entity);
 
 		return ptr;
-	}
-
-	inline void ComponentRegistry<physics::PhysicsBody>::add_component(glType::Entity entity, physics::PhysicsBody&& component)
-	{
-		auto ptr = std::make_shared<physics::PhysicsBody>(component); //TODO: Add Allocator
-
-		_componentsVec.emplace_back(ptr);
-		_components.emplace(entity, ptr);
-
-		ptr->add_world_force<physics::ForceType::Gravity>(_defaultGravityForce);
-
-		ptr->communicate_impl(entity);
-
-		add_to_physics_manager(ptr);
-	}
-
-	inline std::shared_ptr<physics::PhysicsBody> ComponentRegistry<physics::PhysicsBody>::add_and_get_component_shared(glType::Entity entity, physics::PhysicsBody&& component)
-	{
-		return add_and_get_comp_shared(entity, std::forward<physics::PhysicsBody>(component));
-	}
-
-	inline physics::PhysicsBody& ComponentRegistry<physics::PhysicsBody>::add_and_get_component(glType::Entity entity, physics::PhysicsBody&& component)
-	{
-
-		return *add_and_get_comp_shared(entity, std::forward<physics::PhysicsBody>(component));
-	}
-
-	inline physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>* ComponentRegistry<physics::PhysicsBody>::get_physics_manager()
-	{
-		return _physicsManager.get();
-	}
-
-	inline void ComponentRegistry<physics::PhysicsBody>::update_physics_manager()
-	{
-		if (_physicsManager)
-		{
-			_physicsManager->update();
-		}
-	}
-
-	inline std::shared_ptr<physics::PhysicsBody> ComponentRegistry<physics::PhysicsBody>::add_and_get_comp_shared(glType::Entity entity, physics::PhysicsBody&& component)
-	{
-		auto ptr = std::make_shared<physics::PhysicsBody>(component); //TODO: Add Allocator
-
-		_componentsVec.emplace_back(ptr);
-		_components.emplace(entity, ptr);
-
-		ptr->add_world_force<physics::ForceType::Gravity>(_defaultGravityForce);
-
-		ptr->communicate_impl(entity);
-
-		add_to_physics_manager(ptr);
-	
-		return ptr;
-	}
-
-	inline void ComponentRegistry<physics::PhysicsBody>::add_to_physics_manager(const std::shared_ptr<physics::PhysicsBody>& component)
-	{
-		if (!_physicsManager)
-		{
-			_physicsManager = std::make_unique<physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>>(*this, glm::vec3(-10.0f), glm::vec3(10.0f));
-		}
-		if (component)
-			_physicsManager->register_body(*component);
 	}
 
 

@@ -2,12 +2,6 @@
 
 #include "config.h"
 
-#include "physics/include/physics_manager.h"
-
-#include "physics/include/physics_body.h"
-
-#include "physics/include/force.h"
-
 
 
 namespace tools
@@ -84,42 +78,6 @@ namespace tools
 		using ComponentRegistryBase<T>::_componentsVec;
 	};
 
-	template<>
-	class ComponentRegistry<physics::PhysicsBody> : public ComponentRegistryBase<physics::PhysicsBody>
-	{
-	public:
-
-		static ComponentRegistry& get_instance();
-
-		void add_component(glType::Entity entity, physics::PhysicsBody&& component);
-
-		std::shared_ptr<physics::PhysicsBody> add_and_get_component_shared(glType::Entity entity, physics::PhysicsBody&& component) override;
-
-		physics::PhysicsBody& add_and_get_component(glType::Entity entity, physics::PhysicsBody&& component) override;
-
-		physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>* get_physics_manager();
-
-		void update_physics_manager();
-
-	private:
-
-		std::shared_ptr<physics::PhysicsBody> add_and_get_comp_shared(glType::Entity entity, physics::PhysicsBody&& component);
-
-		ComponentRegistry() = default;
-
-
-		void add_to_physics_manager(const std::shared_ptr<physics::PhysicsBody>& component);
-
-	private:
-
-		std::unique_ptr<physics::PhysicsManager<NUM_OF_SPATIAL_PARTIONING_ARENAS>> _physicsManager;
-
-		physics::GlobalForce<physics::ForceType::Gravity> _defaultGravityForce;
-
-		using ComponentRegistryBase<physics::PhysicsBody>::_components;
-
-		using ComponentRegistryBase<physics::PhysicsBody>::_componentsVec;
-	};
 
 }
 // Ctrl + < for code search

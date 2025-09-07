@@ -74,8 +74,6 @@ namespace tools
 
 		bool set_window(GLFWwindow* window);
 
-		void world_visitor(World& visitor) const;
-
 		float get_width() const;
 
 		float get_height() const;

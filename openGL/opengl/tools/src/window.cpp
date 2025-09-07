@@ -6,7 +6,6 @@
 
 #include "tools\include\window.h"
 #include "tools\include\timer.h"
-#include "physics\include\world.h"
 
 
 namespace tools {
@@ -492,11 +491,6 @@ namespace tools {
 
 		return true;
 
-	}
-
-	void Window::world_visitor(World& visitor) const
-	{
-		visitor.set_camera(_camera.get());
 	}
 
 	float Window::get_width() const
